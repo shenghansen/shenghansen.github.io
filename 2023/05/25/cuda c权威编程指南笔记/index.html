@@ -1,0 +1,727 @@
+<!DOCTYPE html><html lang="zh-cn" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>cuda c权威编程指南笔记 | might's room</title><meta name="author" content="might"><meta name="copyright" content="might"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="cuda c权威编程指南笔记一、基于CUDA的异构并行计算1.1并行计算并行性：包括任务并行和数据并行。 当多任务或函数可以独立的大规模的并行执行时，就是任务并行，任务并行的重点在于利用多核系统对数据进行分配。 当同时处理许多数据时，就是数据并行，数据并行的重点在于数据的分配。 CUDA编程非常适合解决数据并行计算的问题 数据划分方法：块划分和周期划分 块划分：每个线程计算一部分数据，通常这些数据">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cuda c权威编程指南笔记">
+<meta property="og:url" content="https://mightcoder.com/2023/05/25/cuda%20c%E6%9D%83%E5%A8%81%E7%BC%96%E7%A8%8B%E6%8C%87%E5%8D%97%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="might&#39;s room">
+<meta property="og:description" content="cuda c权威编程指南笔记一、基于CUDA的异构并行计算1.1并行计算并行性：包括任务并行和数据并行。 当多任务或函数可以独立的大规模的并行执行时，就是任务并行，任务并行的重点在于利用多核系统对数据进行分配。 当同时处理许多数据时，就是数据并行，数据并行的重点在于数据的分配。 CUDA编程非常适合解决数据并行计算的问题 数据划分方法：块划分和周期划分 块划分：每个线程计算一部分数据，通常这些数据">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lh3.googleusercontent.com/raD52-V3yZtQ3WzOE0Cvzvt8icgGHKXPpN2PS_5MMyZLJrVxgMtLN4r2S2kp5jYI9zrA2e0Y8vAfpZia669pbIog2U9ZKdJmQ8oSBjof6gc4IrhmorT2Rr-YopMlOf1aoU3tbn5Q">
+<meta property="article:published_time" content="2023-05-25T13:39:37.000Z">
+<meta property="article:modified_time" content="2023-05-25T13:35:23.351Z">
+<meta property="article:author" content="might">
+<meta property="article:tag" content="hpc">
+<meta property="article:tag" content="gpu">
+<meta property="article:tag" content="cuda">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/raD52-V3yZtQ3WzOE0Cvzvt8icgGHKXPpN2PS_5MMyZLJrVxgMtLN4r2S2kp5jYI9zrA2e0Y8vAfpZia669pbIog2U9ZKdJmQ8oSBjof6gc4IrhmorT2Rr-YopMlOf1aoU3tbn5Q"><link rel="shortcut icon" href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg"><link rel="canonical" href="https://mightcoder.com/2023/05/25/cuda%20c%E6%9D%83%E5%A8%81%E7%BC%96%E7%A8%8B%E6%8C%87%E5%8D%97%E7%AC%94%E8%AE%B0/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//static.cloudflareinsights.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script defer="defer" data-pjax="data-pjax" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="{&quot;token&quot;: &quot;60e2c80ac4524b11b7168fad4fb0548b&quot;}"></script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: 'days',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'cuda c权威编程指南笔记',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-05-25 21:35:23'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 8 || hour >= 22
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="might's room" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url('https://lh3.googleusercontent.com/raD52-V3yZtQ3WzOE0Cvzvt8icgGHKXPpN2PS_5MMyZLJrVxgMtLN4r2S2kp5jYI9zrA2e0Y8vAfpZia669pbIog2U9ZKdJmQ8oSBjof6gc4IrhmorT2Rr-YopMlOf1aoU3tbn5Q')"><nav id="nav"><span id="blog-info"><a href="/" title="might's room"><img class="site-icon" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg"/><span class="site-name">might's room</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">cuda c权威编程指南笔记</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2023-05-25T13:39:37.000Z" title="Created 2023-05-25 21:39:37">2023-05-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2023-05-25T13:35:23.351Z" title="Updated 2023-05-25 21:35:23">2023-05-25</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">Word Count:</span><span class="word-count">12.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">Reading Time:</span><span>38mins</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="cuda c权威编程指南笔记"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="cuda-c权威编程指南笔记"><a href="#cuda-c权威编程指南笔记" class="headerlink" title="cuda c权威编程指南笔记"></a>cuda c权威编程指南笔记</h1><h2 id="一、基于CUDA的异构并行计算"><a href="#一、基于CUDA的异构并行计算" class="headerlink" title="一、基于CUDA的异构并行计算"></a>一、基于CUDA的异构并行计算</h2><h3 id="1-1并行计算"><a href="#1-1并行计算" class="headerlink" title="1.1并行计算"></a>1.1并行计算</h3><p>并行性：包括任务并行和数据并行。</p>
+<p>当多任务或函数可以独立的大规模的并行执行时，就是任务并行，任务并行的重点在于利用多核系统对数据进行分配。</p>
+<p>当同时处理许多数据时，就是数据并行，数据并行的重点在于数据的分配。</p>
+<p>CUDA编程非常适合解决数据并行计算的问题</p>
+<p>数据划分方法：块划分和周期划分</p>
+<p>块划分：每个线程计算一部分数据，通常这些数据有相同的大小</p>
+<p>周期划分，每个线程计算数据的多部分</p>
+<h2 id="二、CUDA编程模型"><a href="#二、CUDA编程模型" class="headerlink" title="二、CUDA编程模型"></a>二、CUDA编程模型</h2><p>关于<code>cudaMalloc()</code>参数的解释</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> *da;</span><br><span class="line">cudaMalloc((<span class="type">void</span>**)&amp;da,size);</span><br></pre></td></tr></table></figure>
+
+<p>这里da是int指针，在<code>cudaMalloc()</code>的参数中需要一个指向指针的指针（即<code>void**</code>），来将这个指针的值改变为GPU中的内存地址。如果直接传这个指针，只能改变这个指针指向地址的值而不能改变该指针的指向地址（值传递，实际上形参只复制了指针指向的地址）。</p>
+<p>关于<code>cudaMemcpy()</code>的同步问题：</p>
+<p> a）同一个stream（包括默认stream）中的kernel后面的copy函数总是会等到kernel结束才执行copy，无论是同步版的<code>cudaMemcpy()</code>还是异步版的<code>cudaMemcpyAsync()</code>。<br>  b）对于host端而言，<code>cudaMemcpy()</code>是同步返回的，而<code>cudaMemcpyAsync()</code>是异步返回的（不等真正执行完就返回的）。但这并不影响和kernel之间的配合。</p>
+<h2 id="三、CUDA执行模型"><a href="#三、CUDA执行模型" class="headerlink" title="三、CUDA执行模型"></a>三、CUDA执行模型</h2><p>通过了解CUDA的执行模型来优化指令吞吐量。</p>
+<h3 id="3-1CUDA执行模型概述"><a href="#3-1CUDA执行模型概述" class="headerlink" title="3.1CUDA执行模型概述"></a>3.1CUDA执行模型概述</h3><p>GPU是围绕着一个流式多处理器stream Multiprocessor（SM）的可拓展阵列搭建的，以Fermi架构为例，说明GPU的关键组件：</p>
+<ul>
+<li>CUDA核心</li>
+<li>共享内存\一级缓存</li>
+<li>寄存器文件</li>
+<li>加载&#x2F;存储单元</li>
+<li>特殊功能单元</li>
+<li>线程束调度器</li>
+</ul>
+<p>下图为Ampere架构的A100GPU的SM架构：</p>
+<p><img src="https://lh3.googleusercontent.com/raD52-V3yZtQ3WzOE0Cvzvt8icgGHKXPpN2PS_5MMyZLJrVxgMtLN4r2S2kp5jYI9zrA2e0Y8vAfpZia669pbIog2U9ZKdJmQ8oSBjof6gc4IrhmorT2Rr-YopMlOf1aoU3tbn5Q" alt="5"> </p>
+<p>block，grid是抽象概念，物理层次是SM，warp。当启动kernel时，block被分布在可用的SM上运行，block一旦被调度到一个SM上，其中的线程只会在那个指定的SM上并发执行。多个block可能被分配到同一个SM上。</p>
+<p>CUDA采用SIMT单指令多线程架构来管理和执行线程，每32个为一组，称为warp。warp中所有线程同时执行相同的指令，每个线程都有自己的指令计数器和寄存器状态，因此每个线程会有独立的程序执行路径。（SIMT侧重于线程级并行，且多线程执行的是同一指令（同一kernel函数））</p>
+<p>逻辑层次和物理层次对应关系如下图（左侧第二个应该为block）：</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205181520819.png" alt="image-20220502202132210"></p>
+<p>block和warp的对应关系如下图：</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205181526488.png" alt="image-20220502202410015"></p>
+<p>同一个block中的线程可以同步，但是block间线程无法同步。</p>
+<p>由于SM的资源限制，活跃的warp是有限的，但是warp间的切换是没有开销的，因为硬件资源已经分配到了SM上的线程和块中。当warp因为任何理由闲置时（例如从设备内存中读取数值），SM可以从同一SM上的常驻线程块中调度其他可用warp。</p>
+<h3 id="3-2理解warp执行的本质"><a href="#3-2理解warp执行的本质" class="headerlink" title="3.2理解warp执行的本质"></a>3.2理解warp执行的本质</h3><h4 id="3-2-1-warp与block"><a href="#3-2-1-warp与block" class="headerlink" title="3.2.1 warp与block"></a>3.2.1 warp与block</h4><p>从逻辑视角看，线程可以组织成一维二维三维的block，然而，从硬件的角度看，所有的线程被组织成一维的，然后将其分配到warp中。</p>
+<blockquote>
+<p>block中warp的数量&#x3D;向上取整【block中线程总数&#x2F;warp大小（32）】</p>
+</blockquote>
+<p>因此，当block中线程数不能被32整除时，最后的warp有些线程就不会活跃，但是它们仍会消耗SM的资源比如寄存器。</p>
+<h4 id="3-2-2-warp分化"><a href="#3-2-2-warp分化" class="headerlink" title="3.2.2 warp分化"></a>3.2.2 warp分化</h4><p>warp分化是指同一warp的线程在执行有分支的程序时，warp将连续连续执行每一个分支路径，同时会禁用不执行这一路径的线程。这会导致并行线程的数量降低，导致性能明显下降，且条件分支越多，并行性削减越明显。</p>
+<p>造成warp分化的原因是SIMT特性，同一warp中的线程必须同时执行同样的指令。且GPU没有复杂的分支预测机制，因此必须通过执行每一个分支的方式完成分支控制。</p>
+<p>warp对性能影响很大，因此我们必须尽可能避免warp分化。所依据的原理就是根据block中线程的warp分配是确定的，我们可以通过确保同一warp中的线程执行的分支相同，来避免warp分化。</p>
+<p>举个简单的例子：<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205181622724.png" alt="image-20220518162230655"></p>
+<p>上面这个例子就将控制分支的分支粒度由1变为wrap大小</p>
+<h4 id="3-2-3-资源分配"><a href="#3-2-3-资源分配" class="headerlink" title="3.2.3 资源分配"></a>3.2.3 资源分配</h4><p>warp的本地执行上下文有以下资源组成</p>
+<ul>
+<li>程序计数器</li>
+<li>寄存器</li>
+<li>共享内存</li>
+</ul>
+<p>SM处理的每个warp的执行上下文在其声明周期内是保存在硬件上的，上下文切换没有损失，但这也导致了每个SM可处理的warp是有限的，warp线程消耗寄存器越多，SM可处理的warp就越少，一个block消耗的共享内存越多，SM中可以被同时处理的线程块就越少。</p>
+<p>warp分为三种类型：</p>
+<ul>
+<li>选定的warp：正在执行的warp是选定的</li>
+<li>阻塞的warp：没有做好准备执行</li>
+<li>符合条件的warp：准备执行但尚未执行</li>
+</ul>
+<h4 id="3-2-4-隐藏延迟"><a href="#3-2-4-隐藏延迟" class="headerlink" title="3.2.4 隐藏延迟"></a>3.2.4 隐藏延迟</h4><p>指令延迟：在指令发出和完成之间的时钟周期被定义为指令延迟</p>
+<p>当每个时钟周期中所有的线程调度器都有一个符合条件的warp时，可以达到计算资源的完全利用。</p>
+<p>延迟隐藏不是让计算单元的延迟消失，而是让warp调度器不受指令延迟影响，GPU的指令延迟被其他warp的计算隐藏。</p>
+<blockquote>
+<p>利特尔原则：所需warp数&#x3D;延迟*吞吐量</p>
+</blockquote>
+<p>例如：内核中一条指令的平均延迟是5个周期。为了在每个周期内执行6个warp的吞吐量，则至少需要30个未完成的warp。</p>
+<h4 id="3-2-5-占有率"><a href="#3-2-5-占有率" class="headerlink" title="3.2.5 占有率"></a>3.2.5 占有率</h4><p>占有率：每个SM中活跃的warp数占最大warp数量的比值</p>
+<blockquote>
+<p>占有率&#x3D;活跃线程束数量&#x2F;最大线程束数量</p>
+</blockquote>
+<p>最大线程束数量由硬件决定，比如3090就是48</p>
+<p>block和grid大小的准则：</p>
+<ul>
+<li>每个block中线程数量是warp大小的倍数</li>
+<li>避免block太小，至少为128或者256</li>
+<li>block的数量要远远大于SM的数量，从而保证足够的并行性</li>
+</ul>
+<h4 id="3-2-6-同步"><a href="#3-2-6-同步" class="headerlink" title="3.2.6 同步"></a>3.2.6 同步</h4><p>系统级同步：<code>cudaDeviceSynchronize()</code></p>
+<p>block级同步：<code>__device__ void syncthread(void)</code></p>
+<p>这个函数会使同一block中的线程都达到这个同步点再继续执行。由于强制线程空闲，对性能有不利影响。</p>
+<p>需要同步的情况：</p>
+<p>block内的线程需要同步，当使用共享内存时，可能会出现race condition，这时利用同步需要规定好读写顺序。</p>
+<p>block间线程同步没有办法，只能通过<code>cudaDeviceSynchronize()</code>进行block同步。</p>
+<h4 id="3-2-7可拓展性"><a href="#3-2-7可拓展性" class="headerlink" title="3.2.7可拓展性"></a>3.2.7可拓展性</h4><p>简单的来说，可拓展性就是指当增加计算单元时性能也可以跟着提升。</p>
+<p>CUDA内核启动时，block分布在多个SM中，block可以并行或连续或任意的顺序执行，这种独立性使CUDA程序在任意数量的计算核心间可以拓展</p>
+<h3 id="3-3-并行性的表现"><a href="#3-3-并行性的表现" class="headerlink" title="3.3 并行性的表现"></a>3.3 并行性的表现</h3><p>减少block的维数增加block的个数会增加并行性</p>
+<p>block的x维应该是warp大小的倍数</p>
+<p>并行性、占有率、内存吞吐量等指标都不能单独决定性能</p>
+<h3 id="3-4-避免分支分化"><a href="#3-4-避免分支分化" class="headerlink" title="3.4 避免分支分化"></a>3.4 避免分支分化</h3><p>避免分支分化的原理就是3.2.2里讲的尽量使同一个warp中的线程执行相同的控制分支。本节以规约问题为例介绍怎么避免分支分化。</p>
+<p>reduction问题是经典的并行计算问题，基本思想如下：</p>
+<p>问题描述：</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205182120120.png" alt="image-20220518212033862"></p>
+<p>若要使用并行算法来完成，可以通过相邻配对和交错配对的方式来完成。</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205182121561.png" alt="image-20220518212110518"></p>
+<p>在GPU中实现并行规约算法，由于线程块间不能同步，所有在block中并行规约结果后需要在host串行将结果相加起来。</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205182124093.png" alt="image-20220518212414053"></p>
+<p>并行核函数：</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205182124836.png" alt="image-20220518212315476"></p>
+<p>原理图：</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205182128072.png" alt="image-20220518212804029"></p>
+<p>main函数：</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205182124313.png" alt="image-20220518212456238"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205182125652.png" alt="image-20220518212559453"></p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205182126634.png" alt="image-20220518212624578"></p>
+<p>这是相邻配对的方式，每个warp中有一半的线程会分支分化，我们对此进行优化。</p>
+<p>将其改为</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205182128838.png" alt="image-20220518212822772"></p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205182128639.png" alt="image-20220518212815599"></p>
+<p>相比于第一种规约，只有前面一半\四分之一\八分之一\。。。的线程进行计算，因此避免了warp分化。</p>
+<p>再将其改为交错配对</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205182130565.png" alt="image-20220518213022510"></p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205182130036.png" alt="image-20220518213008996"></p>
+<p>三种核函数性能对比：</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205182131797.png" alt="image-20220518213108748"></p>
+<p>发现第三个比第一个快了1.69倍，比第二个快了1.34倍，与第二个相比，性能提升的原因是reduceInterleaved函数里的全局内存加载&#x2F;存储模式导致的，在第4章里会介绍更多有关于全局内存加载&#x2F;存储模式对内核性能的影响。</p>
+<h3 id="3-5展开循环"><a href="#3-5展开循环" class="headerlink" title="3.5展开循环"></a>3.5展开循环</h3><p>在CUDA中，循环展开的意义重大，通过减少指令消耗和增加更多的独立调度指令来提高性能。因此，更多的并发操作被添加到流水线上，以产生更高的指令和内存带宽。这为线程束调度器提供更多符合条件的线程束，它们可以帮助隐藏指令或内存延迟。</p>
+<h4 id="3-5-1-展开规约"><a href="#3-5-1-展开规约" class="headerlink" title="3.5.1 展开规约"></a>3.5.1 展开规约</h4><p>在第四节的规约中，每个线程对应一个数据，每个block对应一个数据块。现在每个block展开两个数据块的处理（问题是原来不是并行的吗，这相当于循环吗？展开循环避免了许多指令和减少了计数，这里也会较少许多指令）</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205182222466.png" alt="image-20220518222209394"></p>
+<p>这条语句将每个block添加了相邻block的元素</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205182222195.png" alt="image-20220518222252160"></p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205182222172.png" alt="image-20220518222258133"></p>
+<p>速度快了3.42倍，再进一步展开，将其展开为4、8个数据块</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205182224666.png" alt="image-20220518222401610"></p>
+<h4 id="3-5-2-展开线程的规约"><a href="#3-5-2-展开线程的规约" class="headerlink" title="3.5.2 展开线程的规约"></a>3.5.2 展开线程的规约</h4><p>在循环处理数据时，活跃线程数不断减半，当活跃线程减为32，就不会再较少了，这部分可以从循环中展开。</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205182240301.png" alt="image-20220518224027128"></p>
+<p>注意临时指针是<code>volatile</code>修饰的，它告诉百年一起每次赋值时需要将vmem的值存回全局内存，并且从全局内存读取，保证编译器不会对全局或共享内存优化读写。(为什么这个要，但是前面却不需要？？)</p>
+<p>修改后的核函数如下</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205182242710.png" alt="image-20220518224216370"></p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205182242292.png" alt="image-20220518224236152"></p>
+<h4 id="3-5-3-完全展开的规约"><a href="#3-5-3-完全展开的规约" class="headerlink" title="3.5.3 完全展开的规约"></a>3.5.3 完全展开的规约</h4><p>如果编译时已知一个循环中的迭代次数，就可以把循环完全展开。因为在Fermi或Kepler架构中，每个块的最大线程数都是1 024（参见表3-2），并且在这些归约核函数中循环迭代次数是基于一个线程块维度的，所以完全展开归约循环是可能的：</p>
+<p><img src="http://yqfile.alicdn.com/61015742618a0b0f05fc456eafa79ea9f282aafc.png" alt="image"><img src="http://yqfile.alicdn.com/dcef9f7fcce98689c2d9495e413db4fd48bab20e.png" alt="image"></p>
+<p>内核时间再次有了小小的改善，它的执行比reduceUnrollWarps8快1.06倍，比原来的实现快9.16倍</p>
+<h4 id="3-5-4-模板函数的规约"><a href="#3-5-4-模板函数的规约" class="headerlink" title="3.5.4 模板函数的规约"></a>3.5.4 模板函数的规约</h4><p>虽然可以手动展开循环，但是使用模板函数有助于进一步减少分支消耗。在设备函数上CUDA支持模板参数。如下所示，可以指定块的大小作为模板函数的参数：</p>
+<p><img src="http://yqfile.alicdn.com/b04bafe536f62138b5f874702357c24562f95cd3.png" alt="image"></p>
+<p><img src="http://yqfile.alicdn.com/577f44b00ae2b3d7a3bd0c8ba2633e16a6ee8d3e.png" alt="image"></p>
+<p>相比reduceCompleteUnrollWarps8，唯一的区别是使用了模板参数替换了块大小。检查块大小的if语句将在编译时被评估，如果这一条件为false，那么编译时它将会被删除，使得内循环更有效率。</p>
+<p>该核函数一定要在switch-case结构中被调用。这允许编译器为特定的线程块大小自动优化代码，但这也意味着它只对在特定块大小下启动reduceCompleteUnroll有效：</p>
+<p><img src="http://yqfile.alicdn.com/ff0dc123aed9aaa80f363477410249f688f0938b.png" alt="image"></p>
+<h4 id="3-5-4-总结"><a href="#3-5-4-总结" class="headerlink" title="3.5.4 总结"></a>3.5.4 总结</h4><p><img src="http://yqfile.alicdn.com/a3bb1472646950be61ce127dfcce08b8488ba3cd.png" alt="image"></p>
+<p>注意，最大的相对性能增益是通过reduceUnrolling8核函数获得的，在这个函数之中每个线程在归约前处理8个数据块。有了8个独立的内存访问，可以更好地让内存带宽饱和及隐藏加载&#x2F;存储延迟。可以使用以下命令检测内存加载&#x2F;存储效率指标：<br><img src="http://yqfile.alicdn.com/7824d9203313bd3743eb550188da9b3d309ac2d4.png" alt="image"></p>
+<p>表3-6总结了所有核函数的结果。在第4章，将会更加详细地介绍全局内存访问，并且会对内存访问如何影响内核性能有更深的了解。</p>
+<p><img src="http://yqfile.alicdn.com/39c130a3209c05a7b29e31a99b197754cf05eb7e.png" alt="image"></p>
+<p>问题回到了隐藏延迟：为什么在warp中大量独立的内存操作可以隐藏延迟？？</p>
+<h3 id="3-6-动态并行"><a href="#3-6-动态并行" class="headerlink" title="3.6 动态并行"></a>3.6 动态并行</h3><p>GPU动态并行允许在GPU端直接创建和同步新的GPU内核，有以下几点优点：</p>
+<ul>
+<li>动态并行提供了一个更有层次结构的方法，在这个方法中，并发性可以在kernel中的多个级别表现出来。</li>
+<li>有了动态并行，可以推迟到运行时决定需要在GPU上创建多少个block和grid，可以动态的利用GPU硬件调度器和加载平衡器，并进行调整以适应数据驱动或工作负载</li>
+<li>在GPU端创建kernel减少了host和device之间的控制和数据传输。</li>
+</ul>
+<p>本节以动态并行实现递归规约为例介绍动态并行。</p>
+<h4 id="3-6-1-嵌套执行"><a href="#3-6-1-嵌套执行" class="headerlink" title="3.6.1 嵌套执行"></a>3.6.1 嵌套执行</h4><ul>
+<li>避免大量嵌套有利于提升性能。</li>
+<li>同步对性能和正确性至关重要，但是减少block内部的同步次数会使嵌套内核的效率更高。</li>
+<li>在每一个嵌套层上设备运行时都要保存额外的内存，所以内核嵌套的最大数量可能是受限制的。</li>
+</ul>
+<h2 id="四、全局内存"><a href="#四、全局内存" class="headerlink" title="四、全局内存"></a>四、全局内存</h2><h3 id="4-1-CUDA内存模型概述"><a href="#4-1-CUDA内存模型概述" class="headerlink" title="4.1 CUDA内存模型概述"></a>4.1 CUDA内存模型概述</h3><p>对于程序员来说，有两种类型存储器：可编程与不可编程</p>
+<p>不可编程：一级缓存和二级缓存</p>
+<p>可编程：</p>
+<ul>
+<li>寄存器</li>
+<li>本地内存</li>
+<li>共享内存</li>
+<li>全局内存</li>
+<li>常量内存</li>
+<li>纹理内存</li>
+</ul>
+<p>每个kernel中的每个线程都有自己的寄存器和本地内存，block内线程共享共享内存，device中的所有线程都可访问全局内存，所有线程都可访问只读的常量内存和纹理内存。</p>
+<h4 id="4-1-1-寄存器"><a href="#4-1-1-寄存器" class="headerlink" title="4.1.1 寄存器"></a>4.1.1 寄存器</h4><p>寄存器式GPU上最快的存储器，kernel中没有其他修饰符修饰的变量通常存在寄存器中，kernel声明的数组中，</p>
+<p>如果引用该数组的索引是常量且能够在编译时确定，那么该数组也存储在寄存器中。</p>
+<p>寄存器变量对线程私有，声明周期与kernel的声明周期相同。</p>
+<p>若kernel使用了超过硬件限制数量的寄存器，则会用本地内存代替多占用的寄存器。这种寄存器溢出会对性能带来不利影响。</p>
+<p>我们可以显式的为kernel加上额外信息来帮助编译器优化。</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205201731997.png" alt="image-20220520173121694"></p>
+<p>限制了每个SM最大block和每个block最多线程</p>
+<h4 id="4-1-2-本地内存"><a href="#4-1-2-本地内存" class="headerlink" title="4.1.2 本地内存"></a>4.1.2 本地内存</h4><p>除了寄存器溢出的变量会存储在寄存器上，编译器可能存放在本地内存中的变量有：</p>
+<ul>
+<li>在编译时使用未知索引引用的本地数组</li>
+<li>可能会占用大量寄存器空间的较大本地结构体或数组</li>
+<li>其他不满足kernel寄存器限定条件的变量</li>
+</ul>
+<p>需要注意的是，本地内存本质上与全局内存在同一块存储区域，因此高延迟，低带宽。</p>
+<h4 id="4-1-3-共享内存"><a href="#4-1-3-共享内存" class="headerlink" title="4.1.3 共享内存"></a>4.1.3 共享内存</h4><p>当用<code>__shared__</code>修饰的变量存放在共享内存中。</p>
+<p>相比本地内存和全局内存，具有更高的带宽和更低的延迟</p>
+<p>共享内存被block内线程共享，因此要注意同步问题，使用<code>__syncthreads</code>进行同步。</p>
+<p>SM中的一级缓存和共享内存都使用64KB的片上内存，是静态划分的，但是可以在运行时动态配置</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205201744956.png" alt="image-20220520174447847"></p>
+<h4 id="4-1-4-常量内存"><a href="#4-1-4-常量内存" class="headerlink" title="4.1.4 常量内存"></a>4.1.4 常量内存</h4><p>常量变量用<code>__constant__</code>修饰，必须在全局空间内和所有核函数外进行声明。其必须通过下面函数进行初始化。</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205201747807.png" alt="image-20220520174742618"></p>
+<p>大多数情况下这个函数是隐式同步的</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205201748556.png" alt="image-20220520174817425"></p>
+<h4 id="4-1-5-纹理内存"><a href="#4-1-5-纹理内存" class="headerlink" title="4.1.5 纹理内存"></a>4.1.5 纹理内存</h4><p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205201749544.png" alt="image-20220520174911292"></p>
+<h4 id="4-1-6-全局内存"><a href="#4-1-6-全局内存" class="headerlink" title="4.1.6 全局内存"></a>4.1.6 全局内存</h4><p>全局内存可以被静态或动态分配，静态通过<code>__device__</code>来分配内存，动态通过<code>cudaMalloc()</code>和<code>cudaFree()</code>来分配和释放全局内存。</p>
+<p>访问全局内存也要注意同步问题，多个线程并发的修改内存的同一位置会导致未定义程序行为。</p>
+<p>内存对齐：全局内存常驻于device内存中，可以通过32字节、64字节128字节的内存事务进行访问，这些内存事务必须自然对齐，也就是说首地址必须是32字节，64字节或128字节的倍数。</p>
+<h4 id="4-1-7-GPU缓存"><a href="#4-1-7-GPU缓存" class="headerlink" title="4.1.7 GPU缓存"></a>4.1.7 GPU缓存</h4><p>GPU cache是不可编程的，在GPU上有四种缓存：</p>
+<ul>
+<li>一级缓存</li>
+<li>二级缓存</li>
+<li>只读常量缓存</li>
+<li>只读纹理缓存</li>
+</ul>
+<p>每个SM有一个一级缓存，所有的SM共享一个二级缓存，一级缓存和二级缓存都能够用来存储本地内存和全局内存中的数据，包括寄存器溢出的部分。每个SM有一个只读常量缓存和只读纹理缓存。</p>
+<p>L1cache和局部内存是同一块存储区域。L2cache被所有SM共享但是其速度要快于全局内存</p>
+<p>在GPU中，只有内存加载操作可以被缓存，内存存储操作不能被缓存</p>
+<h4 id="4-1-8-CUDA变量声明总结"><a href="#4-1-8-CUDA变量声明总结" class="headerlink" title="4.1.8 CUDA变量声明总结"></a>4.1.8 CUDA变量声明总结</h4><p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205201951702.png" alt="image-20220520195107399"></p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205202005695.png" alt="image-20220520200502424"></p>
+<h4 id="4-1-9-静态全局内存"><a href="#4-1-9-静态全局内存" class="headerlink" title="4.1.9 静态全局内存"></a>4.1.9 静态全局内存</h4><p>4.1.6说到可以通过<code>__device__</code>声明静态全局内存，关于静态全局内存的使用有几点需要注意的</p>
+<p>通过<code>__device__</code>声明的变量只是一个符号，不能通过这个变量访问GPU中的全局内存变量。即使在同一文件中可见，主机代码也不能访问设备变量，设备代码也不能访问主机变量。</p>
+<p>要想访问GPU的全局内存变量，应该通过<code>cudaMemcpyToSambol()</code>和<code>cudaMemcpyFromSambol()</code>访问。</p>
+<p>另外还可以<code>cudaGetSymbolAddress()</code>获得全局变量的统一虚拟地址（UAV），注意不能用<code>&amp;</code>符号获取地址。</p>
+<h3 id="4-2-内存管理"><a href="#4-2-内存管理" class="headerlink" title="4.2 内存管理"></a>4.2 内存管理</h3><p>尽可能减少主机与设备之间的传输</p>
+<h4 id="4-2-3-固定内存"><a href="#4-2-3-固定内存" class="headerlink" title="4.2.3 固定内存"></a>4.2.3 固定内存</h4><p>因为虚拟内存的原因，在host端分配的内存是可分页的（pageable），可能在虚拟内存中，当GPU要访问主机端的数据时就可能发生page fault需要页面置换，从而降低效率。</p>
+<p>我们可以使用<code>cudaMallocHost()</code>函数来分配host内存，这样这些内存的页面是锁定的即不会被置入swap区，从而提高了读写带宽。通过<code>cudaFreeHost()</code>来释放主机内存。</p>
+<blockquote>
+<p><strong>主机与设备间的内存传输</strong></p>
+<ul>
+<li>与分页内存相比，固定内存分配和释放成本更高，但是它为大规模数据传输提供了更高的传输吞吐量</li>
+<li>将许多小的传输批处理为一个更大的传输能提高性能，因为它减少了单位传输消耗</li>
+<li>主机与设备之间的数据传输有时可以与内核执行重叠。第六章会详细讲解</li>
+<li>应当尽量减少或重叠主机与设备间的数据传输</li>
+</ul>
+</blockquote>
+<h4 id="4-2-4-零拷贝内存"><a href="#4-2-4-零拷贝内存" class="headerlink" title="4.2.4 零拷贝内存"></a>4.2.4 零拷贝内存</h4><p>之前讲过host不能直接访问device变量，device不能直接访问host变量，但是有一个例外：即零拷贝内存（zero copy mem）</p>
+<p>零拷贝内存的优势：</p>
+<ul>
+<li>当设备内存不足时可以使用主机内存</li>
+<li>避免主机与设备之间的显示传输（使用零拷贝内存则会自动隐式传输）</li>
+<li>提高PCLe的传输率</li>
+</ul>
+<p>使用<code>cudaHostAlloc()</code>来给零拷贝内存分配空间</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205231844941.png" alt="image-20220523184456852"></p>
+<p>flag有四种：<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205231845892.png" alt="image-20220523184544847"></p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205231846105.png" alt="image-20220523184601042"></p>
+<p>可以使用<code>cudaHostGetDevicePointer()</code>函数获取设备端的指针</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205231848437.png" alt="image-20220523184856391"></p>
+<p>总结一下，零拷贝内存就是将显示的内存传输改为隐式，减少了编程者的工作量，对于少量数据来说零拷贝内存是一个不错的选择，但是对于由PCLe总线连接的离散GPU上的更大数据集来说，零拷贝内存不是一个好选择，它会导致性能显著下降。</p>
+<blockquote>
+<p>有两种常见的异构计算架构：集成架构和离散架构（集成显卡和独立显卡）</p>
+<p>在集成架构中，CPU和GPU集成在一个芯片上，并在物理地址上共享内存。在这种架构中，由于无需再PCLe总线上备份，所以零拷贝内存在性能上和可编程性方面可能更佳。</p>
+<p>对于通过PCLe总线连接的离散系统而言，零拷贝内存只在特殊情况下有优势。</p>
+<p>另外特写需要注意的，零拷贝内存被device和host共享，要注意同步问题。</p>
+</blockquote>
+<h4 id="4-2-5-统一虚拟寻址"><a href="#4-2-5-统一虚拟寻址" class="headerlink" title="4.2.5 统一虚拟寻址"></a>4.2.5 统一虚拟寻址</h4><p>统一虚拟寻址（UVA）指主机内存和设备内存共享同一个内存空间</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205231856774.png" alt="image-20220523185643679"></p>
+<p>UVA可以在零拷贝内存的基础上更进一步解放程序员，使用零拷贝内存时还需要创建host指针和device指针两个指针，有UVA后不需要两个指针，只需要一个指针就可以被host和device访问。</p>
+<p>对比零拷贝内存的代码和UVA的代码</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205231900361.png" alt="image-20220523190028273"></p>
+<p>有了UVA可以直接将指针传给核函数</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205231901126.png" alt="image-20220523190120067"></p>
+<h4 id="4-2-6-统一内存寻址"><a href="#4-2-6-统一内存寻址" class="headerlink" title="4.2.6 统一内存寻址"></a>4.2.6 统一内存寻址</h4><p>在CUDA 6.0引入统一内存寻址,进一步简化了内存管理。其原理为创建了一个托管内存池，内存池已分配的空间可以用相同的内存地址在CPU和GPU上进行访问。</p>
+<p>统一内存寻址和UVA不同，UVA只是创建了统一的虚拟内存空间，但是不会自动将数据从一个物理位置转移到另一个物理位置。它应用都是在主机端分配内存，会受到PCLe传输的影响，核函数延迟高。而统一内存寻址将内存和执行空间分离，因此可以根据需要将数据透明的传输到主机或设备上，以提高局部性和性能。</p>
+<p>可以通过<code>__managed__</code>来静态声明一个托管变量，但是只能在文件范围和全局范围内进行</p>
+<p>或者通过<code>cudaMallocManaged()</code>来动态分配托管内存。</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205231913341.png" alt="image-20220523191354292"></p>
+<h3 id="4-3-内存访问模式"><a href="#4-3-内存访问模式" class="headerlink" title="4.3 内存访问模式"></a>4.3 内存访问模式</h3><p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205231952392.png" alt="image-20220523195216276"></p>
+<p>核函数的内存请求是在DRAM(片外全局内存)和片上内存间以128字节或32字节的内存事务实现的。</p>
+<p>一级缓存的缓存行是128字节。二级缓存的缓存行是32字节。可以在编译时选择是否开启一级缓存，默认开启,通过<code>-Xptxas -dlcm-cg</code>关闭缓存，<code>-Xptxas -dlcm-ca</code>开启。</p>
+<h4 id="4-3-1-对齐和合并访问"><a href="#4-3-1-对齐和合并访问" class="headerlink" title="4.3.1 对齐和合并访问"></a>4.3.1 对齐和合并访问</h4><p>从全局内存读取数据有两个特性：对齐访问，全局访问</p>
+<p>对齐访问指从内存读取到缓存时，必须从缓存行大小的整数倍地址开始读，比如一级缓存，每次读取的地址必须是128的倍数。</p>
+<p>合并访问：CUDA模型的显著特征之一是指令必须以warp为单位进行发表和执行，存储也是一样。当warp的32个线程访问一个连续的内存块时，就会出现合并内存访问。</p>
+<p>如何优化内存事务效率：用最少的事务请求满足最多的内存请求，即尽可能的减少访存次数。</p>
+<h4 id="4-3-2-全局内存读取"><a href="#4-3-2-全局内存读取" class="headerlink" title="4.3.2 全局内存读取"></a>4.3.2 全局内存读取</h4><p>启用一级缓存的内存加载以128字节粒度进行加载，不启用则以32字节进行加载。在未对其的情况下，不启用缓存会使加载效率得到提升，因为一次加载的字节数较少，无用的数据部分会减少。但是缓存可以减少重复加载。</p>
+<blockquote>
+<p>CPU与GPU一级缓存的区别：</p>
+<p>CPU一级缓存优化了时间和空间局部性，GPU专为空间局部性设计，频繁访问一个一级缓存的内存位置不会增加数据留在缓存中的概率。</p>
+</blockquote>
+<h4 id="4-3-3-全局内存存储"><a href="#4-3-3-全局内存存储" class="headerlink" title="4.3.3 全局内存存储"></a>4.3.3 全局内存存储</h4><p>内存写入只通过二级缓存，在32字节的粒度上被执行。内存事务可以同时被分为一段、两段和四段、</p>
+<p>对齐存储效率显著高于非对齐存储。</p>
+<h4 id="4-3-4-结构体数组和数组结构体"><a href="#4-3-4-结构体数组和数组结构体" class="headerlink" title="4.3.4 结构体数组和数组结构体"></a>4.3.4 结构体数组和数组结构体</h4><p>结构体数组（SoA）数组结构体（AoS）是两种常见的数据组织方式，</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">innerStruct</span>&#123;</span></span><br><span class="line">  <span class="type">float</span> x;</span><br><span class="line">  <span class="type">float</span> y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">innerStruct</span> <span class="title">myAos</span>[<span class="title">n</span>]</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">innerArray</span>&#123;</span></span><br><span class="line">	<span class="type">float</span> x[n];</span><br><span class="line">  <span class="type">float</span> y[n];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>两种方式在内存中的结构如图所示：</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205232043815.png" alt="image-20220523204321745"></p>
+<p>使用SOA模式可以充分利用GPU的内存带宽，由于相同字段元素相邻存储，不仅可以合并内存访问，还可以对全局内存实现更高效的利用。</p>
+<blockquote>
+<p>许多并行编程范式，尤其是SIMD类型范式更倾向于SOA，CUDA也倾向于使用SOA。</p>
+</blockquote>
+<h4 id="4-3-5-性能调整"><a href="#4-3-5-性能调整" class="headerlink" title="4.3.5 性能调整"></a>4.3.5 性能调整</h4><p><strong>展开技术</strong></p>
+<p>在第三章已经讲过，增加每个线程执行独立内存操作的数量可以提高性能。</p>
+<p>对于IO密集型的核函数，内存访问并行有很高的优先级。</p>
+<p><strong>增大并行性</strong></p>
+<p>增大并行性主要通过修改核函数的配置实现，通过减少block内线程数，增加block的数量来增大并行性。但是block中线程的数量也不能太少，原因如下：</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205232204078.png" alt="image-20220523220455984"></p>
+<blockquote>
+<p>最大化带宽利用率</p>
+<p>总结下要最大化贷款的利用率要从两个角度出发<br>一是提高DRAM和SM片上内存的有效内存的移动，避免浪费。并且要保证内存访问应当是对齐和合并的<br>二是提高并发内存操作，主要途径有（1）展开（2）修改核函数启动配置来提高并行性</p>
+</blockquote>
+<h3 id="4-4-核函数可达到的带宽"><a href="#4-4-核函数可达到的带宽" class="headerlink" title="4.4 核函数可达到的带宽"></a>4.4 核函数可达到的带宽</h3><h4 id="4-4-1-理论带宽与有效带宽"><a href="#4-4-1-理论带宽与有效带宽" class="headerlink" title="4.4.1 理论带宽与有效带宽"></a>4.4.1 理论带宽与有效带宽</h4><p>理论带宽：当前硬件可实现的绝对最大带宽<br>有效带宽：（读字节数+写字节数）*  10<sup>-9</sup>&#x2F;运行时间</p>
+<h4 id="4-4-2-矩阵转置问题"><a href="#4-4-2-矩阵转置问题" class="headerlink" title="4.4.2 矩阵转置问题"></a>4.4.2 矩阵转置问题</h4><p>简单的矩阵转置代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">transposeHost</span><span class="params">(<span class="type">float</span> *out, <span class="type">float</span> *in, <span class="type">const</span> <span class="type">int</span> nx, <span class="type">const</span> <span class="type">int</span> ny)</span> &#123;</span><br><span class="line">	<span class="keyword">for</span> (<span class="type">int</span> iy = <span class="number">0</span>; iy &lt; ny; ++iy) &#123;</span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> ix = <span class="number">0</span>; ix &lt; nx; ++ix) &#123;</span><br><span class="line">			out[ix*ny+iy] = in[iy*nx+ix];</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>矩阵转置有两种基本方法：行读取列存储，列读取行存储，其中行操作都是合并存储的，列操作都是交叉存储的。</p>
+<p>如果禁用一级缓存，这两种方法结果相同，但是如果启用一级缓存，列读取行存储的有效带宽更高，因为读取时虽然是交叉读取，但是因为有缓存可以减少访存；但是行读取列存储时由于存储不经过一级缓存，所以缓存对其没有意义。</p>
+<p><strong>展开转置</strong></p>
+<p>将转置操作展开能获得更高的带宽</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">__global__ <span class="type">void</span> <span class="title function_">transposeUnroll4Col</span><span class="params">(<span class="type">float</span> *out, <span class="type">float</span> *in, <span class="type">const</span> <span class="type">int</span> nx,</span></span><br><span class="line"><span class="params"><span class="type">const</span> <span class="type">int</span> ny)</span> &#123;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> ix = blockDim.x * blockIdx.x*<span class="number">4</span> + threadIdx.x;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> iy = blockDim.y * blockIdx.y + threadIdx.y;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> ti = iy*nx + ix; <span class="comment">// access in rows</span></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> to = ix*ny + iy; <span class="comment">// access in columns</span></span><br><span class="line">  <span class="keyword">if</span> (ix+<span class="number">3</span>*blockDim.x &lt; nx &amp;&amp; iy &lt; ny) &#123;</span><br><span class="line">    out[ti] = in[to];</span><br><span class="line">    out[ti + blockDim.x] = in[to+ blockDim.x*ny];</span><br><span class="line">    out[ti + <span class="number">2</span>*blockDim.x] = in[to+ <span class="number">2</span>*blockDim.x*ny];</span><br><span class="line">    out[ti + <span class="number">3</span>*blockDim.x] = in[to+ <span class="number">3</span>*blockDim.x*ny];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>对角转置</strong></p>
+<p><strong>使用瘦块（thin block）增加并行性</strong></p>
+<h2 id="五、共享和常量内存"><a href="#五、共享和常量内存" class="headerlink" title="五、共享和常量内存"></a>五、共享和常量内存</h2><h3 id="5-1-CUDA共享内存概述"><a href="#5-1-CUDA共享内存概述" class="headerlink" title="5.1 CUDA共享内存概述"></a>5.1 CUDA共享内存概述</h3><h4 id="5-1-1-共享内存"><a href="#5-1-1-共享内存" class="headerlink" title="5.1.1 共享内存"></a>5.1.1 共享内存</h4><p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205251442449.png" alt="image-20220525144256333"></p>
+<p>共享内存（SMEM）与一级缓存在片上，相比于全局内存，其延迟低20-30倍，带宽高大约10倍。</p>
+<p>共享内存被block内的线程共享，当warp读取共享内存时，理想情况下每个请求应该在一个事务中完成，在最坏情况下，一个请求在32个事务中顺序执行。因此要避免多次共享内存请求。当多个线程访问共享内存中的同一个字，一个线程读取该字后，通过多播把他发送给其他线程。</p>
+<p>共享内存被SM所以常驻线程共享，所以共享内存是限制设备并行性的关键资源。一个核函数使用的共享内存越多，处于并发活跃状态的线程块就越少。</p>
+<blockquote>
+<p><strong>可编程管理的缓存</strong></p>
+<p>在编写CPU程序时，缓存对于程序是透明的，我们不能直接操纵缓存，只能通过循环转换等方法优化缓存。循环转换是一种常用的缓存优化方法，通过重新安排迭代顺序，提高缓存的局部性。</p>
+<p>而共享内存是可编程管理的缓存，我们可以通过在数据布局上提供更多细粒度控制和改善片上数据的移动，使得应用程序代码优化变得简单。</p>
+</blockquote>
+<h4 id="5-1-2-共享内存分配"><a href="#5-1-2-共享内存分配" class="headerlink" title="5.1.2 共享内存分配"></a>5.1.2 共享内存分配</h4><p>共享内存可以动态或静态分配，其作用域可以分配为全局或局部。</p>
+<p>通过<code>__shared__</code>修饰符声明变量为静态分配共享变量，如果在核函数内进行声明则是局部变量，如果在核函数外进行声明即为全局变量。</p>
+<p>例如</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">__shared__ <span class="type">float</span> tile[size_y][size_x];</span><br></pre></td></tr></table></figure>
+
+<p>若共享内存大小在编译时未知，可以动态声明，使用<code>extern</code>关键字声明未知大小的数组，在核函数调用时，将所需的字节数作为三重括号内的第三个参数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> __shared__ <span class="type">int</span> tile[];</span><br><span class="line">kernel&lt;&lt;&lt;grid,block,isize* <span class="title function_">sizeof</span><span class="params">(<span class="type">int</span>)</span>&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>注意：只能动态声明一维数组！</p>
+<h4 id="5-1-3-共享内存存储体-bank-和访问模式"><a href="#5-1-3-共享内存存储体-bank-和访问模式" class="headerlink" title="5.1.3 共享内存存储体(bank)和访问模式"></a>5.1.3 共享内存存储体(bank)和访问模式</h4><p><strong>存储体（bank）</strong></p>
+<p>为了获得高内存带宽，共享内存被分为32个同样大小的内存模型,它们被称为存储体，它们可以被同时访问。有32个存储体是因为在一个线程束中有32个线程。共享内存是一个一维地址空间。根据GPU的计算能力，共享内存的地址在不同模式下会映射到不同的存储体中(稍后详述)。如果通过线程束发布共享内存加载或存储操作，且在每个存储体上只访问不多于一个的内存地址，那么该操作可由一个内存事务来完成。否则，该操作由多个内存事务来完成，这样就降低了内存带宽的利用率。</p>
+<p><strong>存储体冲突(bank conflict)</strong></p>
+<p>在共享内存中当多个地址请求落在相同的内存存储体中时，就会发生存储体冲突，这会导致请求被重复执行。</p>
+<p>当线程束发出共享内存请求时,有以下3种典型的模式:</p>
+<ul>
+<li><p>并行访问:多个地址访问多个存储体</p>
+</li>
+<li><p>串行访问:多个地址访问同一个存储体</p>
+</li>
+<li><p>广播访问:单一地址读取单一存储体</p>
+</li>
+</ul>
+<p>并行访问是最常见的模式，它是被一个线程束访问的多个地址落在多个存储体中。这种模式意味着，如果不是所有的地址，那么至少有一些地址可以在一个单一的内存事务中被服务。最佳情况是，当每个地址都位于一个单独的存储体中时，执行无冲突的共享内存访问。串行访问是最坏的模式，当多个地址属于同一个存储体时，必须以串行的方式进行请求。如果线程束中32个线程全都访问同一存储体中不同的内存地址，那么将需要32个内存事务，并且满足这些访问所消耗的时间是单一请求的32倍。<br>在广播访问的情况下，线程束中所有的线程都读取同一存储体中相同的地址。若一个内存事务被执行，那么被访问的字就会被广播到所有请求的线程中。虽然一个单一的内存事务只需要一个广播访问，但是因为只有一小部分字节被读取，所以带宽利用率很差。</p>
+<p>若每个线程访问一个存储体，这是最优的并行访问模式，若多个线程访问一个存储体，有两种可能的情况：</p>
+<ul>
+<li>如果线程访问同一个存储体中相同的地址，广播访问无冲突</li>
+<li>如果线程访问同一个存储体中不同的地址，会发生存储体冲突</li>
+</ul>
+<p><strong>访问模式</strong></p>
+<p>内存存储体的宽度（字长）随计算能力的不同而变化：计算能力2.x的为四字节，计算能力3.x的为8字节</p>
+<p>字长为四字节的存储模式：</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205251628021.png" alt="image-20220525162857783"></p>
+<p>字长为8字节的存储模式</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205251629548.png" alt="image-20220525162922453"></p>
+<p><strong>内存填充</strong></p>
+<p>内存填充是避免存储体冲突的一种方法，以下图为例，若bank0发生大量存储体冲突,可以通过填充字的方式来避免</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205251632600.png" alt="image-20220525163216480"></p>
+<p>填充的内存不能用于数据存储，这样block中可用的共享内存会减少</p>
+<h4 id="5-1-4-配置共享内存"><a href="#5-1-4-配置共享内存" class="headerlink" title="5.1.4 配置共享内存"></a>5.1.4 配置共享内存</h4><p>SM上的片上内存被共享内存和一级缓存共享。有两种配置方法：</p>
+<ul>
+<li>按设备进行配置</li>
+<li>按核函数进行配置</li>
+</ul>
+<p>具体配置方法略去，不同计算能力的设备的片上内存不同，配置方法不同。</p>
+<h4 id="5-1-5-同步"><a href="#5-1-5-同步" class="headerlink" title="5.1.5 同步"></a>5.1.5 同步</h4><p>共享内存的同步有两个基本方法</p>
+<ul>
+<li>障碍（barriers）</li>
+<li>内存栅栏（memory fences）</li>
+</ul>
+<p><strong>弱排序内存模型</strong></p>
+<p>CUDA采用弱排序内存模型，这意味着，内存访问不一定按照它们在程序中的顺序执行，为了显式的确定内存访问的顺序，必须通过barriers和memory fences来保证。</p>
+<p><strong>显示障碍（barriers）</strong></p>
+<p><code>void __syncthreads()</code>作为显示障碍保证当所有线程都到达该点时才能继续执行</p>
+<p>需要注意的是在条件语句中调用<code>void __syncthreads()</code>，很可能块中的线程无法到达相同的障碍点</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (threadID % <span class="number">2</span> == <span class="number">0</span>) &#123;</span><br><span class="line">__syncthreads();</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">__syncthreads();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>另外，前面已经说过block会以并行、串行的方式执行，这保证了CUDA是可拓展的，但这也会导致block间无法同步，若想实现block间的同步，可以在核函数中启动多个核函数并使用<code>__syncthreads()</code>进行同步。</p>
+<p><strong>内存栅栏（memory fences）</strong></p>
+<p>什么是内存栅栏（内存屏障，memory barriers）</p>
+<p>在并行系统中，由于指令的乱序执行，实际的访存可能会和程序中的访存顺序不同，这就会导致程序不按照预想的形式执行，为了避免这种问题，引入内存栅栏，保证访存是按照程序中的顺序。</p>
+<p>有三种范围的内存栅栏：block,grid,system</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> __threadfence_block();</span><br></pre></td></tr></table></figure>
+
+<p>保证栅栏前该线程对所有共享内存和全局内存的写操作对同一块中的其他线程是可见的，即保证其他线程都知道该线程执行了这些访存操作</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> __threadfence();</span><br></pre></td></tr></table></figure>
+
+<p>范围变为grid</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> __threadfence_system();</span><br></pre></td></tr></table></figure>
+
+<p>范围变为system，全部设备</p>
+<p><strong>volatile</strong></p>
+<p>volatile的作用与c语言中相同，可以防止编译器优化，保证volatile修饰的变量都将存到全局内存中，避免缓存在寄存器和本地内存中。</p>
+<h3 id="5-2-共享内存的数据布局"><a href="#5-2-共享内存的数据布局" class="headerlink" title="5.2 共享内存的数据布局"></a>5.2 共享内存的数据布局</h3><p>介绍了方形和矩形两种常见的数据布局，以及其对应的矩阵转置算法，还有通过内存填充来避免存储体冲突。以行主序写列主序读在读的时候会出现存储体冲突，通过内存填充可以避免存储体冲突。</p>
+<p>要区分在全局内存和共享内存矩阵转置的区别，全局内存要避免的是交叉访问尽量合并访问，共享内存要避免的是存储体冲突。</p>
+<p>具体见原书代码吧，应当学会矩阵的转置以及内存填充。</p>
+<h3 id="5-3-减少全局内存的使用"><a href="#5-3-减少全局内存的使用" class="headerlink" title="5.3 减少全局内存的使用"></a>5.3 减少全局内存的使用</h3><p>本节以第三章提到的规约函数为例，介绍如何使用共享内存作为可编程管理缓存以减少全局内存的使用。</p>
+<p>通过将规约函数中的数据处理放到共享内存中，减少了全局内存的使用，提高了性能。具体应当查看原书代码，学会使用局部内存。</p>
+<h3 id="5-4-合并的全局内存访问"><a href="#5-4-合并的全局内存访问" class="headerlink" title="5.4 合并的全局内存访问"></a>5.4 合并的全局内存访问</h3><h3 id="5-5-常量内存"><a href="#5-5-常量内存" class="headerlink" title="5.5 常量内存"></a>5.5 常量内存</h3><p>常量内存位于DRAM上，且有专门的片上缓存。常量内存主要有两种用途：</p>
+<ul>
+<li>只读数据</li>
+<li>当线程束中线程访问相同位置时</li>
+</ul>
+<p>常量内存在设备端是只读的，在host是可读可写的</p>
+<p>常量内存的访问模式不同于其他内存，当线程束中所有线程都访问相同的位置是，这个访问模式是最优的，当线程束访问不同的地址时，该访问就需要串行。</p>
+<p>声明：通过<code>__constant__</code>声明</p>
+<p>初始化：通过<code>cudaMemcpySymbol(const void *symbol,const void *src,size_t count,size_t offset,cudaMemcpyKind kind)</code>,kind可省略，省略就表示默认<code>cudaMemcpyHostDevice</code></p>
+<p><strong>与只读内存的比较</strong></p>
+<blockquote>
+<p><strong>常量缓存与只读缓存</strong></p>
+<p>在设备上只读缓存和常量缓存都是只读的</p>
+<p>每个SM资源有限，只读缓存48KB，常量缓存64KB</p>
+<p>常量缓存在统一读取中可以更好运行，只读缓存更适合分散读取</p>
+</blockquote>
+<p>声明与初始化（主机端）：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">const</span> <span class="type">float</span> h_coef[] = &#123;a0, a1, a2, a3, a4&#125;;</span><br><span class="line">cudaMalloc((<span class="type">float</span>**)&amp;d_coef, (RADIUS + <span class="number">1</span>) * <span class="keyword">sizeof</span>(<span class="type">float</span>));</span><br><span class="line">cudaMemcpy(d_coef, h_coef, (RADIUS + <span class="number">1</span>) * <span class="keyword">sizeof</span>(<span class="type">float</span>), cudaMemcpyHostToDevice);</span><br></pre></td></tr></table></figure>
+
+<p>设备端</p>
+<p><code>__log()</code> 例如：<code>output[idx] += __ldg(&amp;input[idx])</code>强制使用只读缓存</p>
+<h3 id="5-6-warp洗牌指令"><a href="#5-6-warp洗牌指令" class="headerlink" title="5.6 warp洗牌指令"></a>5.6 warp洗牌指令</h3><p>洗牌指令：只要两个线程在相同的线程束中，就允许这两个线程直接读取另一个线程的寄存器</p>
+<p>首先必须要介绍束内线程（lane）的概念，每个warp中的束内线程有其独一无二的束内线程索引（laneID），每个warp有其线程束索引（warpID）<br>$$<br>laneID&#x3D;threadID.x%32\<br>warpID&#x3D;threadID.x&#x2F;32<br>$$</p>
+<p>对于二维线程块可以将其转为一维线程索引再求laneID和warpID</p>
+<h2 id="六、流与并发"><a href="#六、流与并发" class="headerlink" title="六、流与并发"></a>六、流与并发</h2><p>一般来说，在CUDA中有两种级别的并发：</p>
+<ul>
+<li>内核并发</li>
+<li>网格并发</li>
+</ul>
+<p>本章主要介绍网格并发以及如何用NVVP将内核并发执行可视化</p>
+<h3 id="6-1-流与事件"><a href="#6-1-流与事件" class="headerlink" title="6.1 流与事件"></a>6.1 流与事件</h3><p>CUDA流目的：实现网格级并发（如何实现并发：通过异步操作，异步了如何确定执行顺序：通过流来确定执行顺序）</p>
+<p>定义：CUDA流是一系列异步的CUDA操作，这些操作按照主机代码确定的顺序在设备上执行。流能封装这些操作，保持操作的顺序，允许操作在流中排队，并使它们在先前的所有操作之后执行，并且可以查询排队操作的状态。</p>
+<p>这些操作包括在主机与设备间进行数据传输，内核启动以及大多数由主机发起但由设备处理的其他命令。流中操作的执行相对于主机总是异步的。CUDA运行时决定何时可以在设备上执行操作。我们的任务是使用CUDA的API来确保一个异步操作在运行结果被使用之前可以完成。</p>
+<p>如何实现网格级并发？：在同一个CUDA流中的操作有严格的执行顺序，而在不同CUDA流中的操作在执行顺序上不受限制。使用多个流同时启动多个内核，可以实现网格级并发。</p>
+<p>实现网格级并发的优势？：在许多情况下，执行内核比传输数据耗时更多。在这些情况下，可以完全隐藏CPU和GPU 之间的通信延迟。通过将内核执行和数据传输调度到不同的流中，这些操作可以重叠,程序的总运行时间将被缩短。流在CUDA的API调用粒度上可实现流水线或双缓冲技术。</p>
+<h4 id="6-1-1-CUDA流"><a href="#6-1-1-CUDA流" class="headerlink" title="6.1.1 CUDA流"></a>6.1.1 CUDA流</h4><p>流的两种类型：</p>
+<ul>
+<li>隐式声明的流（空流）</li>
+<li>显式声明的流（非空流）</li>
+</ul>
+<p>如果没有显示指明流，那么数据传输和内核启动默认使用空流，前面几章的例子使用的都是空流。</p>
+<p>接下来讲解如何创建销毁检查流：</p>
+<p>声明：<code>cudaStream_t stream;</code></p>
+<p>创建：<code>cudaStreamCreate(&amp;stream);  </code></p>
+<p>销毁：<code>cudaError_t cudaStreamDestroy(cudaStream_t stream);</code></p>
+<p>当<code>cudaStreamDestroy</code>函数调用时，若流中有未完成的工作，该函数将立即返回，若所有工作已经完成，与流相关的资源将被自动释放。</p>
+<p>因为CUDA流操作是异步的，不知道什么时候结束，所以有相关函数来检查流中操作是否以及完成</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cudaError_t <span class="title function_">cudaStreamSynchronize</span><span class="params">(cudaStream_t stream)</span>;</span><br><span class="line">cudaError_t <span class="title function_">cudaStreamQuery</span><span class="params">(cudaStream_t stream)</span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>cudaStreamSynchronize</code>强制阻塞主机，直到在给定流中所有的操作都完成了。<code>cudaStreamQuery</code>会检查流中所有操作是否都已经完成，但在它们完成前不会阻塞主机。当所有操作都完成时<code>cudaStreamQuery</code>函数会返回<code>cudaSuccess</code>，当一个或多个操作仍在执行或等待执行时返回<code>cudaErrorNotReady</code>。</p>
+<p>在之前的代码中，常见的数据传输和执行内核操作比如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cudaMemcpy(..., cudaMemcpyHostToDevice);</span><br><span class="line">kernel&lt;&lt;&lt;grid, block&gt;&gt;&gt;(...);</span><br><span class="line">cudaMemcpy(..., cudaMemcpyDeviceToHost);</span><br></pre></td></tr></table></figure>
+
+<p>在这个代码中，三个操作被发布到默认的流中，<code>cudaMemcpy()</code>主机同步等待数据传输完毕，在传输完成前，主机将强制空闲，内核启动是异步的，因此可以做到在内核启动后主机与设备的并行计算。</p>
+<p>如果一直使用<code>cudaMemcpy() </code> 进行同步数据传输的话，主机端有无效的等待时间，也无法实现网格并行，可以通过<code>cudaMemcpyAsync()</code>来异步的数据传输，主机调用函数以后可以继续向前执行，由设备端继续执行，当然这样做必须三个函数的执行顺序必须按照发布顺序执行，因此需要通过显式的设置CUDA流来进行装载。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cudaError_t <span class="title function_">cudaMemcpyAsync</span><span class="params">(<span class="type">void</span>* dst, <span class="type">const</span> <span class="type">void</span>* src, <span class="type">size_t</span> count,cudaMemcpyKind kind, cudaStream_t stream = <span class="number">0</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>将流作为第五个参数。</p>
+<p>需要注意的是，执行异步数据传输时，必须使用固定主机分页</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cudaError_t <span class="title function_">cudaMallocHost</span><span class="params">(<span class="type">void</span> **ptr, <span class="type">size_t</span> size)</span>;</span><br><span class="line">cudaError_t <span class="title function_">cudaHostAlloc</span><span class="params">(<span class="type">void</span> **pHost, <span class="type">size_t</span> size, <span class="type">unsigned</span> <span class="type">int</span> flags)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>在非默认流启动核函数，必须将流作为内核执行配置的第四个参数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kernel_name&lt;&lt;&lt;grid, block, sharedMemSize, stream&gt;&gt;&gt;(argument <span class="built_in">list</span>)</span><br></pre></td></tr></table></figure>
+
+<p>接下来在实例中看下非空流是如何实现网格并行的</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; nStreams; i++) &#123;</span><br><span class="line">  <span class="type">int</span> offset = i * bytesPerStream;</span><br><span class="line">  cudaMemcpyAsync(&amp;d_a[offset], &amp;a[offset], bytePerStream, streams[i]);</span><br><span class="line">  kernel&lt;&lt;grid, block, <span class="number">0</span>, streams[i]&gt;&gt;(&amp;d_a[offset]);</span><br><span class="line">  cudaMemcpyAsync(&amp;a[offset], &amp;d_a[offset], bytesPerStream, streams[i]);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; nStreams; i++) &#123;</span><br><span class="line">	cudaStreamSynchronize(streams[i]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>相比于之前的默认流代码，使用流的异步代码不必阻塞，在一个数据传输及核函数返回前可以启动下一数据传输和核函数，实现网格级并行，效果如下图。</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205262106804.png" alt="image-20220526210629575"></p>
+<h4 id="6-1-2-流调度"><a href="#6-1-2-流调度" class="headerlink" title="6.1.2 流调度"></a>6.1.2 流调度</h4><p><strong>虚假依赖关系</strong></p>
+<p>虽然fermi架构支持16路并发，但所有的流最终多路复用到单一的迎检工作队列，这就导致了虚假的依赖关系，阻碍了网格级并行</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205262113244.png" alt="image-20220526211322189"></p>
+<p><strong>Hyper-Q</strong></p>
+<p>使用多个硬件工作队列，减少虚假依赖关系</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205262114761.png" alt="image-20220526211435690"></p>
+<h4 id="6-1-3-流的优先级"><a href="#6-1-3-流的优先级" class="headerlink" title="6.1.3 流的优先级"></a>6.1.3 流的优先级</h4><p>计算能力3.5以上的设备，可以给流分配优先级</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//分配优先级</span></span><br><span class="line">cudaError_t <span class="title function_">cudaStreamCreateWithPriority</span><span class="params">(cudaStream_t* pStream, <span class="type">unsigned</span> <span class="type">int</span> flags,<span class="type">int</span> priority)</span>;</span><br><span class="line"><span class="comment">//查询优先级</span></span><br><span class="line">cudaError_t <span class="title function_">cudaDeviceGetStreamPriorityRange</span><span class="params">(<span class="type">int</span> *leastPriority,<span class="type">int</span> *greatestPriority)</span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>cudaStreamCreateWithPriority</code>这个函数创建了一个具有指定整数优先级的流，并在pStream中返回一个句柄。这个优先级是与pStream中的工作调度相关的。高优先级流的网格队列可以优先占有低优先级流已经执行的工作。流优先级不会影响数据传输操作，只对计算内核有影响。如果优先级超出了设备定义的范围，它会被自动限制为定义范围内的最低值或最高值。</p>
+<p><code>cudaDeviceGetStreamPriorityRange</code>的返回值放在<code>leastPriority</code>和<code>greatestPriority</code>中，如果当前设备不支持优先级，将返回0；</p>
+<h4 id="6-1-4-事件"><a href="#6-1-4-事件" class="headerlink" title="6.1.4 事件"></a>6.1.4 事件</h4><p>CUDA事件与流中特定点相关联，可以执行两个基本任务：</p>
+<ul>
+<li>同步流的执行</li>
+<li>监控设备的进展</li>
+</ul>
+<p>声明：<code>cudaEvent_t event; </code></p>
+<p>初始化：<code>cudaError_t cudaEventCreate(cudaEvent_t* event);</code></p>
+<p>销毁：<code>cudaError_t cudaEventDestroy(cudaEvent_t event); </code></p>
+<p>在流中插入事件：<code>cudaError_t cudaEventRecord(cudaEvent_t event, cudaStream_t stream = 0);  </code></p>
+<p>等待一个事件结束:<code>cudaError_t cudaEventSynchronize(cudaEvent_t event);  </code>类似<code>cudaStreamSynchronize  </code></p>
+<p>查询一个事件是否执行完：<code>cudaError_t cudaEventQuery(cudaEvent_t event); </code>类似<code>cudaStreamQuery  </code></p>
+<p>记录两个事件之间的时间：<code>cudaError_t cudaEventElapsedTime(float* ms, cudaEvent_t start, cudaEvent_t stop);  </code>两个事件不一定属于同一个流</p>
+<h4 id="6-1-5-流同步"><a href="#6-1-5-流同步" class="headerlink" title="6.1.5 流同步"></a>6.1.5 流同步</h4><p>前面已经讲过，为了实现网格并行，非默认流中的操作是非阻塞的，但是会有主机和设备需要同步的时候，也就是流同步。</p>
+<p><strong>阻塞流与非阻塞流</strong></p>
+<p>前面已经介绍过空流与非空流，空流也就是默认流是同步流，其操作（内存操作）会阻塞主机，而非空流是异步流，其操作不阻塞主机，非空流可以进一步分成以下两种流：</p>
+<ul>
+<li>阻塞流：空流可以阻塞其操作</li>
+<li>非阻塞流：不会阻塞空流中操作</li>
+</ul>
+<p>没看懂，回头再回来看吧！！！</p>
+<p><strong>可配置事件</strong></p>
+<p>没看懂sad</p>
+<p><strong>隐式同步</strong></p>
+<p>CUDA中有两种设备-主机同步：隐式同步与显示同步，隐式同步比如<code>cudaMemcpy</code>，了解隐式同步很有意义，因为没有考虑隐式同步的话会导致想不到的性能下降。</p>
+<p>隐式同步包括：</p>
+<ul>
+<li>固定页主机内存分配</li>
+<li>设备内存分配</li>
+<li>设备内存初始化</li>
+<li>同一个设备上两个地址之间的内存复制</li>
+<li>一级缓存&#x2F;共享内存配置的修改</li>
+</ul>
+<p><strong>显示同步</strong></p>
+<p>显示同步的几种方法：</p>
+<p>- </p>
+<ul>
+<li>同步设备：<code>cudaDeviceSynchronize()</code>，使主机等待设备相关的计算与通信完成</li>
+<li>同步流：<code>cudaStreamSynchronize()</code>，使主机等待所有该流中的操作完成</li>
+<li>同步事件：<code>cudaEventSynchronize()</code>，使主机等待事件完成</li>
+<li>事件同步（可以跨流）：<code>cudaStreamWaitEvent(cudaStream stream,cudaEvent_t event)</code>，使一个流等待一个事件完成，这个事件可能不属于这个流，这样就可以实现跨流同步。</li>
+</ul>
+<h3 id="6-2-并发内核执行"><a href="#6-2-并发内核执行" class="headerlink" title="6.2 并发内核执行"></a>6.2 并发内核执行</h3><h4 id="6-2-1-非空流的并发执行"><a href="#6-2-1-非空流的并发执行" class="headerlink" title="6.2.1 非空流的并发执行"></a>6.2.1 非空流的并发执行</h4><p>对于支持Hyper-Q的设备，使用多个非空流可以实现内核并发执行</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205291318256.png" alt="image-20220529131849166"></p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205291318583.png" alt="image-20220529131859505"></p>
+<h4 id="6-2-2-fermiGPU的虚假依赖关系"><a href="#6-2-2-fermiGPU的虚假依赖关系" class="headerlink" title="6.2.2 fermiGPU的虚假依赖关系"></a>6.2.2 fermiGPU的虚假依赖关系</h4><p>然而在fermi架构中，由于不支持hyper-Q,所有流被多路复用的一个硬件工作队列，产生虚假依赖关系，无法并行</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205291320516.png" alt="image-20220529132059454"></p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205291320654.png" alt="image-20220529132048576"></p>
+<p>可以采用广度优先顺序，确保工作队列中任务来自不同的流</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205291321117.png" alt="image-20220529132157058"></p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202205291322795.png" alt="image-20220529132206722"></p>
+<h4 id="6-2-3-使用OpenMP的调度操作"><a href="#6-2-3-使用OpenMP的调度操作" class="headerlink" title="6.2.3 使用OpenMP的调度操作"></a>6.2.3 使用OpenMP的调度操作</h4><p>之前的例子中都是使用一个线程启动多个内核，为了进一步提升性能可以使用多个主机线程将操作调度到多个流去。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">omp_set_num_threads(n_streams);</span><br><span class="line"><span class="meta">#<span class="keyword">pragma</span> omp parallel</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> i = omp_get_thread_num();</span><br><span class="line">  kernel_1&lt;&lt;&lt;grid, block, <span class="number">0</span>, streams[i]&gt;&gt;&gt;();</span><br><span class="line">  kernel_2&lt;&lt;&lt;grid, block, <span class="number">0</span>, streams[i]</span><br><span class="line">  kernel_3&lt;&lt;&lt;grid, block, <span class="number">0</span>, streams[i]&gt;&gt;&gt;();</span><br><span class="line">	kernel_4&lt;&lt;&lt;grid, block, <span class="number">0</span>, streams[i]&gt;&gt;&gt;();</span><br><span class="line">&#125;&gt;&gt;&gt;();</span><br></pre></td></tr></table></figure>
+
+<p>这个例子中使用openmp效果一般，当每个流在内核执行之前、期间或之后有额外的工作待完成，那么使用多线程调度流可以显著提高性能。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://mightcoder.com">might</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://mightcoder.com/2023/05/25/cuda%20c%E6%9D%83%E5%A8%81%E7%BC%96%E7%A8%8B%E6%8C%87%E5%8D%97%E7%AC%94%E8%AE%B0/">https://mightcoder.com/2023/05/25/cuda%20c%E6%9D%83%E5%A8%81%E7%BC%96%E7%A8%8B%E6%8C%87%E5%8D%97%E7%AC%94%E8%AE%B0/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/hpc/">hpc</a><a class="post-meta__tags" href="/tags/gpu/">gpu</a><a class="post-meta__tags" href="/tags/cuda/">cuda</a></div><div class="post_share"><div class="social-share" data-image="https://lh3.googleusercontent.com/raD52-V3yZtQ3WzOE0Cvzvt8icgGHKXPpN2PS_5MMyZLJrVxgMtLN4r2S2kp5jYI9zrA2e0Y8vAfpZia669pbIog2U9ZKdJmQ8oSBjof6gc4IrhmorT2Rr-YopMlOf1aoU3tbn5Q" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>请作者喝杯咖啡</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/05/26/rocm/" title="Rocm"><img class="cover" src="https://www.phoronix.com/assets/categories/radeon.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">Rocm</div></div></a></div><div class="next-post pull-right"><a href="/2023/03/15/%E3%80%90live%20house%E3%80%912023-3-15-%E8%84%86%E8%8E%93-%E3%80%8A%E9%87%8D%E5%9B%9E%E8%88%9E%E5%8F%B0%E3%80%8B/" title="【live house】2023.3.15 脆莓 《重返舞台》"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mmexport1678891865305.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next</div><div class="next_info">【live house】2023.3.15 脆莓 《重返舞台》</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2022/07/31/PAC22-%E5%88%9D%E8%B5%9B/" title="PAC22-初赛"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202208092121258.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-07-31</div><div class="title">PAC22-初赛</div></div></a></div><div><a href="/2023/05/27/kokkos/" title="Kokkos编程指南"><img class="cover" src="data:image/jpeg;base64,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" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-05-27</div><div class="title">Kokkos编程指南</div></div></a></div><div><a href="/2023/05/26/rocm/" title="Rocm"><img class="cover" src="https://www.phoronix.com/assets/categories/radeon.webp" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-05-26</div><div class="title">Rocm</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> Comment</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">might</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/shenghansen" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:shenghs@mail2.sysu.edu.cn" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">Hope you can find something useful here ᐕ)⁾⁾ .</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#cuda-c%E6%9D%83%E5%A8%81%E7%BC%96%E7%A8%8B%E6%8C%87%E5%8D%97%E7%AC%94%E8%AE%B0"><span class="toc-number">1.</span> <span class="toc-text">cuda c权威编程指南笔记</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%9F%BA%E4%BA%8ECUDA%E7%9A%84%E5%BC%82%E6%9E%84%E5%B9%B6%E8%A1%8C%E8%AE%A1%E7%AE%97"><span class="toc-number">1.1.</span> <span class="toc-text">一、基于CUDA的异构并行计算</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1%E5%B9%B6%E8%A1%8C%E8%AE%A1%E7%AE%97"><span class="toc-number">1.1.1.</span> <span class="toc-text">1.1并行计算</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81CUDA%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.2.</span> <span class="toc-text">二、CUDA编程模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81CUDA%E6%89%A7%E8%A1%8C%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.3.</span> <span class="toc-text">三、CUDA执行模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1CUDA%E6%89%A7%E8%A1%8C%E6%A8%A1%E5%9E%8B%E6%A6%82%E8%BF%B0"><span class="toc-number">1.3.1.</span> <span class="toc-text">3.1CUDA执行模型概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2%E7%90%86%E8%A7%A3warp%E6%89%A7%E8%A1%8C%E7%9A%84%E6%9C%AC%E8%B4%A8"><span class="toc-number">1.3.2.</span> <span class="toc-text">3.2理解warp执行的本质</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-1-warp%E4%B8%8Eblock"><span class="toc-number">1.3.2.1.</span> <span class="toc-text">3.2.1 warp与block</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-2-warp%E5%88%86%E5%8C%96"><span class="toc-number">1.3.2.2.</span> <span class="toc-text">3.2.2 warp分化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-3-%E8%B5%84%E6%BA%90%E5%88%86%E9%85%8D"><span class="toc-number">1.3.2.3.</span> <span class="toc-text">3.2.3 资源分配</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-4-%E9%9A%90%E8%97%8F%E5%BB%B6%E8%BF%9F"><span class="toc-number">1.3.2.4.</span> <span class="toc-text">3.2.4 隐藏延迟</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-5-%E5%8D%A0%E6%9C%89%E7%8E%87"><span class="toc-number">1.3.2.5.</span> <span class="toc-text">3.2.5 占有率</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-6-%E5%90%8C%E6%AD%A5"><span class="toc-number">1.3.2.6.</span> <span class="toc-text">3.2.6 同步</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-7%E5%8F%AF%E6%8B%93%E5%B1%95%E6%80%A7"><span class="toc-number">1.3.2.7.</span> <span class="toc-text">3.2.7可拓展性</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E5%B9%B6%E8%A1%8C%E6%80%A7%E7%9A%84%E8%A1%A8%E7%8E%B0"><span class="toc-number">1.3.3.</span> <span class="toc-text">3.3 并行性的表现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E9%81%BF%E5%85%8D%E5%88%86%E6%94%AF%E5%88%86%E5%8C%96"><span class="toc-number">1.3.4.</span> <span class="toc-text">3.4 避免分支分化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5%E5%B1%95%E5%BC%80%E5%BE%AA%E7%8E%AF"><span class="toc-number">1.3.5.</span> <span class="toc-text">3.5展开循环</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-5-1-%E5%B1%95%E5%BC%80%E8%A7%84%E7%BA%A6"><span class="toc-number">1.3.5.1.</span> <span class="toc-text">3.5.1 展开规约</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-5-2-%E5%B1%95%E5%BC%80%E7%BA%BF%E7%A8%8B%E7%9A%84%E8%A7%84%E7%BA%A6"><span class="toc-number">1.3.5.2.</span> <span class="toc-text">3.5.2 展开线程的规约</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-5-3-%E5%AE%8C%E5%85%A8%E5%B1%95%E5%BC%80%E7%9A%84%E8%A7%84%E7%BA%A6"><span class="toc-number">1.3.5.3.</span> <span class="toc-text">3.5.3 完全展开的规约</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-5-4-%E6%A8%A1%E6%9D%BF%E5%87%BD%E6%95%B0%E7%9A%84%E8%A7%84%E7%BA%A6"><span class="toc-number">1.3.5.4.</span> <span class="toc-text">3.5.4 模板函数的规约</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-5-4-%E6%80%BB%E7%BB%93"><span class="toc-number">1.3.5.5.</span> <span class="toc-text">3.5.4 总结</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-%E5%8A%A8%E6%80%81%E5%B9%B6%E8%A1%8C"><span class="toc-number">1.3.6.</span> <span class="toc-text">3.6 动态并行</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-6-1-%E5%B5%8C%E5%A5%97%E6%89%A7%E8%A1%8C"><span class="toc-number">1.3.6.1.</span> <span class="toc-text">3.6.1 嵌套执行</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%85%A8%E5%B1%80%E5%86%85%E5%AD%98"><span class="toc-number">1.4.</span> <span class="toc-text">四、全局内存</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-CUDA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E6%A6%82%E8%BF%B0"><span class="toc-number">1.4.1.</span> <span class="toc-text">4.1 CUDA内存模型概述</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-1-1-%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">1.4.1.1.</span> <span class="toc-text">4.1.1 寄存器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-1-2-%E6%9C%AC%E5%9C%B0%E5%86%85%E5%AD%98"><span class="toc-number">1.4.1.2.</span> <span class="toc-text">4.1.2 本地内存</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-1-3-%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98"><span class="toc-number">1.4.1.3.</span> <span class="toc-text">4.1.3 共享内存</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-1-4-%E5%B8%B8%E9%87%8F%E5%86%85%E5%AD%98"><span class="toc-number">1.4.1.4.</span> <span class="toc-text">4.1.4 常量内存</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-1-5-%E7%BA%B9%E7%90%86%E5%86%85%E5%AD%98"><span class="toc-number">1.4.1.5.</span> <span class="toc-text">4.1.5 纹理内存</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-1-6-%E5%85%A8%E5%B1%80%E5%86%85%E5%AD%98"><span class="toc-number">1.4.1.6.</span> <span class="toc-text">4.1.6 全局内存</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-1-7-GPU%E7%BC%93%E5%AD%98"><span class="toc-number">1.4.1.7.</span> <span class="toc-text">4.1.7 GPU缓存</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-1-8-CUDA%E5%8F%98%E9%87%8F%E5%A3%B0%E6%98%8E%E6%80%BB%E7%BB%93"><span class="toc-number">1.4.1.8.</span> <span class="toc-text">4.1.8 CUDA变量声明总结</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-1-9-%E9%9D%99%E6%80%81%E5%85%A8%E5%B1%80%E5%86%85%E5%AD%98"><span class="toc-number">1.4.1.9.</span> <span class="toc-text">4.1.9 静态全局内存</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="toc-number">1.4.2.</span> <span class="toc-text">4.2 内存管理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-3-%E5%9B%BA%E5%AE%9A%E5%86%85%E5%AD%98"><span class="toc-number">1.4.2.1.</span> <span class="toc-text">4.2.3 固定内存</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-4-%E9%9B%B6%E6%8B%B7%E8%B4%9D%E5%86%85%E5%AD%98"><span class="toc-number">1.4.2.2.</span> <span class="toc-text">4.2.4 零拷贝内存</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-5-%E7%BB%9F%E4%B8%80%E8%99%9A%E6%8B%9F%E5%AF%BB%E5%9D%80"><span class="toc-number">1.4.2.3.</span> <span class="toc-text">4.2.5 统一虚拟寻址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-6-%E7%BB%9F%E4%B8%80%E5%86%85%E5%AD%98%E5%AF%BB%E5%9D%80"><span class="toc-number">1.4.2.4.</span> <span class="toc-text">4.2.6 统一内存寻址</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E5%86%85%E5%AD%98%E8%AE%BF%E9%97%AE%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.4.3.</span> <span class="toc-text">4.3 内存访问模式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-1-%E5%AF%B9%E9%BD%90%E5%92%8C%E5%90%88%E5%B9%B6%E8%AE%BF%E9%97%AE"><span class="toc-number">1.4.3.1.</span> <span class="toc-text">4.3.1 对齐和合并访问</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-2-%E5%85%A8%E5%B1%80%E5%86%85%E5%AD%98%E8%AF%BB%E5%8F%96"><span class="toc-number">1.4.3.2.</span> <span class="toc-text">4.3.2 全局内存读取</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-3-%E5%85%A8%E5%B1%80%E5%86%85%E5%AD%98%E5%AD%98%E5%82%A8"><span class="toc-number">1.4.3.3.</span> <span class="toc-text">4.3.3 全局内存存储</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-4-%E7%BB%93%E6%9E%84%E4%BD%93%E6%95%B0%E7%BB%84%E5%92%8C%E6%95%B0%E7%BB%84%E7%BB%93%E6%9E%84%E4%BD%93"><span class="toc-number">1.4.3.4.</span> <span class="toc-text">4.3.4 结构体数组和数组结构体</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-5-%E6%80%A7%E8%83%BD%E8%B0%83%E6%95%B4"><span class="toc-number">1.4.3.5.</span> <span class="toc-text">4.3.5 性能调整</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-%E6%A0%B8%E5%87%BD%E6%95%B0%E5%8F%AF%E8%BE%BE%E5%88%B0%E7%9A%84%E5%B8%A6%E5%AE%BD"><span class="toc-number">1.4.4.</span> <span class="toc-text">4.4 核函数可达到的带宽</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-4-1-%E7%90%86%E8%AE%BA%E5%B8%A6%E5%AE%BD%E4%B8%8E%E6%9C%89%E6%95%88%E5%B8%A6%E5%AE%BD"><span class="toc-number">1.4.4.1.</span> <span class="toc-text">4.4.1 理论带宽与有效带宽</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-4-2-%E7%9F%A9%E9%98%B5%E8%BD%AC%E7%BD%AE%E9%97%AE%E9%A2%98"><span class="toc-number">1.4.4.2.</span> <span class="toc-text">4.4.2 矩阵转置问题</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E5%85%B1%E4%BA%AB%E5%92%8C%E5%B8%B8%E9%87%8F%E5%86%85%E5%AD%98"><span class="toc-number">1.5.</span> <span class="toc-text">五、共享和常量内存</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-CUDA%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98%E6%A6%82%E8%BF%B0"><span class="toc-number">1.5.1.</span> <span class="toc-text">5.1 CUDA共享内存概述</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-1-%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98"><span class="toc-number">1.5.1.1.</span> <span class="toc-text">5.1.1 共享内存</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-2-%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D"><span class="toc-number">1.5.1.2.</span> <span class="toc-text">5.1.2 共享内存分配</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-3-%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98%E5%AD%98%E5%82%A8%E4%BD%93-bank-%E5%92%8C%E8%AE%BF%E9%97%AE%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.5.1.3.</span> <span class="toc-text">5.1.3 共享内存存储体(bank)和访问模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-4-%E9%85%8D%E7%BD%AE%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98"><span class="toc-number">1.5.1.4.</span> <span class="toc-text">5.1.4 配置共享内存</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-5-%E5%90%8C%E6%AD%A5"><span class="toc-number">1.5.1.5.</span> <span class="toc-text">5.1.5 同步</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98%E7%9A%84%E6%95%B0%E6%8D%AE%E5%B8%83%E5%B1%80"><span class="toc-number">1.5.2.</span> <span class="toc-text">5.2 共享内存的数据布局</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E5%87%8F%E5%B0%91%E5%85%A8%E5%B1%80%E5%86%85%E5%AD%98%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">1.5.3.</span> <span class="toc-text">5.3 减少全局内存的使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-4-%E5%90%88%E5%B9%B6%E7%9A%84%E5%85%A8%E5%B1%80%E5%86%85%E5%AD%98%E8%AE%BF%E9%97%AE"><span class="toc-number">1.5.4.</span> <span class="toc-text">5.4 合并的全局内存访问</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-5-%E5%B8%B8%E9%87%8F%E5%86%85%E5%AD%98"><span class="toc-number">1.5.5.</span> <span class="toc-text">5.5 常量内存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-6-warp%E6%B4%97%E7%89%8C%E6%8C%87%E4%BB%A4"><span class="toc-number">1.5.6.</span> <span class="toc-text">5.6 warp洗牌指令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E6%B5%81%E4%B8%8E%E5%B9%B6%E5%8F%91"><span class="toc-number">1.6.</span> <span class="toc-text">六、流与并发</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E6%B5%81%E4%B8%8E%E4%BA%8B%E4%BB%B6"><span class="toc-number">1.6.1.</span> <span class="toc-text">6.1 流与事件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#6-1-1-CUDA%E6%B5%81"><span class="toc-number">1.6.1.1.</span> <span class="toc-text">6.1.1 CUDA流</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-1-2-%E6%B5%81%E8%B0%83%E5%BA%A6"><span class="toc-number">1.6.1.2.</span> <span class="toc-text">6.1.2 流调度</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-1-3-%E6%B5%81%E7%9A%84%E4%BC%98%E5%85%88%E7%BA%A7"><span class="toc-number">1.6.1.3.</span> <span class="toc-text">6.1.3 流的优先级</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-1-4-%E4%BA%8B%E4%BB%B6"><span class="toc-number">1.6.1.4.</span> <span class="toc-text">6.1.4 事件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-1-5-%E6%B5%81%E5%90%8C%E6%AD%A5"><span class="toc-number">1.6.1.5.</span> <span class="toc-text">6.1.5 流同步</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E5%B9%B6%E5%8F%91%E5%86%85%E6%A0%B8%E6%89%A7%E8%A1%8C"><span class="toc-number">1.6.2.</span> <span class="toc-text">6.2 并发内核执行</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#6-2-1-%E9%9D%9E%E7%A9%BA%E6%B5%81%E7%9A%84%E5%B9%B6%E5%8F%91%E6%89%A7%E8%A1%8C"><span class="toc-number">1.6.2.1.</span> <span class="toc-text">6.2.1 非空流的并发执行</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-2-2-fermiGPU%E7%9A%84%E8%99%9A%E5%81%87%E4%BE%9D%E8%B5%96%E5%85%B3%E7%B3%BB"><span class="toc-number">1.6.2.2.</span> <span class="toc-text">6.2.2 fermiGPU的虚假依赖关系</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-2-3-%E4%BD%BF%E7%94%A8OpenMP%E7%9A%84%E8%B0%83%E5%BA%A6%E6%93%8D%E4%BD%9C"><span class="toc-number">1.6.2.3.</span> <span class="toc-text">6.2.3 使用OpenMP的调度操作</span></a></li></ol></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2023/11/02/effective%20modern%20c++/" title="effective modern c++"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20231101213331.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="effective modern c++"/></a><div class="content"><a class="title" href="/2023/11/02/effective%20modern%20c++/" title="effective modern c++">effective modern c++</a><time datetime="2023-11-02T13:01:37.000Z" title="Created 2023-11-02 21:01:37">2023-11-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/11/01/CXL/" title="CXL"><img src="https://i.ytimg.com/vi/6TRbkes15Ok/maxresdefault.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CXL"/></a><div class="content"><a class="title" href="/2023/11/01/CXL/" title="CXL">CXL</a><time datetime="2023-11-01T12:31:37.000Z" title="Created 2023-11-01 20:31:37">2023-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/10/25/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/" title="性能优化技巧总结"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202208092121258.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="性能优化技巧总结"/></a><div class="content"><a class="title" href="/2023/10/25/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/" title="性能优化技巧总结">性能优化技巧总结</a><time datetime="2023-10-25T13:01:37.000Z" title="Created 2023-10-25 21:01:37">2023-10-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/05/28/cmake/" title="Cmake"><img src="data:image/jpeg;base64,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" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Cmake"/></a><div class="content"><a class="title" href="/2023/05/28/cmake/" title="Cmake">Cmake</a><time datetime="2023-05-28T13:39:37.000Z" title="Created 2023-05-28 21:39:37">2023-05-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/05/28/open%20mlsys/" title="open mlsys"><img src="https://openmlsys.github.io/_images/logo.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="open mlsys"/></a><div class="content"><a class="title" href="/2023/05/28/open%20mlsys/" title="open mlsys">open mlsys</a><time datetime="2023-05-28T13:39:37.000Z" title="Created 2023-05-28 21:39:37">2023-05-28</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://lh3.googleusercontent.com/raD52-V3yZtQ3WzOE0Cvzvt8icgGHKXPpN2PS_5MMyZLJrVxgMtLN4r2S2kp5jYI9zrA2e0Y8vAfpZia669pbIog2U9ZKdJmQ8oSBjof6gc4IrhmorT2Rr-YopMlOf1aoU3tbn5Q')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By might</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">hope you can find something useful here ᐕ)⁾⁾ .</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="Scroll To Comments"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const initValine = () => {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'VBvzA6UUhphh1Tc1BtzWXzye-gzGzoHsz',
+      appKey: 'J0UlGcCok0khsrORkwxD1HwF',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  const loadValine = async () => {
+    if (typeof Valine === 'function') initValine()
+    else {
+      await getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js')
+      initValine()
+    }
+  }
+
+  if ('Valine' === 'Valine' || !false) {
+    if (false) btf.loadComment(document.getElementById('vcomment'),loadValine)
+    else setTimeout(loadValine, 0)
+  } else {
+    window.loadOtherComment = loadValine
+  }
+})()</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

@@ -1,0 +1,582 @@
+<!DOCTYPE html><html lang="zh-cn" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>optimizing_cpp(5) | might's room</title><meta name="author" content="might"><meta name="copyright" content="might"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="五.不同c++结构的效率1.不同种类变量存储变量和对象如果在cpp中声明的方式不同，它们在内存中的位置也不同，这会影响数据缓存的效率，如果数据在内存中分散那么数据缓存效率就会很差，所以要了解变量存储的方式。 1.1栈（stack）在函数内部声明的变量和对象存储在栈上（特殊情况会在下面声明） 栈是前进后出的（FILO），主要存储函数返回地址（即函数被调用的地方），函数参数，局部变量，以及保存函数返回">
+<meta property="og:type" content="article">
+<meta property="og:title" content="optimizing_cpp(5)">
+<meta property="og:url" content="https://mightcoder.com/2022/03/29/optimizing-cpp-5/index.html">
+<meta property="og:site_name" content="might&#39;s room">
+<meta property="og:description" content="五.不同c++结构的效率1.不同种类变量存储变量和对象如果在cpp中声明的方式不同，它们在内存中的位置也不同，这会影响数据缓存的效率，如果数据在内存中分散那么数据缓存效率就会很差，所以要了解变量存储的方式。 1.1栈（stack）在函数内部声明的变量和对象存储在栈上（特殊情况会在下面声明） 栈是前进后出的（FILO），主要存储函数返回地址（即函数被调用的地方），函数参数，局部变量，以及保存函数返回">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg">
+<meta property="article:published_time" content="2022-03-29T03:11:37.000Z">
+<meta property="article:modified_time" content="2022-07-15T08:13:03.058Z">
+<meta property="article:author" content="might">
+<meta property="article:tag" content="hpc">
+<meta property="article:tag" content="cpp">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg"><link rel="shortcut icon" href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg"><link rel="canonical" href="https://mightcoder.com/2022/03/29/optimizing-cpp-5/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//static.cloudflareinsights.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script defer="defer" data-pjax="data-pjax" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="{&quot;token&quot;: &quot;60e2c80ac4524b11b7168fad4fb0548b&quot;}"></script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: 'days',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'optimizing_cpp(5)',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-07-15 16:13:03'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 8 || hour >= 22
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="might's room" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="might's room"><img class="site-icon" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg"/><span class="site-name">might's room</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">optimizing_cpp(5)</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2022-03-29T03:11:37.000Z" title="Created 2022-03-29 11:11:37">2022-03-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2022-07-15T08:13:03.058Z" title="Updated 2022-07-15 16:13:03">2022-07-15</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">Word Count:</span><span class="word-count">12.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">Reading Time:</span><span>40mins</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="optimizing_cpp(5)"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="五-不同c-结构的效率"><a href="#五-不同c-结构的效率" class="headerlink" title="五.不同c++结构的效率"></a>五.不同c++结构的效率</h2><h3 id="1-不同种类变量存储"><a href="#1-不同种类变量存储" class="headerlink" title="1.不同种类变量存储"></a>1.不同种类变量存储</h3><p>变量和对象如果在cpp中声明的方式不同，它们在内存中的位置也不同，这会影响数据缓存的效率，如果数据在内存中分散那么数据缓存效率就会很差，所以要了解变量存储的方式。</p>
+<h4 id="1-1栈（stack）"><a href="#1-1栈（stack）" class="headerlink" title="1.1栈（stack）"></a>1.1栈（stack）</h4><p>在函数内部声明的变量和对象存储在栈上（特殊情况会在下面声明）</p>
+<p>栈是前进后出的（FILO），主要存储函数返回地址（即函数被调用的地方），函数参数，局部变量，以及保存函数返回前必须恢复的寄存器（的值）。每次调用函数都会在栈中分配所需的空间，然后在函数返回时释放该部分空间，这就意味着这部分内存空间被一次又一次的重复利用，所以栈是存储数据的最有效的存储空间，这部分内存被镜像在一级数据缓存中，访问速度很快。</p>
+<p>从中我们学到，尽可能的将变量和对象声明在它们被使用的函数中而不是函数外。</p>
+<h4 id="1-2全局（global）或者静态（static）存储"><a href="#1-2全局（global）或者静态（static）存储" class="headerlink" title="1.2全局（global）或者静态（static）存储"></a>1.2全局（global）或者静态（static）存储</h4><p>静态内存区主要存储全局变量和静态变量（static修饰的变量），在函数之外声明的变量称为全局变量（当然了函数内部的是局部变量），被static修饰的变量有几种情况</p>
+<ul>
+<li>修饰局部变量时，这个局部变量只初始化一次，并且延长了这个局部变量的生命周期，直到程序运行结束后才释放</li>
+<li>修饰全局变量时，这个全局变量只能在本文件中访问，不能再其他文件中访问，即使是extern外部声明都不行</li>
+<li>（如果static修饰函数，则表示这个函数只能在本文件中调用）</li>
+</ul>
+<p>除此之外静态内存区还存储浮点常量，字符串常量，数组初始化列表，switch语句跳转表和虚函数表。</p>
+<p>尽量不要将变量设置为全局变量，除非是不同线程间的通信这种情况才必须设置全局变量。</p>
+<p>尽量将查找表静态化（查找表就是下面代码展现的结构）</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">float</span> <span class="title">fun</span><span class="params">(<span class="type">int</span> x)</span></span>&#123;</span><br><span class="line">  <span class="type">static</span> <span class="type">const</span> <span class="type">float</span> list[]=&#123;<span class="number">1.1</span>,<span class="number">0.3</span>,<span class="number">-2.0</span>,<span class="number">4.4</span>,<span class="number">2.5</span>&#125;;</span><br><span class="line">  <span class="keyword">return</span> list[x];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>需要先介绍下这个数组是如何初始化的，用浮点常数来初始化数组，其实是将浮点数存储在静态内存区，然后从静态内存区复制到栈中的（整形常量通常包含在指令中，所以不会有这种缓存问题）。</p>
+<p>我们在这里将其声明为<code>static</code>，就是让这个数组只初始化一次，不会每次调用函数都会优化，然后将其声明为<code>const</code>,其实是告诉编译器这是个常量，如果不声明<code>const</code>函数不知道这是第一次调用还是之后的调用，每次都会进行检查，使用<code>const</code>则提高了效率</p>
+<h4 id="1-3寄存器（register）"><a href="#1-3寄存器（register）" class="headerlink" title="1.3寄存器（register）"></a>1.3寄存器（register）</h4><p>有限数量的变量可以之间存储在cpu的寄存器中，但是数量很少</p>
+<h4 id="1-4Volatile"><a href="#1-4Volatile" class="headerlink" title="1.4Volatile"></a>1.4Volatile</h4><p>volatite关键字声明的变量可以被某些编译器未知的因素更改，比如操作系统、硬件或者其他线程。遇到这个关键字声明的变量，编译器对访问该变量的代码就不再进行优化，从而可以提供对特殊地址的稳定访问。特别要注意的是volatile并不保证原子性。</p>
+<h4 id="1-5线程本地存储（thread-local-storage-TLS）"><a href="#1-5线程本地存储（thread-local-storage-TLS）" class="headerlink" title="1.5线程本地存储（thread-local storage TLS）"></a>1.5线程本地存储（thread-local storage TLS）</h4><p>我们知道多线程共享同一个进程的地址空间，对全局变量来说，某一个线程对其修改会影响其他所有线程。如果我们需要一个变量在每个线程中都能访问，并且值在每个线程中互不影响，这就是 Thread Local Storage。</p>
+<p>通过<code>thread_local</code>, <code>__thread</code> or <code>__declspec(thread) </code>关键字声明的变量，每个线程将会拥有一个实例，称为全局的线程本地存储。线程本地存储是低效的，因为它是通过存储在线程环境块中的指针进行访问的。我们应该尽量将变量存储在栈上（即在函数内部声明的局部变量），存储在栈上的变量总是属于创建它们的线程。</p>
+<h4 id="1-6动态内存分配"><a href="#1-6动态内存分配" class="headerlink" title="1.6动态内存分配"></a>1.6动态内存分配</h4><p>使用<code>new</code> <code>delete</code> <code>molloc</code> <code>free</code>完成的内存分配和回收称为动态内存分配，从内存中选取一部分称为堆用于分配内存。动态内存分配若没有回收则会造成内存泄漏，若在释放对象后访问指针还会造成空指针错误。</p>
+<h4 id="1-7类中声明的变量"><a href="#1-7类中声明的变量" class="headerlink" title="1.7类中声明的变量"></a>1.7类中声明的变量</h4><p>在cpp中，数据和函数是分开存放的，函数在代码区，数据主要在栈、堆、静态内存区。</p>
+<p>类的静态成员变量在编译时被分配到静态内存区，非静态成员变量只有在初始化对象时才被分配内存。</p>
+<p>静态成员函数（静态方法）和非静态成员函数（非静态方法）都是存储在代码区的。</p>
+<p>接下来说一下对象在内存中是如何存储的：当对象在函数内部被创建时（即局部变量），对象的成员变量存储在栈；当对象是全局变量，则对象的成员变量存储在静态区；当对象是<code>static</code>修饰的局部变量，对象的成员变量存储在静态区；如果对象是通过new创建出来的，对象的成员变量存储在堆区。</p>
+<p>有必要说明一下cpp中的对象有两种创建方式，直接创建和通过new创建，前者存储在栈或者静态区，后者存储在堆上</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//存储在栈或者静态区</span></span><br><span class="line"><span class="function">ClassName <span class="title">object</span><span class="params">(param)</span></span>;</span><br><span class="line"><span class="comment">//存储在堆上，必须delete否则内存泄漏</span></span><br><span class="line">ClassName *object=<span class="keyword">new</span> <span class="built_in">ClassName</span>(param);</span><br><span class="line"><span class="keyword">delete</span> object;</span><br></pre></td></tr></table></figure>
+
+<p>（再扯一嘴，看起来用new创建对象好像很麻烦没有必要比较低效，但是好处是一不用担心内存空间不足，因为是动态拓展的，二即使是在函数内部创建对象，只要不delete，对象就一直存在，解决了对象的生命周期问题。）</p>
+<h3 id="2-整型变量"><a href="#2-整型变量" class="headerlink" title="2.整型变量"></a>2.整型变量</h3><h4 id="2-1整数大小"><a href="#2-1整数大小" class="headerlink" title="2.1整数大小"></a>2.1整数大小</h4><p>不同类型的整型变量有不同的大小，大小和在stdint.h中的名称可以参照下图</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/image-20220317144109932.png" alt="image-20220317144109932"></p>
+<p>因为不同平台声明特定大小整型的方式不同，所以如果<code>stdint.h</code> or <code>inttypes.h  </code>存在，可以用它们来定义特定大小的整型，以达到可移植的目的。</p>
+<p>在大小无关紧要，不存在溢出风险的情况下建议使用默认大小的整型，比如简单的变量，循环计数器等等。</p>
+<p>在大型数组中，推荐使用够用的最小类型的正数，以便能够更好的使用数据缓存。</p>
+<p>无符号整数类型<code>size_t</code>在32位系统中为32位，在62位系统中为64位，此类型常用于表示数组大小和数组索引，能够确保不会发生溢出。</p>
+<p>在进行整型计算时，最重要的就是检查是否会发生溢出，比如<code>a=(b*c)/d</code>，即使abc都小于最大值，<code>(b*c)</code>也有可能溢出。</p>
+<h4 id="2-2无符号数和有符号数"><a href="#2-2无符号数和有符号数" class="headerlink" title="2.2无符号数和有符号数"></a>2.2无符号数和有符号数</h4><p>无符号数在除以常量及取模时比有符号数快。</p>
+<p>有符号数转换为浮点数比无符号数快。</p>
+<p>关于溢出：无符号数溢出会变为较小的正数（相当于取模），有符号数溢出一般会变成负值</p>
+<p>另外需要特别注意的是不要混合使用有符号数和无符号数，在进行两者的计算或比较时，会将有符号数转为无符号数比较（可以参考csapp的笔记），尽量避免无符号数除非进行模运算或者使用变量代表位的集合。</p>
+<h4 id="2-3整型运算"><a href="#2-3整型运算" class="headerlink" title="2.3整型运算"></a>2.3整型运算</h4><p>加法、减法、比较、移位基本只需要一个时钟周期。</p>
+<p>乘法可能需要3-4个时钟周期，除法需要40-80个时钟周期，具体取决于cpu</p>
+<h3 id="3-浮点变量"><a href="#3-浮点变量" class="headerlink" title="3.浮点变量"></a>3.浮点变量</h3><p>X86架构的现代cpu有两种不同类型的浮点寄存器，以及对应的两种不同类型的浮点指令。</p>
+<p>最开始执行浮点操作的方法涉及到8个浮点寄存器（称为FPU），它们组织成寄存器栈，称为x87寄存器。这些寄存器都以long double(80 bits)存储数据，当其他类型数据压入寄存器时，会自动拓展成80位。</p>
+<p>这类寄存器栈的优点为：</p>
+<ul>
+<li>所有计算以long double类型完成</li>
+<li>不同精度之间的转换不需要额外的时间</li>
+<li>某些数学函数比如对数和三角函数使用内部指令完成</li>
+<li>代码紧凑，在代码缓存中占用很少空间</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>由于使用寄存器栈，编译器很难创建寄存器变量</li>
+<li>除非启用Pentium-II 或者更高的版本，否则浮点计算较为缓慢</li>
+<li>整数和浮点数转换效率低下</li>
+<li>使用long double导致除法、平方根等数学函数耗时更长</li>
+</ul>
+<p>另一种新的浮点运算使用八个或者更多的向量寄存器（XMM,YMM,ZMM），浮点运算使用单精度或者双精度，中间结果的精度总是与操作数相同。</p>
+<p>这类向量寄存器的优点为：</p>
+<ul>
+<li>很容易创建寄存器变量</li>
+<li>可以向量化运算，即SIMD并行计算</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>不支持long double</li>
+<li>如果涉及混合精度的计算，需要显示的进行精度转换，这可能会很耗时（而上文提到的方式精度转换不需要额外的时间）</li>
+<li>执行数学函数必须依赖写好的数学库，但这通常要比内在硬件函数要快</li>
+</ul>
+<p>关于单双精度执行计算的速度问题，当使用矢量计算时，单精度除法、平方根和数学函数的计算速度要快于双精度，不使用矢量寄存器时，加减乘等速度相同。（有待细化考究）</p>
+<p>当使用XMM这种类似寄存器时，不要混合使用单精度和双精度，另外，尽量避免浮点变量和整数的转换。</p>
+<h3 id="4-布尔变量"><a href="#4-布尔变量" class="headerlink" title="4.布尔变量"></a>4.布尔变量</h3><p>布尔运算有短路现象，可以利用这一特点加快程序运行</p>
+<p>布尔变量是超定的？？？</p>
+<h3 id="5-指针和引用"><a href="#5-指针和引用" class="headerlink" title="5.指针和引用"></a>5.指针和引用</h3><ul>
+<li>指针和引用其实在做同样的事，它们经过编译器编译后的结果是相同的，引用可以看作常量指针。</li>
+<li>使用引用语法更简单（引用直接代表所指变量的值，而指针代表地址，需要<code>*p</code>才能得到所指变量的值）</li>
+<li>引用比指针更加安全，因为引用在定义时必须进行初始化，而指针很可能因为未初始化导致空指针问题</li>
+<li>引用和指针计算的意义不同，指针加减某数或者自增自减都是改变地址，指向了另一块内存，而引用的计算直接改变的是引用的值</li>
+</ul>
+<p>在计算出指针的值后大约需要两个时钟周期才能访问指向的对象，所以<code>x = *(p++)</code> 比<code>x = *(++p)</code> 更有效</p>
+<h3 id="6-智能指针"><a href="#6-智能指针" class="headerlink" title="6.智能指针"></a>6.智能指针</h3><p>将基本类型指针封装为类对象指针（这个类肯定是个模板，以适应不同基本类型的需求），并在析构函数里编写delete语句删除指针指向的内存空间。</p>
+<p>通过智能指针访问对象和普通指针一样不需要付出额外的代价，，但是当智能指针创建、删除、复制或者从一个函数转移到另一个函数时都会产生额外的成本。</p>
+<h3 id="7-类型转换"><a href="#7-类型转换" class="headerlink" title="7.类型转换"></a>7.类型转换</h3><h4 id="7-1无符号到有符号转换"><a href="#7-1无符号到有符号转换" class="headerlink" title="7.1无符号到有符号转换"></a>7.1无符号到有符号转换</h4><p>只是编译器以不同的方式解释整数的位，转换不需要额外的时间</p>
+<h4 id="7-2整型大小转换"><a href="#7-2整型大小转换" class="headerlink" title="7.2整型大小转换"></a>7.2整型大小转换</h4><p>整型拓展：无符号数添0拓展，有符号数通过拓展符号位来将整数转换为更长的大小</p>
+<p>整型缩小：简单的忽略高位，不做溢出检查，不需要额外的时间，当然，如果数太大就会溢出</p>
+<h4 id="7-3浮点数精度转换"><a href="#7-3浮点数精度转换" class="headerlink" title="7.3浮点数精度转换"></a>7.3浮点数精度转换</h4><p>这涉及到前面讲的两种浮点计算单元，如果是浮点寄存器栈，双、单、半精度的转换不需要额外的时间。如果使用XMM寄存器，就需要2-15个时钟周期，使用向量浮点计算时，做精度转换的成本很高。</p>
+<h4 id="7-4整数到浮点数"><a href="#7-4整数到浮点数" class="headerlink" title="7.4整数到浮点数"></a>7.4整数到浮点数</h4><p>有符号数转浮点需要4到16个时钟周期，无符号数更长。如果没有溢出风险，先将无符号数转为有符号数再转浮点会更快。</p>
+<h4 id="7-5浮点到整数的转换"><a href="#7-5浮点到整数的转换" class="headerlink" title="7.5浮点到整数的转换"></a>7.5浮点到整数的转换</h4><p>除非开启SSE2或者更高版本的指令集，否则将浮点转整数需要很长的时间，通常50-100个时钟周期。 原因是C&#x2F;C++标准规定使用截断模式，因浮点舍入模式要更改为截断，然后再次改回来。</p>
+<p>如果在代码的关键部分中存在浮点到整数转换，那么是有必要做一些事情是。 可能的解决方案是：</p>
+<ul>
+<li>通过使用不同类型的变量来避免转换。</li>
+<li>将中间结果存储为浮点数，把转换移出最内层循环。</li>
+<li>使用64位模式或启用SSE2指令集（需要支持此功能的微处理器）。</li>
+<li>使用舍入而不是截断，并使用汇编语言创建舍入函数。有关舍入的详细信息，后面会进行说明</li>
+</ul>
+<h4 id="7-6指针类型转换"><a href="#7-6指针类型转换" class="headerlink" title="7.6指针类型转换"></a>7.6指针类型转换</h4><p>指针的类型是可以转换的，并且不会产生额外的代码，只是以不同的方式解释相同数据位，当然，这种转换并不安全。</p>
+<p>我们来看个例子</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">float</span> x;</span><br><span class="line">*(<span class="type">int</span>*)&amp;x|=<span class="number">0x80000000</span></span><br></pre></td></tr></table></figure>
+
+<p>第一眼看上去会很奇怪不知道在干什么，其实慢慢从右往左看，先取了x的地址，得到一个float类型的指针，然后将其强转为int指针，再用*取指针所指的值进行计算，进行的是一个位或计算，将其最高位置为1，所以这行代码的功能就是将x转为int类型并且符号位置为1，即负数。</p>
+<p>通过对其地址进行类型转换，可以使编译器将变量或对象视为具有不同的类型</p>
+<h4 id="7-7常量强制转换"><a href="#7-7常量强制转换" class="headerlink" title="7.7常量强制转换"></a>7.7常量强制转换</h4><p><code>const_cast</code>运算符用于规避常量指针的常量限制</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">c1</span> &#123;</span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> x; <span class="comment">// constant data</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">c1</span>() : <span class="built_in">x</span>(<span class="number">0</span>) &#123;&#125;; <span class="comment">// constructor initializes x to 0</span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">xplus2</span><span class="params">()</span> </span>&#123; <span class="comment">// this function can modify x</span></span><br><span class="line">        *<span class="built_in">const_cast</span>&lt;<span class="type">int</span>*&gt;(&amp;x) += <span class="number">2</span>; <span class="comment">// add 2 to x</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-分支和switch语句"><a href="#8-分支和switch语句" class="headerlink" title="8.分支和switch语句"></a>8.分支和switch语句</h3><p>现代微处理器的高速度是通过流水线获得的。然而，流水线结构有一个大问题。一旦代码中有分支出现（例如，<code>if-else</code>），微处理器并不能预先知道该把两个分支中的哪一个送入流水线。 如果错误的分支被喂给了流水线，该错误直到10至20个时钟周期后才能被发现，这期间所有的取指，解码，甚至推测性指令执行工作都被浪费掉了。</p>
+<p>现代微处理器使用先进的算法，根据该分支及附近分支的历史数据来预测分支的走向，在微处理器做出正确预测的情况下，分支指令通常需要0-2个时钟周期。从分支错误预测中恢复，所需的时间大约为12-25个时钟周期，具体取决于处理器。 这被称为分支错误预测惩罚</p>
+<p>for循环或while循环也是一种分支。每次循环迭代后，会决定是重复循环还是退出。 如果循环计数很小并且不变，循环分支通常可以很好的被预测。 可以完美预测的最大循环计数通常介于9到64之间，具体取决于处理器。 仅仅某些处理器上可以较好地预测嵌套循环。 在许多处理器上，一个循环内包含多个分支，不能很好地被预测</p>
+<p>switch 语句是一种超过两条路的分支。 下面情形 switch 语句最为高效：</p>
+<ul>
+<li>每个 case 的标签遵循一个序列</li>
+<li>在该序列中，某个标签的当前值等于上一个标签加一。</li>
+</ul>
+<p>这是因为，这种情况可以使用跳转目标表来实现。 具有许多标签的 switch 语句，并且标签的值离得很远，该情形是很低效的，因为编译器必须将其转换为分支树。</p>
+<p>在程序的关键部分，分支和switch语句的数量最好保持较小，特别是如果分支的可预测性很差。如果可以消除分支，则展开循环可能很有用。下一段将会细讲。</p>
+<h3 id="9-循环"><a href="#9-循环" class="headerlink" title="9.循环"></a>9.循环</h3><p>循环的效率取决于微处理器对于循环控制分支预测的好坏，一个固定重复计数器并且没有分支的循环能够被完美预测，而嵌套循环只在一些有特定循环预测器的处理器上预测的很好，在其他的处理器上只有内部循环被预测的很好。</p>
+<h4 id="9-1循环展开"><a href="#9-1循环展开" class="headerlink" title="9.1循环展开"></a>9.1循环展开</h4><p>在某些情况下循环展开是一个优势，例如:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> i;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">20</span>; i++) &#123;</span><br><span class="line">    <span class="keyword">if</span> (i % <span class="number">2</span> == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">FuncA</span>(i);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">FuncB</span>(i);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">FuncC</span>(i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>该循环重复20次并交替调用<code>FuncA</code>和<code>FuncB</code>，然后调用<code>FuncC</code>。 将循环展开两次代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Example 7.30b</span></span><br><span class="line"><span class="type">int</span> i;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">20</span>; i += <span class="number">2</span>) &#123;</span><br><span class="line">    <span class="built_in">FuncA</span>(i);</span><br><span class="line">    <span class="built_in">FuncC</span>(i);</span><br><span class="line">    <span class="built_in">FuncB</span>(i+<span class="number">1</span>);</span><br><span class="line">    <span class="built_in">FuncC</span>(i+<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样做有三个优势：</p>
+<ol>
+<li>这样做循环执行10次而不是20次</li>
+<li>重复次数减少到10，意味着在某些处理器上可以完美预测</li>
+<li>移除了if分支</li>
+</ol>
+<p>只有在可以获得特定优势的情况下才应使用循环展开。 如果循环包含浮点计算并且循环计数器是整数，那么通常可以假设整个计算时间由浮点代码而不是循环控制分支确定。 在这种情况下，通过展开循环没有任何好处。</p>
+<p>在具有微操作高速缓存（例如，Sandy Bridge）的处理器上应该避免循环展开，因为重要的是节省微操作高速缓存的使用。 如果看上去有好处，编译器通常会自动展开循环。</p>
+<p><strong>程序员不必手动展开循环，除非能获得特别的好处，比如上面的代码例子消除了if分支</strong></p>
+<h4 id="9-2循环控制条件"><a href="#9-2循环控制条件" class="headerlink" title="9.2循环控制条件"></a>9.2循环控制条件</h4><p>如果循环控制分支依赖于循环内的计算，则效率很低，所以尽量将循环控制条件脱离循环内部，比如：</p>
+<p>以下示例将以零结尾的ASCII字符串转换为小写：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Example 7.31a</span></span><br><span class="line"><span class="type">char</span> string[<span class="number">100</span>], *p = string;</span><br><span class="line"><span class="keyword">while</span> (*p != <span class="number">0</span>) *(p++) |= <span class="number">0x20</span>;</span><br></pre></td></tr></table></figure>
+
+<p>如果已知字符串的长度，则使用循环计数器更有效：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Example 7.31b</span></span><br><span class="line"><span class="type">char</span> string[<span class="number">100</span>], *p = string; <span class="type">int</span> i, StringLength;</span><br><span class="line"><span class="keyword">for</span> (i = StringLength; i &gt; <span class="number">0</span>; i--) *(p++) |= <span class="number">0x20</span>;</span><br></pre></td></tr></table></figure>
+
+<p>循环计数器应该优先选择整数，如果循环需要浮点数，可以再创建一个整数作为循环计数器</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Example 7.32a</span></span><br><span class="line"><span class="type">double</span> x, n, factorial = <span class="number">1.0</span>;</span><br><span class="line"><span class="keyword">for</span> (x = <span class="number">2.0</span>; x &lt;= n; x++) factorial *= x;</span><br></pre></td></tr></table></figure>
+
+<p>这可以<strong>通过添加整数计数器，并在循环控制条件中使用整数来加以改进：</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Example 7.32b</span></span><br><span class="line"><span class="type">double</span> x, n, factorial = <span class="number">1.0</span>; <span class="type">int</span> i;</span><br><span class="line"><span class="keyword">for</span> (i = (<span class="type">int</span>)n - <span class="number">2</span>, x = <span class="number">2.0</span>; i &gt;= <span class="number">0</span>; i--, x++) factorial *= x;</span><br></pre></td></tr></table></figure>
+
+<h4 id="9-3不要使用循环复制或者清除数组"><a href="#9-3不要使用循环复制或者清除数组" class="headerlink" title="9.3不要使用循环复制或者清除数组"></a>9.3不要使用循环复制或者清除数组</h4><p>将循环用于琐碎的任务，例如复制数组或将数组设置为全零，可能不是最佳选择。 例如：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Example 7.33a</span></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> size = <span class="number">1000</span>; <span class="type">int</span> i;</span><br><span class="line"><span class="type">float</span> a[size], b[size];</span><br><span class="line"><span class="comment">// set a to zero</span></span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; size; i++) a[i] = <span class="number">0.0</span>;</span><br><span class="line"><span class="comment">// copy a to b</span></span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; size; i++) b[i] = a[i];</span><br></pre></td></tr></table></figure>
+
+<p>使用函数 <code>memset</code> 和 <code>memcpy</code> 一般更快一些：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Example 7.33b</span></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> size = <span class="number">1000</span>;</span><br><span class="line"><span class="type">float</span> a[size], b[size];</span><br><span class="line"><span class="comment">// set a to zero</span></span><br><span class="line"><span class="built_in">memset</span>(a, <span class="number">0</span>, <span class="built_in">sizeof</span>(a));</span><br><span class="line"><span class="comment">// copy a to b</span></span><br><span class="line"><span class="built_in">memcpy</span>(b, a, <span class="built_in">sizeof</span>(b));</span><br></pre></td></tr></table></figure>
+
+<p>至少在简单的情况下，大多数编译器会通过调用memset和memcpy自动替换这样的循环。 显式使用<code>memset</code>和<code>memcpy</code>是不安全的，因为如果size参数大于目标数组，则可能发生严重错误。 但是如果循环计数太大，循环也会发生相同的错误。</p>
+<h3 id="10-函数"><a href="#10-函数" class="headerlink" title="10.函数"></a>10.函数</h3><p>调用函数可能会降低程序速度。原因如下：</p>
+<ul>
+<li>函数调用会让微处理器跳转到不同的代码地址然后返回。这可能需要多达4个时钟周期。 在大多数情况下，微处理器能够将调用及返回操作与其他计算重叠运行以节省时间。</li>
+<li>如果代码碎片化地分散在内存中，代码缓存的效率会降低。</li>
+<li>函数参数以32位模式存储在堆栈中。 将参数存储在堆栈上并再次读取它们需要额外的时间。 如果某个参数处于关键依赖链条中，因此带来的延时是需要重视的。</li>
+<li>设置堆栈帧，保存和恢复寄存器，以及保存异常处理信息（可能需要，也可能不需要），都需要额外的时间。</li>
+<li>每个函数调用语句占用分支目标缓冲区（BTB）中的一个单元。 如果程序的关键部分有很多函数调用和分支，BTB中的争用可能导致分支预测错误</li>
+</ul>
+<p>可以采用以下方法解决此问题</p>
+<h4 id="10-1避免非必要的函数"><a href="#10-1避免非必要的函数" class="headerlink" title="10.1避免非必要的函数"></a>10.1避免非必要的函数</h4><p>可以牺牲部分代码的重用性，将多行代码合为一个函数，以加快速度（当然这里要见仁见智）</p>
+<h4 id="10-2使用内联函数"><a href="#10-2使用内联函数" class="headerlink" title="10.2使用内联函数"></a>10.2使用内联函数</h4><p>使用<code>inline</code>关键字定义内联函数</p>
+<h4 id="10-3避免在嵌套循环的最内层出现函数嵌套"><a href="#10-3避免在嵌套循环的最内层出现函数嵌套" class="headerlink" title="10.3避免在嵌套循环的最内层出现函数嵌套"></a>10.3避免在嵌套循环的最内层出现函数嵌套</h4><p>调用其他函数的函数叫帧函数，不调用其他函数的函数叫叶函数，叶函数效率更高。如果在嵌套循环的最内层包含对帧函数的调用，可以通过以下方法来改进</p>
+<ul>
+<li>内联帧函数</li>
+<li>把帧函数转换为叶函数（具体方法就是内联帧函数中被调用的函数）</li>
+</ul>
+<h4 id="10-4使用宏代替函数"><a href="#10-4使用宏代替函数" class="headerlink" title="10.4使用宏代替函数"></a>10.4使用宏代替函数</h4><p>使用<code>#define</code>声明的宏肯定会被内联</p>
+<h4 id="10-5使用fastcall函数"><a href="#10-5使用fastcall函数" class="headerlink" title="10.5使用fastcall函数"></a>10.5使用<code>fastcall</code>函数</h4><ul>
+<li>在32位模式下，关键字<code>__fastcall</code>更改函数调用方法，以便前两个（CodeGear编译器上是三个）整型参数使用寄存器传输，而不是用堆栈传输。 这可以提高具有整型参数函数的速度。浮点参数不受<code>__fastcall</code>的影响。 类的成员函数中的隐式“this”指针也被视为参数，因此可能只剩下一个空闲寄存器来传输其他参数。 因此，在使用<code>__fastcall</code>时，请确保最关键的整型参数首先出现在函数参数中。</li>
+<li>在64位模式下，函数参数默认传输到寄存器中。 因此，在64位模式下无法识别<code>__fastcall</code>关键字。</li>
+</ul>
+<h4 id="10-6函数本地化"><a href="#10-6函数本地化" class="headerlink" title="10.6函数本地化"></a>10.6函数本地化</h4><p>将关键字static添加到函数声明中，使得函数被设置为本地函数</p>
+<h4 id="10-7使用64位模式"><a href="#10-7使用64位模式" class="headerlink" title="10.7使用64位模式"></a>10.7使用64位模式</h4><p>参数传输在64位模式下比32位模式下更高效，在64位Linux中比在64位Windows中更高效。</p>
+<ul>
+<li>在64位Linux中，前六个整数参数和前八个浮点参数在寄存器中传输，总计最多十四个寄存器参数。</li>
+<li>在64位Windows中，前四个参数在寄存器中传输，无论它们是整数还是浮点数。</li>
+</ul>
+<p>因此，如果函数具有四个以上的参数，则64位Linux比64位Windows更有效。 在参数传递这方面，32位Linux和32位Windows之间没有区别</p>
+<h3 id="11-函数参数"><a href="#11-函数参数" class="headerlink" title="11.函数参数"></a>11.函数参数</h3><p>在大多数情况下，函数参数按值传输。这意味着参数的值将复制到局部变量。 这对于简单类型（如int，float，double，bool，enum以及指针和引用）都很有效。</p>
+<p>数组总是作为指针传递，除非它们被封装到类或结构中。</p>
+<p>如果参数具有复合类型（例如结构或类），则情况会更复杂。 如果满足以下所有条件，则复合类型参数的传输效率可以很高：</p>
+<ul>
+<li>对象足够小，可以装进单个寄存器</li>
+<li>对象没有复制构造函数，也没有析构函数</li>
+<li>对象没有虚拟成员（虚拟函数）</li>
+<li>对象不使用运行时类型标识（RTTI）（什么是RTTI参考这个连接 [C++中的RTTI](<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/3b4a80adffa7">C++中的RTTI机制 - 简书 (jianshu.com)</a>)）</li>
+</ul>
+<p>如果上述某一或某些条件不满足，则将使用指向对象的指针或引用来传递对象通常会更快。 如果对象很大，那么复制整个对象显然需要时间。</p>
+<ul>
+<li>将对象复制到参数时，必须调用复制构造函数，</li>
+<li>并且函数返回之前，如果有析构函数的话，还必须调用析构函数</li>
+</ul>
+<p>将复合对象传递给函数的<strong>首选方法是使用const引用</strong>。 const引用确保不修改原始对象。 与指针或非const引用不同，const引用允许函数参数是表达式或匿名对象。 如果函数被内联，编译器可以轻松地优化掉const引用。</p>
+<p>另一种方法是使该函数成为对象类或结构的成员。 这种方法效率同等的高。</p>
+<p>简单的函数参数</p>
+<ul>
+<li>在32位系统中传输到堆栈中，</li>
+<li>但在64位系统的寄存器中传输。</li>
+</ul>
+<p>后者更有效率。</p>
+<ul>
+<li>64位Windows允许在寄存器中传输最多四个参数。</li>
+<li>64位Unix系统允许在寄存器中传输多达14个参数（8个浮点数或2个加6个整数，指针或引用参数）。</li>
+</ul>
+<p>成员函数中的this指针也计入一个参数。进一步的细节在手册5中给出：“不同的C++编译器和操作系统调用约定”。</p>
+<h3 id="12-函数返回类型"><a href="#12-函数返回类型" class="headerlink" title="12.函数返回类型"></a>12.函数返回类型</h3><p>函数返回类型最好是</p>
+<ul>
+<li>简单类型</li>
+<li>指针</li>
+<li>引用</li>
+<li>void</li>
+</ul>
+<p>返回复合类型太复杂且效率低下，如果要返回一个复合对象的话，有几种解决方法</p>
+<ul>
+<li>使该函数成为该对象的构造函数</li>
+<li>修改已有的对象而不创建新对象，函数参数通过指针或者引用传对象，返回值也通过指针或者引用返回对象</li>
+<li>在函数内部创建静态对象并返回指针，这样效率高，但是有风险， 返回的指针或引用仅在下次调用函数前有效，此对象也可能被在不同的线程中改写。 如果您忘记将此本地对象设置为静态，则只要函数返回它就会立即失效。</li>
+<li>使用new在函数内部创建对象，但是效率低，且有内存泄漏的风险</li>
+</ul>
+<h3 id="13-函数尾调用优化"><a href="#13-函数尾调用优化" class="headerlink" title="13.函数尾调用优化"></a>13.函数尾调用优化</h3><p>尾调用：指某个函数的最后一步是调用另一个函数</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//下面情况是尾调用</span></span><br><span class="line"><span class="function">function <span class="title">f</span><span class="params">(x)</span></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">g</span>(x);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//但是下面两种就不属于尾调用了</span></span><br><span class="line"><span class="comment">// 情况一</span></span><br><span class="line"><span class="function">function <span class="title">f</span><span class="params">(x)</span></span>&#123;</span><br><span class="line">  let y = <span class="built_in">g</span>(x);</span><br><span class="line">  <span class="keyword">return</span> y;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 情况二</span></span><br><span class="line"><span class="function">function <span class="title">f</span><span class="params">(x)</span></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">g</span>(x) + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们知道，函数调用会在内存形成一个”调用记录”，又称”调用帧”（call frame），保存调用位置和内部变量等信息。如果在函数A的内部调用函数B，那么在A的调用记录上方，还会形成一个B的调用记录。等到B运行结束，将结果返回到A，B的调用记录才会消失。如果函数B内部还调用函数C，那就还有一个C的调用记录栈，以此类推。所有的调用记录，就形成一个<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E8%B0%83%E7%94%A8%E6%A0%88">“调用栈”</a>（call stack）。</p>
+<p><img src="https://www.ruanyifeng.com/blogimg/asset/2015/bg2015041002.png" alt="img"></p>
+<p>尾调用由于是函数的最后一步操作，所以不需要保留外层函数的调用记录，因为调用位置、内部变量等信息都不会再用到了，只要直接用内层函数的调用记录，取代外层函数的调用记录就可以了。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">f</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">let</span> m = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">let</span> n = <span class="number">2</span>;</span><br><span class="line">  <span class="keyword">return</span> <span class="title function_">g</span>(m + n);</span><br><span class="line">&#125;</span><br><span class="line"><span class="title function_">f</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 等同于</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">f</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="title function_">g</span>(<span class="number">3</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="title function_">f</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 等同于</span></span><br><span class="line"><span class="title function_">g</span>(<span class="number">3</span>);</span><br></pre></td></tr></table></figure>
+
+<p>上面代码中，如果函数g不是尾调用，函数f就需要保存内部变量m和n的值、g的调用位置等信息。但由于调用g之后，函数f就结束了，所以执行到最后一步，完全可以删除 f() 的调用记录，只保留 g(3) 的调用记录。</p>
+<p>这就叫做”尾调用优化”（Tail call optimization），即只保留内层函数的调用记录。如果所有函数都是尾调用，那么完全可以做到每次执行时，调用记录只有一项，这将大大节省内存。这就是”尾调用优化”的意义。</p>
+<p>另一个非常重要的应用是尾递归,递归非常耗费内存，因为需要同时保存成千上百个调用记录，很容易发生”栈溢出”错误（stack overflow）。但对于尾递归来说，由于只存在一个调用记录，所以永远不会发生”栈溢出”错误。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">factorial</span>(<span class="params">n</span>) &#123;</span><br><span class="line">  <span class="keyword">if</span> (n === <span class="number">1</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">return</span> n * <span class="title function_">factorial</span>(n - <span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">factorial</span>(<span class="number">5</span>) <span class="comment">// 120</span></span><br></pre></td></tr></table></figure>
+
+<p>上面代码是一个阶乘函数，计算n的阶乘，最多需要保存n个调用记录，复杂度 O(n) 。</p>
+<p>如果改写成尾递归，只保留一个调用记录，复杂度 O(1) 。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">factorial</span>(<span class="params">n, total</span>) &#123;</span><br><span class="line">  <span class="keyword">if</span> (n === <span class="number">1</span>) <span class="keyword">return</span> total;</span><br><span class="line">  <span class="keyword">return</span> <span class="title function_">factorial</span>(n - <span class="number">1</span>, n * total);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">factorial</span>(<span class="number">5</span>, <span class="number">1</span>) <span class="comment">// 120</span></span><br></pre></td></tr></table></figure>
+
+<p>递归尾调用虽然效率会高一些，但是仍然比循环效率低，尽量将递归变为循环。</p>
+<h3 id="14-结构体和类"><a href="#14-结构体和类" class="headerlink" title="14.结构体和类"></a>14.结构体和类</h3><p>如今，编程教科书推荐使用面向对象编程，使软件开发更加清晰和模块化。 对象是结构和类的实例。 面向对象的编程风格对程序性能，既有正面又有负面的影响。积极影响是：</p>
+<ul>
+<li>如果一组变量是相同结构或类的成员，则它们一起使用，也存储在一起。这使数据缓存更有效。</li>
+<li>类成员变量不需要作为参数传递给类成员函数，避免了参数传输的开销。</li>
+</ul>
+<p>面向对象编程的负面影响是：</p>
+<ul>
+<li><p>非静态成员函数有一个’<code>this</code>‘指针，它作为隐式参数传递给函数。所有非静态成员函数都会产生’<code>this</code>‘参数传输的开销。</p>
+</li>
+<li><p>‘<code>this</code>‘指针占用一个寄存器。寄存器是32位系统中的稀缺资源。</p>
+</li>
+<li><p>虚拟成员函数效率较低</p>
+</li>
+</ul>
+<p>关于面向对象编程的正面影响，还是负面影响占主导地位，没有一般性的定论。至少，可以说使用类和成员函数，代价并不昂贵。 你可以使用面向对象的编程风格：<br>如果它对程序的逻辑结构和清晰度有好处，只要在程序的最关键部分避免过多的函数调用，<br>单纯结构的使用（没有成员函数）对性能没有负面影响。</p>
+<h4 id="14-1实例变量"><a href="#14-1实例变量" class="headerlink" title="14.1实例变量"></a>14.1实例变量</h4><p>无论在什么时间创建类或结构的实例，其数据成员都按照它们被声明的顺序连续存储。 将数据组织到类或结构中，并不会导致性能损失。 访问类或结构对象的数据成员并不会比访问简单变量花费更多的时间。大多数编译器会将数据成员与地址对齐，以便优化访问。</p>
+<p>结构或类中如果混有不同大小的数据成员，数据对齐会导致某些字节未被使用，比如：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">S1</span> &#123;</span><br><span class="line">   <span class="type">short</span> <span class="type">int</span> a; <span class="comment">// 2个字节. 第一个在偏移位置0, 第二个在位置1</span></span><br><span class="line">   <span class="comment">// 6个未使用的字节</span></span><br><span class="line">   <span class="type">double</span> b; <span class="comment">// 8个字节. 第一个在偏移位置8, 最后一个在位置15</span></span><br><span class="line">   <span class="type">int</span> d; <span class="comment">// 4个字节. 第一个在偏移位置16, 最后一个在位置19</span></span><br><span class="line">   <span class="comment">// 4个未使用字节</span></span><br><span class="line">&#125;;</span><br><span class="line">S1 ArrayOfStructures[<span class="number">100</span>];</span><br></pre></td></tr></table></figure>
+
+<p>上面的结构体由于对其浪费了8个字节，在整个数组中浪费了800个字节。</p>
+<p>我们可以通过调整数据成员声明的顺序来避免浪费。</p>
+<p>通过重新安排数据成员的编码顺序，通常可以使结构和类对象更小。 如果类有至少一个虚拟函数，则在第一个数据成员之前，或最后一个成员之后，有一个指向虚拟表的指针。 该指针在32位系统中为4个字节，在64位系统中为8个字节。 如果你对结构或其每个成员的大小有疑问，可以使用<code>sizeof</code>运算符进行测试。 <code>sizeof</code>运算符返回的值包括对象末尾的任何未使用的字节的大小。</p>
+<ul>
+<li><strong>如果数据成员相对于结构或类的开头的偏移量小于128，则生成的访问数据成员的代码更为紧凑，因为偏移量可以表示为8位有符号数。</strong></li>
+<li>如果相对于结构或类的开头的偏移量大于等于128字节，则偏移量必须表示为32位数（指令集在介于8位和32位偏移之间，没有任何区别）。</li>
+</ul>
+<p>例如：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Example 7.40</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">S2</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">   <span class="type">int</span> a[<span class="number">100</span>]; <span class="comment">// 400字节. 首字节偏移量0, 尾字节偏移量399</span></span><br><span class="line">   <span class="type">int</span> b; <span class="comment">// 4字节. 首字节偏移量400, 尾字节偏移量403</span></span><br><span class="line">   <span class="function"><span class="type">int</span> <span class="title">ReadB</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> b;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>这里<code>b</code>的偏移量为400。通过指针或成员函数（如<code>ReadB</code>）访问<code>b</code>的任何代码都需要将偏移量编码为32位数。 如果交换<code>a</code>和<code>b</code>，则可以使用编码为8位有符号数的偏移量访问这两个变量，或者根本不用偏移。 这使代码更紧凑，从而更有效地使用代码缓存。 因此，对于大型数组和其他大型对象，建议在结构或类声明中排在最后。并且最常用的数据成员放在前面。 如果不能把所有数据成员包含前128个字节内，则将最常用的成员放在前128个字节中</p>
+<h4 id="14-2方法（类成员函数）"><a href="#14-2方法（类成员函数）" class="headerlink" title="14.2方法（类成员函数）"></a>14.2方法（类成员函数）</h4><p>所有的类成员函数都把隐含的this指针作为参数。</p>
+<p>因此下面三个方法一样快</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">S3</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">   <span class="type">int</span> a;</span><br><span class="line">   <span class="type">int</span> b;</span><br><span class="line">   <span class="function"><span class="type">int</span> <span class="title">Sum1</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> a + b;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">Sum2</span><span class="params">(S3 * p)</span> </span>&#123;<span class="keyword">return</span> p-&gt;a + p-&gt;b;&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">Sum3</span><span class="params">(S3 &amp; r)</span> </span>&#123;<span class="keyword">return</span> r.a + r.b;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是有些编译器会通过寄存器传递this指针而不是堆栈，所以会导致Sum1的效率略高些</p>
+<h4 id="14-3虚函数"><a href="#14-3虚函数" class="headerlink" title="14.3虚函数"></a>14.3虚函数</h4><p>先回顾一下面向对象中多态的概念，多态分为静态多态和动态多态，也叫编译时多态和与运行时多态。前者即静态多态指函数重载和模板编程，后者动态多态指父类的指针（对象引用变量）指向不同类的对象时，所调用的方法会有不同的效果，需要注意cpp中只有虚函数才能被重写，如果没有<code>virtual</code>修饰，父类指针始终调用父类的方法，而不会调用子类中重写的方法。</p>
+<p>虚函数的实现原理：</p>
+<p>存在虚函数的类中都有一个一维的表叫做虚表，每一个类的对象都有一个指向虚表头部的虚指针，每一个类对应一个虚表，每一个对象对应一个虚表指针。</p>
+<p>编译器在编译的时候，发现Base类中有虚函数，此时编译器会为每个包含虚函数的类创建一个虚表（即vtable），该表是一个一维数组（而不是一个链表），在这个数组中存放每个虚函数的地址。由于Base类和Derive类都包含了一个虚函数func()，编译器会为这两个类都建立一个虚表。</p>
+<p>那么如何定位虚表呢？编译器另外还为每个带有虚函数的类的对象自动创建一个虚表指针（即vptr），这个指针指向了对象所属类的虚表。在程序运行时，根据对象的类型去初始化vptr，从而让vptr正确的指向所属类的虚表。所以在调用虚函数时，就能够找到正确的函数。对于上述程序，由于实际指向的对象类型是Derive，因此vptr指向的Derive类的vtable，当调用func()时，根据虚表中的函数地址找到的就是Derive类的func()函数。</p>
+<p>正是由于每个对象调用的虚函数都是通过虚表指针来索引的，也就决定了虚表指针的正确初始化是非常重要的。换句话说，在虚表指针没有正确初始化之前，我们不能够去调用虚函数。那么虚表指针在什么时候，或者说在什么地方初始化呢？<br>答案是在构造函数中进行虚表的创建和虚表指针的初始化。</p>
+<p>构造函数的调用顺序，在构造子类对象时，要先调用父类的构造函数，之后再完成子类的构造。在调用父类的构造函数时，编译器只“看到了”父类，并不知道后面是否后还有继承者，它初始化虚表指针，将该虚表指针指向父类的虚表。当执行子类的构造函数时，虚表指针被重新赋值，指向自身的虚表。对于以上的例子，当Derive类的对象构造完毕后，其内部的虚表指针也就被初始化为指向Derive类的虚表。在类型转换后，调用func()，由于实际指向的是Derive类的对象，该对象内部的虚表指针指向的是Derive类的虚表，因此最终调用的是Derive类的func()函数。</p>
+<p>要注意：对于虚函数调用来说，每一个对象内部都有一个虚表指针，该虚表指针被初始化为本类的虚表。所以在程序中，不管你的对象类型如何转换，但该对象内部的虚表指针是固定的，所以呢，才能实现动态的对象函数调用，这就是C++多态性实现的原理。</p>
+<hr>
+<p>多态性时面向对象程序比非面向对象程序效率低的主要原因之一。 如果可以避免使用虚函数，那么你可以获得面向对象编程的大部分优势，而无需支付性能成本。</p>
+<ul>
+<li>如果函数调用语句总是调用相同版本的虚函数，调用虚拟成员函数所花费的时间比调用非虚拟成员函数所花费的时间，只多几个时钟周期。</li>
+<li>如果虚函数版本发生变化，那么可能会得到10到20个时钟周期的错误预测惩罚。（意味着主要性能成本来自流水线预测失败）</li>
+</ul>
+<p>为了效率的话，尽量使用编译时多态，或者使用模板，但是要权衡模板编程的复杂性。</p>
+<h4 id="14-4运行时类型识别（RTTI）"><a href="#14-4运行时类型识别（RTTI）" class="headerlink" title="14.4运行时类型识别（RTTI）"></a>14.4运行时类型识别（RTTI）</h4><p>运行时类型标识会向所有类对象添加额外信息，其效率不高。 如果编译器有RTTI选项，把它关闭，寻找其它替代方法</p>
+<h4 id="14-5继承"><a href="#14-5继承" class="headerlink" title="14.5继承"></a>14.5继承</h4><p>编译器对于派生类的对象的实现方式，与包含父类和子类成员的简单类的对象相同。 父类和子类的成员访问同样的快。通常，可以假定使用继承几乎没有任何性能损失。</p>
+<p>由于以下原因，代码缓存性能可能会略有下降：</p>
+<ul>
+<li>父类数据成员的大小将添加到子类成员的偏移量中。 访问总偏移量大于127字节的数据成员的代码，会稍微变得不那么紧凑。</li>
+<li>父和子的成员函数通常存储在不同的模块中。 这可能会导致大量跳转，代码缓存效率降低。 解决这个问题的方法是，确保彼此相邻调用的函数也存储在彼此附近。</li>
+</ul>
+<h4 id="14-6构造函数和析构函数"><a href="#14-6构造函数和析构函数" class="headerlink" title="14.6构造函数和析构函数"></a>14.6构造函数和析构函数</h4><p>构造函数在内部实现为成员函数，该函数返回该对象的引用。 新对象的内存分配不一定由构造函数自身完成。 因此，构造函数与任何其他成员函数效率没有区别。 此结论适用于默认构造函数，拷贝构造函数和任何其它构造函数。</p>
+<p>一个类可以不需要构造函数。</p>
+<ul>
+<li>如果对象不需要初始化，可以没有默认构造函数。</li>
+<li>如果只需复制所有数据成员就可以复制对象，则不需要拷贝构造函数。</li>
+</ul>
+<p>简单的构造函数可以被内联，以提高性能。</p>
+<p>当通过赋值，函数参数或函数返回值来复制对象时，拷贝构造函数都可能被调用。 如果拷贝构造函数涉及内存或其他资源的分配，可能要花费一定时间。 有多种方法可以避免这种内存复制浪费，例如：</p>
+<ul>
+<li>使用指向对象的引用或指针，而不是复制对象本身。</li>
+<li>使用“移动构造函数”来转移内存块的所有权。这需要一个支持C++ 0x的编译器。</li>
+<li>创建一个类的成员函数，或者友元函数，或者运算符，将内存块的所有权从一个对象转移到另一个对象。 失去内存块所有权的对象应将其指针设置为<code>NULL</code>。 当然应该有一个析构函数来销毁对象拥有的任何内存块。</li>
+</ul>
+<p>析构函数与成员函数效率相同。如果没有必要，不要写析构函数。 虚拟析构函数与虚拟成员函数效率相同。</p>
+<p>补充：移动构造函数</p>
+<p>移动构造函数以及左值右值是cpp11标准引入的新标准，通过<code>std::move()</code>可以避免复制内存，提高效率。</p>
+<p>首先介绍左值和右值，字面意义上，左值既能出现在等号左边，也能出现在等号右边。右值只能出现在等号右边。左值指指向对象的表达式，指在内存中占据地址的对象，右值是不在内存中某个可识别位置的对象的表达式，左值和右值的根本区别在于能否取内存地址。</p>
+<p>举个栗子</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> var;<span class="comment">//左值</span></span><br><span class="line">var = <span class="number">4</span>;<span class="comment">//var是左值，4是右值</span></span><br></pre></td></tr></table></figure>
+
+<p>赋值操作需要左操作数是一个左值。<code>var</code> 是一个有内存位置的对象，因此它是左值。然而，下面的写法则是错的：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">4</span> = var;       <span class="comment">// 错误！不能将左值赋给右值</span></span><br><span class="line">(var + <span class="number">1</span>) = <span class="number">4</span>; <span class="comment">// 错误！（var+1）也是右值，不能将右值赋给另一个右值</span></span><br></pre></td></tr></table></figure>
+
+<p>接下来说明下左值引用和右值引用。</p>
+<p>左值引用和右值引用都是引用，只不过一个用作左值，一个只能用作右值即只能给别的变量赋值。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> &amp;a=<span class="number">2</span>;<span class="comment">//左值引用</span></span><br><span class="line"><span class="type">int</span> &amp;&amp;b=a;<span class="comment">//右值引用</span></span><br></pre></td></tr></table></figure>
+
+<p>接下来说会移动构造函数，在cpp中通过一个已有对象初始化另一个对象要通过复制构造函数，而当对象中有指针类型的成员变量时，复制构造函数执行的是深拷贝，这是低效且占用内存空间的，而如果不深拷贝的话，多个指针指向同一个地址会造成对该内存空间的多次释放。由此引入了移动构造函数，即将原对象的内存空间移动给新对象，同时将原对象的指针为<code>NULL</code>，避免重复释放同一块内存地址。</p>
+<p>移动构造函数的代码实现就是将右值引用作为参数</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">demo</span>(demo &amp;&amp;d):<span class="built_in">num</span>(d.num)&#123;<span class="comment">//右值引用</span></span><br><span class="line">   d.num = <span class="literal">NULL</span>;</span><br><span class="line">   cout&lt;&lt;<span class="string">&quot;move construct!&quot;</span>&lt;&lt;endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">demo</span>(<span class="type">const</span> demo &amp;d):<span class="built_in">num</span>(<span class="keyword">new</span> <span class="built_in">int</span>(*d.num))&#123;<span class="comment">//左值引用</span></span><br><span class="line">   cout&lt;&lt;<span class="string">&quot;copy construct!&quot;</span>&lt;&lt;endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="15-unions"><a href="#15-unions" class="headerlink" title="15.unions"></a>15.unions</h3><p>　共用体，也叫联合体，在一个“联合”内可以定义多种不同的数据类型， 一个被说明为该“联合”类型的变量中，允许装入该“联合”所定义的任何一种数据，这些数据共享同一段内存，以达到节省空间的目的。<strong>union变量所占用的内存长度等于最长的成员的内存长度。</strong></p>
+<h3 id="16-模板"><a href="#16-模板" class="headerlink" title="16.模板"></a>16.模板</h3><p>模板类似宏，在编译前模板的参数被简单的被值替代。</p>
+<p>使用模板传参比直接函数传参要更高效，当然，可读性会变差。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">Multiply</span> <span class="params">(<span class="type">int</span> x, <span class="type">int</span> m)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">return</span> x * m;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">template</span> &lt;<span class="type">int</span> m&gt;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">MultiplyBy</span> <span class="params">(<span class="type">int</span> x)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">return</span> x * m;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">int</span> a, b;</span><br><span class="line">a = <span class="built_in">Multiply</span>(<span class="number">10</span>,<span class="number">8</span>);</span><br><span class="line">b = <span class="built_in">MultiplyBy</span>&lt;<span class="number">8</span>&gt;(<span class="number">10</span>);</span><br><span class="line"><span class="comment">//下面的函数更高效</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>使用模板实现多态</strong></p>
+<p>先举个栗子</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Example 7.47b. 使用模板实现编译时多态</span></span><br><span class="line"><span class="comment">// 把非多态函数放入祖父类中:</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">CGrandParent</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">   <span class="function"><span class="type">void</span> <span class="title">NotPolymorphic</span><span class="params">()</span></span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 所有要调用多态函数的函数放入父类。</span></span><br><span class="line"><span class="comment">// 子类类名作为父类的模板参数：</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> MyChild&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">CParent</span> : <span class="keyword">public</span> CGrandParent &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">   <span class="function"><span class="type">void</span> <span class="title">Hello</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     cout &lt;&lt; <span class="string">&quot;Hello &quot;</span>;</span><br><span class="line">     <span class="comment">// call polymorphic child function:</span></span><br><span class="line">     (<span class="built_in">static_cast</span>&lt;MyChild*&gt;(<span class="keyword">this</span>))-&gt;<span class="built_in">Disp</span>();</span><br><span class="line">   &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 多个子类，每个子类实现一个版本的函数</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">CChild1</span> : <span class="keyword">public</span> CParent&lt;CChild1&gt; &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">   <span class="function"><span class="type">void</span> <span class="title">Disp</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     cout &lt;&lt; <span class="number">1</span>;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">CChild2</span> : <span class="keyword">public</span> CParent&lt;CChild2&gt; &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">   <span class="function"><span class="type">void</span> <span class="title">Disp</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     cout &lt;&lt; <span class="number">2</span>;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">test</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">   CChild1 Object1; CChild2 Object2;</span><br><span class="line">   CChild1 * p1;</span><br><span class="line">   p1 = &amp;Object1;</span><br><span class="line">   p1-&gt;<span class="built_in">Hello</span>(); <span class="comment">// Writes &quot;Hello 1&quot;</span></span><br><span class="line">   CChild2 * p2;</span><br><span class="line">   p2 = &amp;Object2;</span><br><span class="line">   p2-&gt;<span class="built_in">Hello</span>(); <span class="comment">// Writes &quot;Hello 2&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用模板实现多态的原理就是将子类类型作为模板的参数填入，然后直接将this指针转为子类类型，从而能够直接调用子类的方法，这是静态多态，提高了效率。可读性仍然降低。 如果编译器能够自动去虚拟化（devirtualization），依靠编译器进行优化的方法，肯定比使用复杂的模板方法更方便。</p>
+<h3 id="17-线程"><a href="#17-线程" class="headerlink" title="17.线程"></a>17.线程</h3><p>在优化多线程应用程序时，我们必须考虑多线程的四种成本：</p>
+<ul>
+<li>启动和停止线程的成本。<ul>
+<li>如果任务的持续时间短于启动和停止线程所需的时间，则不要将任务放入单独的线程中。</li>
+</ul>
+</li>
+<li>任务切换的成本。<ul>
+<li>如果具有相同优先级的线程数不超过CPU核心数，则此成本最低。</li>
+</ul>
+</li>
+<li>线程之间同步和通信的成本。<ul>
+<li>信号量，互斥量等的开销很大。如果两个线程经常相互等待以便访问同一资源，那么最好将它们连接到一个线程中。</li>
+<li>必须将多个线程之间共享的变量声明为<code>volatile</code>。这可以防止编译器把该变量进行优化消失。</li>
+</ul>
+</li>
+<li>不同的线程需要单独存储。<ul>
+<li>多个线程使用的函数或类都不应该依赖静态或全局变量。（参见第28页的线程本地存储）</li>
+<li>线程有自己的堆栈。如果线程共享相同的缓存，则可能导致缓存争用。</li>
+</ul>
+</li>
+</ul>
+<p>多线程程序必须使用线程安全函数。 线程安全函数永远不应该使用静态变量。</p>
+<h3 id="18-异常"><a href="#18-异常" class="headerlink" title="18.异常"></a>18.异常</h3><p>异常处理旨在检测很少发生的错误，并从错误中恢复，只要不发生错误，异常处理就不会占用额外的时间，但是一旦出现异常，程序就需要大量时间来进行恢复。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">C1</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">   ...</span><br><span class="line">   ~<span class="built_in">C1</span>();</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">F1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">   C1 x;</span><br><span class="line">   ...</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">F0</span><span class="params">()</span> </span>&#123;</span><br><span class="line">   <span class="keyword">try</span> &#123;</span><br><span class="line">     <span class="built_in">F1</span>();</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="built_in">catch</span> (...) &#123;</span><br><span class="line">     ...</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以以上述代码为例讲解，F1方法创建了C1对象，F0方法又调用F1方法，当F0调用F1时出现异常，执行跳出F1，程序没有返回，就无法清理已经分配的内存（比如C1对象x），所以F1必须保存所有相关信息才能保证能够清理垃圾。</p>
+<p>如果F1调用另一个函数，该函数又调用另一个函数等，并且如果在最里面的函数中发生异常，则异常处理程序需要有关函数调用链的所有信息，并且它需要通过函数调用向后跟踪路径，检查所有必要的清理工作。 这称为堆栈展开。</p>
+<p>所有函数都必须为异常处理程序保存一些信息，即使没有异常发生。 这就是为什么在某些编译器中异常处理可能代价高昂的原因。 如果你的应用程序异常处理不是必需的，你应该禁用它，这样代码更小，也更高效。</p>
+<ul>
+<li><p>你可以通过关闭编译器中的异常处理选项，来禁用整个程序的异常处理。</p>
+</li>
+<li><p>你可以通过向函数原型添加<code>throw()</code>来禁用单个函数的异常处理：</p>
+  <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">F1</span><span class="params">()</span> <span class="title">throw</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p><code>C++11</code>推荐使用 <code>noexcept</code>，<code>throw()</code>已经过时。</p>
+<p>这允许编译器假定<code>F1</code>永远不会抛出任何异常，因此它不必保存函数<code>F1</code>的恢复信息。 然而，如果<code>F1</code>调用另一个可能抛出异常的函数<code>F2</code>，则<code>F1</code>必须检查<code>F2</code>抛出的异常，并在<code>F2</code>实际抛出异常的情况下调用<code>std::unexpected()</code>函数。 因此，只有当<code>F1</code>调用的所有函数都使用<code>throw()</code>限定符时，才能把<code>throw()</code>应用于<code>F1</code>。<code>throw()</code>对库函数很有用。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://mightcoder.com">might</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://mightcoder.com/2022/03/29/optimizing-cpp-5/">https://mightcoder.com/2022/03/29/optimizing-cpp-5/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/hpc/">hpc</a><a class="post-meta__tags" href="/tags/cpp/">cpp</a></div><div class="post_share"><div class="social-share" data-image="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>请作者喝杯咖啡</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/03/30/optimizing-cpp-6/" title="optimizing_cpp(6)"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">optimizing_cpp(6)</div></div></a></div><div class="next-post pull-right"><a href="/2022/03/22/DeePMD/" title="DeePMD"><img class="cover" src="https://opengraph.githubassets.com/d898d41940ad810016642ba5050f4f9269cb9162d43131d73ee7342b779c1ffa/deepmodeling/deepmd-kit" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next</div><div class="next_info">DeePMD</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2022/03/15/optimizing-cpp-1-4/" title="optimizing_cpp(1-4)"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-03-15</div><div class="title">optimizing_cpp(1-4)</div></div></a></div><div><a href="/2022/04/05/optimizing-cpp-10/" title="optimizing_cpp(10)"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-05</div><div class="title">optimizing_cpp(10)</div></div></a></div><div><a href="/2022/04/05/optimizing-cpp-11/" title="optimizing_cpp(11)"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-05</div><div class="title">optimizing_cpp(11)</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> Comment</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">might</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/shenghansen" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:shenghs@mail2.sysu.edu.cn" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">Hope you can find something useful here ᐕ)⁾⁾ .</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94-%E4%B8%8D%E5%90%8Cc-%E7%BB%93%E6%9E%84%E7%9A%84%E6%95%88%E7%8E%87"><span class="toc-number">1.</span> <span class="toc-text">五.不同c++结构的效率</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%B8%8D%E5%90%8C%E7%A7%8D%E7%B1%BB%E5%8F%98%E9%87%8F%E5%AD%98%E5%82%A8"><span class="toc-number">1.1.</span> <span class="toc-text">1.不同种类变量存储</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-1%E6%A0%88%EF%BC%88stack%EF%BC%89"><span class="toc-number">1.1.1.</span> <span class="toc-text">1.1栈（stack）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2%E5%85%A8%E5%B1%80%EF%BC%88global%EF%BC%89%E6%88%96%E8%80%85%E9%9D%99%E6%80%81%EF%BC%88static%EF%BC%89%E5%AD%98%E5%82%A8"><span class="toc-number">1.1.2.</span> <span class="toc-text">1.2全局（global）或者静态（static）存储</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-3%E5%AF%84%E5%AD%98%E5%99%A8%EF%BC%88register%EF%BC%89"><span class="toc-number">1.1.3.</span> <span class="toc-text">1.3寄存器（register）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-4Volatile"><span class="toc-number">1.1.4.</span> <span class="toc-text">1.4Volatile</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-5%E7%BA%BF%E7%A8%8B%E6%9C%AC%E5%9C%B0%E5%AD%98%E5%82%A8%EF%BC%88thread-local-storage-TLS%EF%BC%89"><span class="toc-number">1.1.5.</span> <span class="toc-text">1.5线程本地存储（thread-local storage TLS）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-6%E5%8A%A8%E6%80%81%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D"><span class="toc-number">1.1.6.</span> <span class="toc-text">1.6动态内存分配</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-7%E7%B1%BB%E4%B8%AD%E5%A3%B0%E6%98%8E%E7%9A%84%E5%8F%98%E9%87%8F"><span class="toc-number">1.1.7.</span> <span class="toc-text">1.7类中声明的变量</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%95%B4%E5%9E%8B%E5%8F%98%E9%87%8F"><span class="toc-number">1.2.</span> <span class="toc-text">2.整型变量</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1%E6%95%B4%E6%95%B0%E5%A4%A7%E5%B0%8F"><span class="toc-number">1.2.1.</span> <span class="toc-text">2.1整数大小</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%95%B0%E5%92%8C%E6%9C%89%E7%AC%A6%E5%8F%B7%E6%95%B0"><span class="toc-number">1.2.2.</span> <span class="toc-text">2.2无符号数和有符号数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-3%E6%95%B4%E5%9E%8B%E8%BF%90%E7%AE%97"><span class="toc-number">1.2.3.</span> <span class="toc-text">2.3整型运算</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%B5%AE%E7%82%B9%E5%8F%98%E9%87%8F"><span class="toc-number">1.3.</span> <span class="toc-text">3.浮点变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%B8%83%E5%B0%94%E5%8F%98%E9%87%8F"><span class="toc-number">1.4.</span> <span class="toc-text">4.布尔变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E6%8C%87%E9%92%88%E5%92%8C%E5%BC%95%E7%94%A8"><span class="toc-number">1.5.</span> <span class="toc-text">5.指针和引用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88"><span class="toc-number">1.6.</span> <span class="toc-text">6.智能指针</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="toc-number">1.7.</span> <span class="toc-text">7.类型转换</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#7-1%E6%97%A0%E7%AC%A6%E5%8F%B7%E5%88%B0%E6%9C%89%E7%AC%A6%E5%8F%B7%E8%BD%AC%E6%8D%A2"><span class="toc-number">1.7.1.</span> <span class="toc-text">7.1无符号到有符号转换</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-2%E6%95%B4%E5%9E%8B%E5%A4%A7%E5%B0%8F%E8%BD%AC%E6%8D%A2"><span class="toc-number">1.7.2.</span> <span class="toc-text">7.2整型大小转换</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-3%E6%B5%AE%E7%82%B9%E6%95%B0%E7%B2%BE%E5%BA%A6%E8%BD%AC%E6%8D%A2"><span class="toc-number">1.7.3.</span> <span class="toc-text">7.3浮点数精度转换</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-4%E6%95%B4%E6%95%B0%E5%88%B0%E6%B5%AE%E7%82%B9%E6%95%B0"><span class="toc-number">1.7.4.</span> <span class="toc-text">7.4整数到浮点数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-5%E6%B5%AE%E7%82%B9%E5%88%B0%E6%95%B4%E6%95%B0%E7%9A%84%E8%BD%AC%E6%8D%A2"><span class="toc-number">1.7.5.</span> <span class="toc-text">7.5浮点到整数的转换</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-6%E6%8C%87%E9%92%88%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="toc-number">1.7.6.</span> <span class="toc-text">7.6指针类型转换</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-7%E5%B8%B8%E9%87%8F%E5%BC%BA%E5%88%B6%E8%BD%AC%E6%8D%A2"><span class="toc-number">1.7.7.</span> <span class="toc-text">7.7常量强制转换</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-%E5%88%86%E6%94%AF%E5%92%8Cswitch%E8%AF%AD%E5%8F%A5"><span class="toc-number">1.8.</span> <span class="toc-text">8.分支和switch语句</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-%E5%BE%AA%E7%8E%AF"><span class="toc-number">1.9.</span> <span class="toc-text">9.循环</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#9-1%E5%BE%AA%E7%8E%AF%E5%B1%95%E5%BC%80"><span class="toc-number">1.9.1.</span> <span class="toc-text">9.1循环展开</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9-2%E5%BE%AA%E7%8E%AF%E6%8E%A7%E5%88%B6%E6%9D%A1%E4%BB%B6"><span class="toc-number">1.9.2.</span> <span class="toc-text">9.2循环控制条件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9-3%E4%B8%8D%E8%A6%81%E4%BD%BF%E7%94%A8%E5%BE%AA%E7%8E%AF%E5%A4%8D%E5%88%B6%E6%88%96%E8%80%85%E6%B8%85%E9%99%A4%E6%95%B0%E7%BB%84"><span class="toc-number">1.9.3.</span> <span class="toc-text">9.3不要使用循环复制或者清除数组</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-%E5%87%BD%E6%95%B0"><span class="toc-number">1.10.</span> <span class="toc-text">10.函数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#10-1%E9%81%BF%E5%85%8D%E9%9D%9E%E5%BF%85%E8%A6%81%E7%9A%84%E5%87%BD%E6%95%B0"><span class="toc-number">1.10.1.</span> <span class="toc-text">10.1避免非必要的函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#10-2%E4%BD%BF%E7%94%A8%E5%86%85%E8%81%94%E5%87%BD%E6%95%B0"><span class="toc-number">1.10.2.</span> <span class="toc-text">10.2使用内联函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#10-3%E9%81%BF%E5%85%8D%E5%9C%A8%E5%B5%8C%E5%A5%97%E5%BE%AA%E7%8E%AF%E7%9A%84%E6%9C%80%E5%86%85%E5%B1%82%E5%87%BA%E7%8E%B0%E5%87%BD%E6%95%B0%E5%B5%8C%E5%A5%97"><span class="toc-number">1.10.3.</span> <span class="toc-text">10.3避免在嵌套循环的最内层出现函数嵌套</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#10-4%E4%BD%BF%E7%94%A8%E5%AE%8F%E4%BB%A3%E6%9B%BF%E5%87%BD%E6%95%B0"><span class="toc-number">1.10.4.</span> <span class="toc-text">10.4使用宏代替函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#10-5%E4%BD%BF%E7%94%A8fastcall%E5%87%BD%E6%95%B0"><span class="toc-number">1.10.5.</span> <span class="toc-text">10.5使用fastcall函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#10-6%E5%87%BD%E6%95%B0%E6%9C%AC%E5%9C%B0%E5%8C%96"><span class="toc-number">1.10.6.</span> <span class="toc-text">10.6函数本地化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#10-7%E4%BD%BF%E7%94%A864%E4%BD%8D%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.10.7.</span> <span class="toc-text">10.7使用64位模式</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-%E5%87%BD%E6%95%B0%E5%8F%82%E6%95%B0"><span class="toc-number">1.11.</span> <span class="toc-text">11.函数参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-%E5%87%BD%E6%95%B0%E8%BF%94%E5%9B%9E%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.12.</span> <span class="toc-text">12.函数返回类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-%E5%87%BD%E6%95%B0%E5%B0%BE%E8%B0%83%E7%94%A8%E4%BC%98%E5%8C%96"><span class="toc-number">1.13.</span> <span class="toc-text">13.函数尾调用优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-%E7%BB%93%E6%9E%84%E4%BD%93%E5%92%8C%E7%B1%BB"><span class="toc-number">1.14.</span> <span class="toc-text">14.结构体和类</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#14-1%E5%AE%9E%E4%BE%8B%E5%8F%98%E9%87%8F"><span class="toc-number">1.14.1.</span> <span class="toc-text">14.1实例变量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#14-2%E6%96%B9%E6%B3%95%EF%BC%88%E7%B1%BB%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0%EF%BC%89"><span class="toc-number">1.14.2.</span> <span class="toc-text">14.2方法（类成员函数）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#14-3%E8%99%9A%E5%87%BD%E6%95%B0"><span class="toc-number">1.14.3.</span> <span class="toc-text">14.3虚函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#14-4%E8%BF%90%E8%A1%8C%E6%97%B6%E7%B1%BB%E5%9E%8B%E8%AF%86%E5%88%AB%EF%BC%88RTTI%EF%BC%89"><span class="toc-number">1.14.4.</span> <span class="toc-text">14.4运行时类型识别（RTTI）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#14-5%E7%BB%A7%E6%89%BF"><span class="toc-number">1.14.5.</span> <span class="toc-text">14.5继承</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#14-6%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0"><span class="toc-number">1.14.6.</span> <span class="toc-text">14.6构造函数和析构函数</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-unions"><span class="toc-number">1.15.</span> <span class="toc-text">15.unions</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-%E6%A8%A1%E6%9D%BF"><span class="toc-number">1.16.</span> <span class="toc-text">16.模板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-%E7%BA%BF%E7%A8%8B"><span class="toc-number">1.17.</span> <span class="toc-text">17.线程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#18-%E5%BC%82%E5%B8%B8"><span class="toc-number">1.18.</span> <span class="toc-text">18.异常</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2023/11/02/effective%20modern%20c++/" title="effective modern c++"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20231101213331.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="effective modern c++"/></a><div class="content"><a class="title" href="/2023/11/02/effective%20modern%20c++/" title="effective modern c++">effective modern c++</a><time datetime="2023-11-02T13:01:37.000Z" title="Created 2023-11-02 21:01:37">2023-11-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/11/01/CXL/" title="CXL"><img src="https://i.ytimg.com/vi/6TRbkes15Ok/maxresdefault.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CXL"/></a><div class="content"><a class="title" href="/2023/11/01/CXL/" title="CXL">CXL</a><time datetime="2023-11-01T12:31:37.000Z" title="Created 2023-11-01 20:31:37">2023-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/10/25/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/" title="性能优化技巧总结"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202208092121258.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="性能优化技巧总结"/></a><div class="content"><a class="title" href="/2023/10/25/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/" title="性能优化技巧总结">性能优化技巧总结</a><time datetime="2023-10-25T13:01:37.000Z" title="Created 2023-10-25 21:01:37">2023-10-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/05/28/cmake/" title="Cmake"><img src="data:image/jpeg;base64,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" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Cmake"/></a><div class="content"><a class="title" href="/2023/05/28/cmake/" title="Cmake">Cmake</a><time datetime="2023-05-28T13:39:37.000Z" title="Created 2023-05-28 21:39:37">2023-05-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/05/28/open%20mlsys/" title="open mlsys"><img src="https://openmlsys.github.io/_images/logo.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="open mlsys"/></a><div class="content"><a class="title" href="/2023/05/28/open%20mlsys/" title="open mlsys">open mlsys</a><time datetime="2023-05-28T13:39:37.000Z" title="Created 2023-05-28 21:39:37">2023-05-28</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By might</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">hope you can find something useful here ᐕ)⁾⁾ .</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="Scroll To Comments"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const initValine = () => {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'VBvzA6UUhphh1Tc1BtzWXzye-gzGzoHsz',
+      appKey: 'J0UlGcCok0khsrORkwxD1HwF',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  const loadValine = async () => {
+    if (typeof Valine === 'function') initValine()
+    else {
+      await getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js')
+      initValine()
+    }
+  }
+
+  if ('Valine' === 'Valine' || !false) {
+    if (false) btf.loadComment(document.getElementById('vcomment'),loadValine)
+    else setTimeout(loadValine, 0)
+  } else {
+    window.loadOtherComment = loadValine
+  }
+})()</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

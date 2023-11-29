@@ -1,0 +1,536 @@
+<!DOCTYPE html><html lang="zh-cn" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>optimizing_cpp(10) | might's room</title><meta name="author" content="might"><meta name="copyright" content="might"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="十、向量操作现代处理器基本都支持向量指令了，这种技术叫SIMD(single instruction multiple data)。向量大小从64位（MMX）、128位(XMM)、256位(YMM)、512位(ZMM) 向量操作适用于对多个数据执行相同的操作且运行并行，比如图像处理、声音处理、矩阵运算。 下面附上各个向量指令集支持的数据类型    Type of elements Size of">
+<meta property="og:type" content="article">
+<meta property="og:title" content="optimizing_cpp(10)">
+<meta property="og:url" content="https://mightcoder.com/2022/04/05/optimizing-cpp-10/index.html">
+<meta property="og:site_name" content="might&#39;s room">
+<meta property="og:description" content="十、向量操作现代处理器基本都支持向量指令了，这种技术叫SIMD(single instruction multiple data)。向量大小从64位（MMX）、128位(XMM)、256位(YMM)、512位(ZMM) 向量操作适用于对多个数据执行相同的操作且运行并行，比如图像处理、声音处理、矩阵运算。 下面附上各个向量指令集支持的数据类型    Type of elements Size of">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg">
+<meta property="article:published_time" content="2022-04-05T13:11:37.000Z">
+<meta property="article:modified_time" content="2022-07-15T08:13:03.060Z">
+<meta property="article:author" content="might">
+<meta property="article:tag" content="hpc">
+<meta property="article:tag" content="cpp">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg"><link rel="shortcut icon" href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg"><link rel="canonical" href="https://mightcoder.com/2022/04/05/optimizing-cpp-10/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//static.cloudflareinsights.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script defer="defer" data-pjax="data-pjax" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="{&quot;token&quot;: &quot;60e2c80ac4524b11b7168fad4fb0548b&quot;}"></script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: 'days',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'optimizing_cpp(10)',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-07-15 16:13:03'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 8 || hour >= 22
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="might's room" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="might's room"><img class="site-icon" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg"/><span class="site-name">might's room</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">optimizing_cpp(10)</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2022-04-05T13:11:37.000Z" title="Created 2022-04-05 21:11:37">2022-04-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2022-07-15T08:13:03.060Z" title="Updated 2022-07-15 16:13:03">2022-07-15</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">Word Count:</span><span class="word-count">3.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">Reading Time:</span><span>13mins</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="optimizing_cpp(10)"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="十、向量操作"><a href="#十、向量操作" class="headerlink" title="十、向量操作"></a>十、向量操作</h2><p>现代处理器基本都支持向量指令了，这种技术叫SIMD(single instruction multiple data)。向量大小从64位（MMX）、128位(XMM)、256位(YMM)、512位(ZMM)</p>
+<p>向量操作适用于对多个数据执行相同的操作且运行并行，比如图像处理、声音处理、矩阵运算。</p>
+<p>下面附上各个向量指令集支持的数据类型</p>
+<table>
+<thead>
+<tr>
+<th><strong>Type of elements</strong></th>
+<th align="center"><strong>Size of each elements, bits</strong></th>
+<th align="center"><strong>Number of elements</strong></th>
+<th align="center"><strong>Total size of vector, bits</strong></th>
+<th><strong>Instruction set</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>char</code></td>
+<td align="center">8</td>
+<td align="center">8</td>
+<td align="center">64</td>
+<td><em>MMX</em></td>
+</tr>
+<tr>
+<td><code>short int</code></td>
+<td align="center">16</td>
+<td align="center">4</td>
+<td align="center">64</td>
+<td><em>MMX</em></td>
+</tr>
+<tr>
+<td><code>int</code></td>
+<td align="center">32</td>
+<td align="center">2</td>
+<td align="center">64</td>
+<td><em>MMX</em></td>
+</tr>
+<tr>
+<td><code>int64_t</code></td>
+<td align="center">64</td>
+<td align="center">1</td>
+<td align="center">64</td>
+<td><em>MMX</em></td>
+</tr>
+<tr>
+<td></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td></td>
+</tr>
+<tr>
+<td><code>char</code></td>
+<td align="center">8</td>
+<td align="center">16</td>
+<td align="center">128</td>
+<td><em>SSE2</em></td>
+</tr>
+<tr>
+<td><code>short int</code></td>
+<td align="center">16</td>
+<td align="center">8</td>
+<td align="center">128</td>
+<td><em>SSE2</em></td>
+</tr>
+<tr>
+<td><code>int</code></td>
+<td align="center">32</td>
+<td align="center">4</td>
+<td align="center">128</td>
+<td><em>SSE2</em></td>
+</tr>
+<tr>
+<td><code>int64_t</code></td>
+<td align="center">64</td>
+<td align="center">2</td>
+<td align="center">128</td>
+<td><em>SSE2</em></td>
+</tr>
+<tr>
+<td><code>float</code></td>
+<td align="center">32</td>
+<td align="center">4</td>
+<td align="center">128</td>
+<td><em>SSE</em></td>
+</tr>
+<tr>
+<td><code>double</code></td>
+<td align="center">64</td>
+<td align="center">2</td>
+<td align="center">128</td>
+<td><em>SSE2</em></td>
+</tr>
+<tr>
+<td></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td></td>
+</tr>
+<tr>
+<td><code>char</code></td>
+<td align="center">8</td>
+<td align="center">32</td>
+<td align="center">256</td>
+<td><em>AVX2</em></td>
+</tr>
+<tr>
+<td><code>short int</code></td>
+<td align="center">16</td>
+<td align="center">16</td>
+<td align="center">256</td>
+<td><em>AVX2</em></td>
+</tr>
+<tr>
+<td><code>int</code></td>
+<td align="center">32</td>
+<td align="center">8</td>
+<td align="center">256</td>
+<td><em>AVX2</em></td>
+</tr>
+<tr>
+<td><code>int64_t</code></td>
+<td align="center">64</td>
+<td align="center">4</td>
+<td align="center">256</td>
+<td><em>AVX2</em></td>
+</tr>
+<tr>
+<td><code>float</code></td>
+<td align="center">32</td>
+<td align="center">8</td>
+<td align="center">256</td>
+<td><em>AVX</em></td>
+</tr>
+<tr>
+<td><code>double</code></td>
+<td align="center">64</td>
+<td align="center">4</td>
+<td align="center">256</td>
+<td><em>AVX</em></td>
+</tr>
+<tr>
+<td></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td></td>
+</tr>
+<tr>
+<td><code>char</code></td>
+<td align="center">8</td>
+<td align="center">64</td>
+<td align="center">512</td>
+<td><em>AVX512BW</em></td>
+</tr>
+<tr>
+<td><code>short int</code></td>
+<td align="center">16</td>
+<td align="center">32</td>
+<td align="center">512</td>
+<td><em>AVX512BW</em></td>
+</tr>
+<tr>
+<td><code>int</code></td>
+<td align="center">32</td>
+<td align="center">16</td>
+<td align="center">512</td>
+<td><em>AVX512</em></td>
+</tr>
+<tr>
+<td><code>int64_t</code></td>
+<td align="center">64</td>
+<td align="center">8</td>
+<td align="center">512</td>
+<td><em>AVX512</em></td>
+</tr>
+<tr>
+<td><code>float</code></td>
+<td align="center">32</td>
+<td align="center">16</td>
+<td align="center">512</td>
+<td><em>AVX512</em></td>
+</tr>
+<tr>
+<td><code>double</code></td>
+<td align="center">64</td>
+<td align="center">8</td>
+<td align="center">512</td>
+<td><em>AVX512</em></td>
+</tr>
+</tbody></table>
+<p>这里忽略了anger关于avx256的介绍，因为查阅资料后发现有不少错误，比如他强调的<code>_mm256_zeroupper()</code> ，这个函数会由编译器自动加上，程序员不应当手动调用。</p>
+<p>另外附上各阶段指令集支持类型</p>
+<table>
+<thead>
+<tr>
+<th>MMX</th>
+<th>64 位整型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SSE</td>
+<td>128 位浮点运算，整数运算仍然要使用 MMX 寄存器，只支持单精度浮点运算</td>
+</tr>
+<tr>
+<td>SSE2</td>
+<td>对整型数据的支持，支持双精度浮点数运算，CPU 快取的控制指令</td>
+</tr>
+<tr>
+<td>SSE3</td>
+<td>扩展的指令包含寄存器的局部位之间的运算，例如高位和低位之间的加减运算；浮点数到整数的转换，以及对超线程技术的支持。</td>
+</tr>
+<tr>
+<td>SSE4</td>
+<td></td>
+</tr>
+<tr>
+<td>AVX</td>
+<td>256 位浮点运算</td>
+</tr>
+<tr>
+<td>AVX2</td>
+<td>对 256 位整型数据的支持，三运算指令（3-Operand Instructions）</td>
+</tr>
+<tr>
+<td>AVX512</td>
+<td>512 位运算</td>
+</tr>
+</tbody></table>
+<p>另外发现一个挺不错的入门介绍，贴上来<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_32916805/article/details/117637192">一文读懂SIMD指令集 目前最全SSE&#x2F;AVX介绍_Axurq的博客-CSDN博客_simd指令集</a></p>
+<h3 id="1-自动向量化"><a href="#1-自动向量化" class="headerlink" title="1.自动向量化"></a>1.自动向量化</h3><p>许多编译器有自动向量化的功能，比如gcc中-O3就开启了自动向量化，除此之外，还可以通过<code>-fopt-info-vec-optimized</code>或<code>-fopt-info-vec</code>命令来查看是否开启向量化。</p>
+<p>自动向量化最重要的方面就是对齐，尽量保证在内存中是地址对齐的。</p>
+<p>内存对齐：</p>
+<p>内存对齐是一个常见的现象，网上查阅资料其实说的都不是很详尽，个人整理理解如下</p>
+<p><strong>为什么要内存对齐？</strong></p>
+<p>1.现代计算机中内存空间都是按照byte划分的，从理论上讲似乎对任何类型的变量的访问可以从任何地址开始，但实际情况是在访问特定变量的时候经常在特定的内存地址访问，比如2、4、8的倍数。</p>
+<p>2.由于1的原因，如果内存没有对齐在读内存时可能本来只需要读一次，但却需要读两次。就像下面这张图（太丑了凑合看），如果不内存对齐，读double时先读前八个字节，再读后八个字节，需要读两次，但是右边的图内存对齐后只需要读一次就行了。</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202204011846756.png" alt="image-20220401184636679"></p>
+<p>并且经过测试，编译器除了会自动内存对齐，还会将内存地址也对齐，其元素的内部地址总是能被结构体中最大的元素的大小整除，方便cpu进行内存访问。</p>
+<p>仍然存疑关于avx256要32位对齐：64位cpu一次访存读取的块是多大的？是64位吗，那为什么向量化从内存载入时要求还32字节对齐呢（8字节对齐不就行了吗），cpu可以一次读取32字节数据吗？</p>
+<h3 id="2-手动向量化"><a href="#2-手动向量化" class="headerlink" title="2.手动向量化"></a>2.手动向量化</h3><p>一般来说尽量让编译器自动向量化，但是有些情况编译器无法自动向量化，而向量化带来的收益很可观就可以手动向量化，例如下面这个栗子，当存在分支时，编译器很难向量化，此时可以利用内部函数手动向量化。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Example 12.4a. Loop with branch</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Loop with branch</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">SelectAddMul</span><span class="params">(<span class="type">short</span> <span class="type">int</span> aa[], <span class="type">short</span> <span class="type">int</span> bb[], <span class="type">short</span> <span class="type">int</span> cc[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">256</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        aa[i] = (bb[i] &gt; <span class="number">0</span>) ? (cc[i] + <span class="number">2</span>) : (bb[i] * cc[i]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以改成</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Example 12.4b. Vectorized with SSE2</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;emmintrin.h&gt;</span> <span class="comment">// Define SSE2 intrinsic functions</span></span></span><br><span class="line"><span class="comment">// Function to load unaligned integer vector from array</span></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="keyword">inline</span> __m128i <span class="title">LoadVector</span><span class="params">(<span class="type">void</span> <span class="type">const</span> * p)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> _mm_loadu_si128((__m128i <span class="type">const</span>*)p);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Function to store unaligned integer vector into array</span></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">void</span> <span class="title">StoreVector</span><span class="params">(<span class="type">void</span> * d, __m128i <span class="type">const</span> &amp; x)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    _mm_storeu_si128((__m128i *)d, x);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Branch/loop function vectorized:</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">SelectAddMul</span><span class="params">(<span class="type">short</span> <span class="type">int</span> aa[], <span class="type">short</span> <span class="type">int</span> bb[], <span class="type">short</span> <span class="type">int</span> cc[])</span>、</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Make a vector of (0,0,0,0,0,0,0,0)</span></span><br><span class="line">    __m128i zero = _mm_set1_epi16(<span class="number">0</span>);</span><br><span class="line">    <span class="comment">// Make a vector of (2,2,2,2,2,2,2,2)</span></span><br><span class="line">    __m128i two = _mm_set1_epi16(<span class="number">2</span>);</span><br><span class="line">    <span class="comment">// Roll out loop by eight to fit the eight-element vectors:</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">256</span>; i += <span class="number">8</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Load eight consecutive elements from bb into vector b:</span></span><br><span class="line">        __m128i b = <span class="built_in">LoadVector</span>(bb + i);</span><br><span class="line">        <span class="comment">// Load eight consecutive elements from cc into vector c:</span></span><br><span class="line">        __m128i c = <span class="built_in">LoadVector</span>(cc + i);</span><br><span class="line">        <span class="comment">// Add 2 to each element in vector c</span></span><br><span class="line">        __m128i c2 = _mm_add_epi16(c, two);</span><br><span class="line">        <span class="comment">// Multiply b and c</span></span><br><span class="line">        __m128i bc = _mm_mullo_epi16 (b, c);</span><br><span class="line">        <span class="comment">// Compare each element in b to 0 and generate a bit-mask:</span></span><br><span class="line">        __m128i mask = _mm_cmpgt_epi16(b, zero);</span><br><span class="line">        <span class="comment">// AND each element in vector c2 with the bit-mask:</span></span><br><span class="line">        c2 = _mm_and_si128(c2, mask);</span><br><span class="line">        <span class="comment">// AND each element in vector bc with the inverted bit-mask:</span></span><br><span class="line">        bc = _mm_andnot_si128(mask, bc);</span><br><span class="line">        <span class="comment">// OR the results of the two AND operations:</span></span><br><span class="line">        __m128i a = _mm_or_si128(c2, bc);</span><br><span class="line">        <span class="comment">// Store the result vector in eight consecutive elements in aa:</span></span><br><span class="line">        <span class="built_in">StoreVector</span>(aa + i, a);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>手动向量化如何对齐数据</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Example 12.5. Aligned arrays</span></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> size = <span class="number">256</span>; <span class="comment">// Array size</span></span><br><span class="line"><span class="built_in">alignas</span>(<span class="number">16</span>) <span class="type">int16_t</span> aa[size]; <span class="comment">// Make aligned array</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>查找表向量化</strong></p>
+<p>查找表是一种很高效的优化手段，以空间换时间，后面会详细讲解如何使用。查找表通常是向量化的障碍，从avx2开始支持对查找表有利的函数如gather等。</p>
+<h3 id="3-将串行代码向量化"><a href="#3-将串行代码向量化" class="headerlink" title="3.将串行代码向量化"></a>3.将串行代码向量化</h3><p>有许多代码执行相同的操作，但是却因为循环依赖无法向量化和并行，我们可以通过修改代码结构来使其能够向量化，例如：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Example 12.8a. Sum of a list</span></span><br><span class="line"><span class="type">float</span> a[<span class="number">100</span>];</span><br><span class="line"><span class="type">float</span> sum = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) </span><br><span class="line">    sum += a[i];</span><br></pre></td></tr></table></figure>
+
+<p>上述的代码是串行的，因为每次迭代 <code>sum</code> 的值都依赖于前一次迭代后 <code>sum</code>  的值。诀窍是将循环按 <code>n</code> 展开并重新组织代码，每个值依赖于 <code>n</code> 个位置之前的值，其中 <code>n</code> 是向量中元素的数量。如果 <code>n = 4</code>，我们得到：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Example 12.8b. Sum of a list, rolled out by 4</span></span><br><span class="line"><span class="type">float</span> a[<span class="number">100</span>];</span><br><span class="line"><span class="type">float</span> s0 = <span class="number">0</span>, s1 = <span class="number">0</span>, s2 = <span class="number">0</span>, s3 = <span class="number">0</span>, sum;</span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i += <span class="number">4</span>)</span><br><span class="line">&#123;</span><br><span class="line">    s0 += a[i];</span><br><span class="line">    s1 += a[i+<span class="number">1</span>];</span><br><span class="line">    s2 += a[i+<span class="number">2</span>];</span><br><span class="line">    s3 += a[i+<span class="number">3</span>];</span><br><span class="line">&#125;</span><br><span class="line">sum = (s0+s1)+(s2+s3);</span><br></pre></td></tr></table></figure>
+
+<p>现在，<code>s0</code>、<code>s1</code>、<code>s2</code> 和 <code>s3 </code>可以组合成一个128位的向量，这样我们就可以在一个操作中做4个加法。如果我们使用 <em>fast math</em> 选项并指定<em>SSE</em> 或更高指令集的选项，一个好的编译器会自动将<strong>例 12.8a</strong>转换为<strong>12.8b</strong>，并将代码向量化。</p>
+<p>再一些更复杂的情况下不能自动向量化。例如，让我们看看泰勒级数的例子。指数函数可由级数计算：</p>
+<p>$$<br>e^x&#x3D;\sum_{n&#x3D;0}^\infty\frac{x^n}{n!}<br>$$<br>用<em>C++</em> 实现看起来可能是这样的：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Example 12.9a. Taylor series</span></span><br><span class="line"><span class="function"><span class="type">float</span> <span class="title">Exp</span><span class="params">(<span class="type">float</span> x)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Approximate exp(x) for small x</span></span><br><span class="line">    <span class="type">float</span> xn = x; <span class="comment">// x^n</span></span><br><span class="line">    <span class="type">float</span> sum = <span class="number">1.f</span>; <span class="comment">// sum, initialize to x^0/0!</span></span><br><span class="line">    <span class="type">float</span> nfac = <span class="number">1.f</span>; <span class="comment">// n factorial</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> n = <span class="number">1</span>; n &lt;= <span class="number">16</span>; n++)</span><br><span class="line">    &#123;</span><br><span class="line">        sum += xn / nfac;</span><br><span class="line">        xn *= x;</span><br><span class="line">        nfac *= n+<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这里每个  x^n 的值由前一个值计算而来，即 x^n &#x3D; x*(x^{n-1})，每个 n! 的值也由前一个值计算而来，即 n!&#x3D; n*(n-1)!。如果我们想要将循环按 4展开，那我们必须要用 4个位置之前的值来计算当前的值。因此，我们将用 x^4*x^{n-4}来计算x^n。没有简单的方法来展开阶乘的计算，但是这个并不是必需的，因为阶乘并不依赖  x ，我们可以将值预先计算好，存一个表中。更好的方法是存储阶乘的倒数，这样我们就不需要除法了（如你所知，除法是很慢的）。现在上述的的代码可以按如下的方式向量化（使用 <strong>Intel vector classes</strong>）：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Example 12.9b. Taylor series, vectorized</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;dvec.h&gt;</span> <span class="comment">// Define vector classes (Intel)</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;pmmintrin.h&gt;</span> <span class="comment">// SSE3 required</span></span></span><br><span class="line"><span class="comment">// This function adds the elements of a vector, uses SSE3.</span></span><br><span class="line"><span class="comment">// (This is faster than the function add_horizontal)</span></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">float</span> <span class="title">add_elements</span><span class="params">(__m128 <span class="type">const</span> &amp; x)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    __m128 s;</span><br><span class="line">    s = _mm_hadd_ps(x, x);</span><br><span class="line">    s = _mm_hadd_ps(s, s);</span><br><span class="line">    <span class="keyword">return</span> _mm_cvtss_f32(s);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">float</span> <span class="title">Exp</span><span class="params">(<span class="type">float</span> x)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Approximate exp(x) for small x</span></span><br><span class="line">    __declspec(<span class="built_in">align</span>(<span class="number">16</span>)) <span class="comment">// align table by 16</span></span><br><span class="line">    <span class="type">const</span> <span class="type">float</span> coef[<span class="number">16</span>] = &#123; <span class="comment">// table of 1/n!</span></span><br><span class="line">    <span class="number">1.</span>, <span class="number">1.</span>/<span class="number">2.</span>, <span class="number">1.</span>/<span class="number">6.</span>, <span class="number">1.</span>/<span class="number">24.</span>, <span class="number">1.</span>/<span class="number">120.</span>, <span class="number">1.</span>/<span class="number">720.</span>, <span class="number">1.</span>/<span class="number">5040.</span>,</span><br><span class="line">    <span class="number">1.</span>/<span class="number">40320.</span>, <span class="number">1.</span>/<span class="number">362880.</span>, <span class="number">1.</span>/<span class="number">3628800.</span>, <span class="number">1.</span>/<span class="number">39916800.</span>,</span><br><span class="line">    <span class="number">1.</span>/<span class="number">4.790016E8</span>, <span class="number">1.</span>/<span class="number">6.22702E9</span>, <span class="number">1.</span>/<span class="number">8.71782E10</span>,</span><br><span class="line">    <span class="number">1.</span>/<span class="number">1.30767E12</span>, <span class="number">1.</span>/<span class="number">2.09227E13</span>&#125;;</span><br><span class="line">    <span class="type">float</span> x2 = x * x; <span class="comment">// x^2</span></span><br><span class="line">    <span class="type">float</span> x4 = x2 * x2; <span class="comment">// x^4</span></span><br><span class="line">    <span class="comment">// Define vectors of four floats</span></span><br><span class="line">    <span class="function">F32vec4 <span class="title">xxn</span><span class="params">(x4, x2*x, x2, x)</span></span>; <span class="comment">// x^1, x^2, x^3, x^4</span></span><br><span class="line">    <span class="function">F32vec4 <span class="title">xx4</span><span class="params">(x4)</span></span>; <span class="comment">// x^4</span></span><br><span class="line">    <span class="function">F32vec4 <span class="title">s</span><span class="params">(<span class="number">0.f</span>, <span class="number">0.f</span>, <span class="number">0.f</span>, <span class="number">1.f</span>)</span></span>; <span class="comment">// initialize sum</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">16</span>; i += <span class="number">4</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Loop by 4</span></span><br><span class="line">        s += xxn * _mm_load_ps(coef+i); <span class="comment">// s += x^n/n!</span></span><br><span class="line">        xxn *= xx4; <span class="comment">// next four x^n</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">add_elements</span>(s); <span class="comment">// add the four sums</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个循环在一个向量中计算四个连续的项。如果循环很长，那么进一步展开循环可能是值得的，因为这里的速度可能受到 <code>xxn</code> 相乘的延迟而不是吞吐量的限制（参见<strong>11 乱序执行</strong>）。这里的系数表是在编译时计算的。在运行时计算系数表可能更方便，只要你能确保系数表只被计算一次，而不是每次调用函数时都会被计算一次。</p>
+<h3 id="4-向量运算的数学函数"><a href="#4-向量运算的数学函数" class="headerlink" title="4.向量运算的数学函数"></a>4.向量运算的数学函数</h3><p>除了英特尔官方的向量基本运算函数外，还有许多函数库支持对数、指数、三角等数学函数的运算。</p>
+<p>有两种向量数学库，长向量库和短向量库，长向量库在每一步等待所有值计算完成后再进入下一步，这意味着在内存中会有中间数组存储中间值，而短向量库对一组数据（比如avx256就是4个double）执行全部步骤后得到最终结果再算下一组数据，这样做就不会产生中间值。一般来说短向量库要高效一些因为没有中间值，但是当数学函数的计算存在依赖链时，短向量库由于阻止了乱序执行效率会显著降低。</p>
+<p>下面是一些长向量数学库的列表：</p>
+<ol>
+<li>Intel vector math library (VML, MKL)。支持所有<em>x86</em> 平台。这个库降低了<em>非英特尔CPU</em> 的性能，除非你重写了英特尔的 <em>CPU分派程序</em>。见<strong>13.7 Intel 编译器中的 CPU分派</strong>。</li>
+<li>Intel Performance Primitives (IPP)。支持所有<em>x86</em> 平台。在<em>非英特尔 CPU</em> 上也能工作的很好。包括许多用于统计学，信号处理和图像处理的函数。</li>
+<li>Yeppp。开源库。支持 <em>x86</em> 和 <em>ARM</em> 平台以及多种编程语言。<a target="_blank" rel="noopener" href="https://www.yeppp.info/">www.yeppp.info</a>。</li>
+</ol>
+<p>下面是一些短向量数学库的列表：</p>
+<ol>
+<li>Sleef library。支持多种不同的平台。开源。<a target="_blank" rel="noopener" href="https://www.sleef.org/">www.sleef.org</a>。</li>
+<li>Intel short vector math library (SVML)。这是由 <em>Intel 编译器</em> 提供的，并通过自动向量化调用。<em>Gnu编译器</em> 可以通过选项 <code>-mveclibabi=svml</code> 使用这个库。如果不使用 Intel 编译器话，这个库通常可以很好地处理 <em>非Intel CPU</em>。见<strong>13.7 Intel 编译器中的 CPU分派</strong>。</li>
+<li>AMD LIBM library。只在64位<em>Linux</em> 和<em>Windows</em> 平台上可用。这个库在没有<em>FMA4</em> 指令集的情况下降低了<em>CPU</em> 的性能（这个指令集最初是由英特尔设计的，但目前只有 <em>AMD</em> 的CPU 支持）。在 <em>Gnu编译器</em> 中，可以通过选项 <code>-mveclibabi=acml</code> 使用这个库。</li>
+<li>VCL vector class library。支持所有<em>x86</em> 平台。支持 <em>Microsoft</em>、<em>Intel</em>、<em>Gnu</em> 和<em>Clang</em> 编译器。代码是内联的，不需要链接外部库。<a target="_blank" rel="noopener" href="https://www.agner.org/optimize/#vectorclass">www.agner.org/optimize/#vectorclass</a>。</li>
+</ol>
+<p>所有这些库都具有很好的性能和精度。速度比任何非向量库快很多倍。</p>
+<p><em>SVML</em> 和 <em>LIBM</em> 库中的函数名没有很好的说明文档。如果你想直接调用库函数，可以参考下表中的例子：</p>
+<table>
+<thead>
+<tr>
+<th align="left"><strong>Library</strong></th>
+<th align="left"><strong>exp function of 4 floats</strong></th>
+<th align="left"><strong>exp function of 2 double</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Intel SVML v.10.2 &amp; earlier</td>
+<td align="left"><code>vmlsExp4 </code></td>
+<td align="left"><code>vmldExp2</code></td>
+</tr>
+<tr>
+<td align="left">Intel SVML v.10.3 &amp; later</td>
+<td align="left"><code>__svml_expf4</code></td>
+<td align="left"><code>__svml_exp2</code></td>
+</tr>
+<tr>
+<td align="left">Intel SVML + ia32intrin.h</td>
+<td align="left"><code>_mm_exp_ps</code></td>
+<td align="left"><code>_mm_exp_pd</code></td>
+</tr>
+<tr>
+<td align="left">AMD Core Math Library</td>
+<td align="left"><code>__vrs4_expf</code></td>
+<td align="left"><code>__vrd2_exp</code></td>
+</tr>
+<tr>
+<td align="left">AMD LIBM Library</td>
+<td align="left"><code>amd_vrs4_expf</code></td>
+<td align="left"><code>amd_vrd2_exp</code></td>
+</tr>
+<tr>
+<td align="left">VCL vector class library</td>
+<td align="left"><code>exp</code></td>
+<td align="left"><code>exp</code></td>
+</tr>
+</tbody></table>
+<h3 id="5-无法填满向量寄存器时"><a href="#5-无法填满向量寄存器时" class="headerlink" title="5.无法填满向量寄存器时"></a>5.无法填满向量寄存器时</h3><p>当变量数目无法填满向量寄存器时，比如只有三个值却想使用avx256，典型的栗子就是RGB图形处理，解决方案有：</p>
+<ol>
+<li>加入不使用的第四个值，使数据刚好可以装入向量中。这是一个简单的解决方案，但是它增加了内存使用量。如果内存访问是瓶颈，需要避免使用这种方法。</li>
+<li>将四个（或八个）点的的数据组成一组，其中一个向量中有四个 R值，下一个向量中有四个 G值，最后一个向量中有四个 B值。</li>
+<li>首先将所有的 R值组织成数据，然后是所有的 G值，最后是所有的 B值。</li>
+</ol>
+<p>2、3方法皆可。如果点的数量不能被向量大小整除，那么可以在最后面添加几个未使用的点，以得到整数个向量。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://mightcoder.com">might</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://mightcoder.com/2022/04/05/optimizing-cpp-10/">https://mightcoder.com/2022/04/05/optimizing-cpp-10/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/hpc/">hpc</a><a class="post-meta__tags" href="/tags/cpp/">cpp</a></div><div class="post_share"><div class="social-share" data-image="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>请作者喝杯咖啡</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/07/31/PAC22-%E5%88%9D%E8%B5%9B/" title="PAC22-初赛"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202208092121258.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">PAC22-初赛</div></div></a></div><div class="next-post pull-right"><a href="/2022/04/05/optimizing-cpp-11/" title="optimizing_cpp(11)"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next</div><div class="next_info">optimizing_cpp(11)</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2022/03/15/optimizing-cpp-1-4/" title="optimizing_cpp(1-4)"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-03-15</div><div class="title">optimizing_cpp(1-4)</div></div></a></div><div><a href="/2022/04/05/optimizing-cpp-11/" title="optimizing_cpp(11)"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-05</div><div class="title">optimizing_cpp(11)</div></div></a></div><div><a href="/2022/04/05/optimizing-cpp-12/" title="optimizing_cpp(12)"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-05</div><div class="title">optimizing_cpp(12)</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> Comment</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">might</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/shenghansen" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:shenghs@mail2.sysu.edu.cn" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">Hope you can find something useful here ᐕ)⁾⁾ .</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E3%80%81%E5%90%91%E9%87%8F%E6%93%8D%E4%BD%9C"><span class="toc-number">1.</span> <span class="toc-text">十、向量操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%87%AA%E5%8A%A8%E5%90%91%E9%87%8F%E5%8C%96"><span class="toc-number">1.1.</span> <span class="toc-text">1.自动向量化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%89%8B%E5%8A%A8%E5%90%91%E9%87%8F%E5%8C%96"><span class="toc-number">1.2.</span> <span class="toc-text">2.手动向量化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%B0%86%E4%B8%B2%E8%A1%8C%E4%BB%A3%E7%A0%81%E5%90%91%E9%87%8F%E5%8C%96"><span class="toc-number">1.3.</span> <span class="toc-text">3.将串行代码向量化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%90%91%E9%87%8F%E8%BF%90%E7%AE%97%E7%9A%84%E6%95%B0%E5%AD%A6%E5%87%BD%E6%95%B0"><span class="toc-number">1.4.</span> <span class="toc-text">4.向量运算的数学函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E6%97%A0%E6%B3%95%E5%A1%AB%E6%BB%A1%E5%90%91%E9%87%8F%E5%AF%84%E5%AD%98%E5%99%A8%E6%97%B6"><span class="toc-number">1.5.</span> <span class="toc-text">5.无法填满向量寄存器时</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2023/11/02/effective%20modern%20c++/" title="effective modern c++"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20231101213331.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="effective modern c++"/></a><div class="content"><a class="title" href="/2023/11/02/effective%20modern%20c++/" title="effective modern c++">effective modern c++</a><time datetime="2023-11-02T13:01:37.000Z" title="Created 2023-11-02 21:01:37">2023-11-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/11/01/CXL/" title="CXL"><img src="https://i.ytimg.com/vi/6TRbkes15Ok/maxresdefault.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CXL"/></a><div class="content"><a class="title" href="/2023/11/01/CXL/" title="CXL">CXL</a><time datetime="2023-11-01T12:31:37.000Z" title="Created 2023-11-01 20:31:37">2023-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/10/25/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/" title="性能优化技巧总结"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202208092121258.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="性能优化技巧总结"/></a><div class="content"><a class="title" href="/2023/10/25/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/" title="性能优化技巧总结">性能优化技巧总结</a><time datetime="2023-10-25T13:01:37.000Z" title="Created 2023-10-25 21:01:37">2023-10-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/05/28/cmake/" title="Cmake"><img src="data:image/jpeg;base64,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" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Cmake"/></a><div class="content"><a class="title" href="/2023/05/28/cmake/" title="Cmake">Cmake</a><time datetime="2023-05-28T13:39:37.000Z" title="Created 2023-05-28 21:39:37">2023-05-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/05/28/open%20mlsys/" title="open mlsys"><img src="https://openmlsys.github.io/_images/logo.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="open mlsys"/></a><div class="content"><a class="title" href="/2023/05/28/open%20mlsys/" title="open mlsys">open mlsys</a><time datetime="2023-05-28T13:39:37.000Z" title="Created 2023-05-28 21:39:37">2023-05-28</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By might</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">hope you can find something useful here ᐕ)⁾⁾ .</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="Scroll To Comments"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const initValine = () => {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'VBvzA6UUhphh1Tc1BtzWXzye-gzGzoHsz',
+      appKey: 'J0UlGcCok0khsrORkwxD1HwF',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  const loadValine = async () => {
+    if (typeof Valine === 'function') initValine()
+    else {
+      await getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js')
+      initValine()
+    }
+  }
+
+  if ('Valine' === 'Valine' || !false) {
+    if (false) btf.loadComment(document.getElementById('vcomment'),loadValine)
+    else setTimeout(loadValine, 0)
+  } else {
+    window.loadOtherComment = loadValine
+  }
+})()</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

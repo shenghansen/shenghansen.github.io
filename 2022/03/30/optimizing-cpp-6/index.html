@@ -1,0 +1,2204 @@
+<!DOCTYPE html><html lang="zh-cn" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>optimizing_cpp(6) | might's room</title><meta name="author" content="might"><meta name="copyright" content="might"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="六、编译器层次的优化1.编译器如何优化1.1内联函数编译器可以自动在调用函数时将函数名替换为函数体，即转为内联函数。 内联函数优点：  节约了调用、返回和参数传递的开销。 因为代码变得连续了，代码缓存的效率会更高。 如果只调用一次内联函数，那么代码就会变得更小。 函数内联可以使其他优化成为可能，下面会详细描述。  1.2常量折叠（constant folding）和常量传播(constant pr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="optimizing_cpp(6)">
+<meta property="og:url" content="https://mightcoder.com/2022/03/30/optimizing-cpp-6/index.html">
+<meta property="og:site_name" content="might&#39;s room">
+<meta property="og:description" content="六、编译器层次的优化1.编译器如何优化1.1内联函数编译器可以自动在调用函数时将函数名替换为函数体，即转为内联函数。 内联函数优点：  节约了调用、返回和参数传递的开销。 因为代码变得连续了，代码缓存的效率会更高。 如果只调用一次内联函数，那么代码就会变得更小。 函数内联可以使其他优化成为可能，下面会详细描述。  1.2常量折叠（constant folding）和常量传播(constant pr">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg">
+<meta property="article:published_time" content="2022-03-30T13:11:37.000Z">
+<meta property="article:modified_time" content="2022-07-15T08:13:03.059Z">
+<meta property="article:author" content="might">
+<meta property="article:tag" content="hpc">
+<meta property="article:tag" content="cpp">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg"><link rel="shortcut icon" href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg"><link rel="canonical" href="https://mightcoder.com/2022/03/30/optimizing-cpp-6/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//static.cloudflareinsights.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script defer="defer" data-pjax="data-pjax" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="{&quot;token&quot;: &quot;60e2c80ac4524b11b7168fad4fb0548b&quot;}"></script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: 'days',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'optimizing_cpp(6)',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-07-15 16:13:03'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 8 || hour >= 22
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="might's room" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="might's room"><img class="site-icon" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg"/><span class="site-name">might's room</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">optimizing_cpp(6)</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2022-03-30T13:11:37.000Z" title="Created 2022-03-30 21:11:37">2022-03-30</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2022-07-15T08:13:03.059Z" title="Updated 2022-07-15 16:13:03">2022-07-15</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">Word Count:</span><span class="word-count">9.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">Reading Time:</span><span>36mins</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="optimizing_cpp(6)"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="六、编译器层次的优化"><a href="#六、编译器层次的优化" class="headerlink" title="六、编译器层次的优化"></a>六、编译器层次的优化</h2><h3 id="1-编译器如何优化"><a href="#1-编译器如何优化" class="headerlink" title="1.编译器如何优化"></a>1.编译器如何优化</h3><h4 id="1-1内联函数"><a href="#1-1内联函数" class="headerlink" title="1.1内联函数"></a>1.1内联函数</h4><p>编译器可以自动在调用函数时将函数名替换为函数体，即转为内联函数。</p>
+<p>内联函数优点：</p>
+<ol>
+<li>节约了调用、返回和参数传递的开销。</li>
+<li>因为代码变得连续了，代码缓存的效率会更高。</li>
+<li>如果只调用一次内联函数，那么代码就会变得更小。</li>
+<li>函数内联可以使其他优化成为可能，下面会详细描述。</li>
+</ol>
+<h4 id="1-2常量折叠（constant-folding）和常量传播-constant-propagation"><a href="#1-2常量折叠（constant-folding）和常量传播-constant-propagation" class="headerlink" title="1.2常量折叠（constant folding）和常量传播(constant propagation)"></a>1.2常量折叠（constant folding）和常量传播(constant propagation)</h4><p>常量折叠是指只包含常量的表达式或子表达式将会被计算结果替换：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.2a</span><br><span class="line">double a, b;</span><br><span class="line">a = b + 2.0 / 3.0;</span><br></pre></td></tr></table></figure>
+
+<p>编译器将会替换成下面的代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.2b</span><br><span class="line">a = b + 0.666666666666666666667;</span><br></pre></td></tr></table></figure>
+
+<p>常量传播指在依赖链上，若上游结果为常量，下游结果也为常量，则都会被替换成常量</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.3a</span><br><span class="line"></span><br><span class="line">float parabola (float x)</span><br><span class="line">&#123;</span><br><span class="line">    return x * x + 1.0f;</span><br><span class="line">&#125;</span><br><span class="line">float a, b;</span><br><span class="line">a = parabola (2.0f);</span><br><span class="line">b = a + 1.0f;</span><br></pre></td></tr></table></figure>
+
+<p>有可能被编译器替换成：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.3b</span><br><span class="line"></span><br><span class="line">a = 5.0f;</span><br><span class="line">b = 6.0f;</span><br></pre></td></tr></table></figure>
+
+<p>当表达式包含不能被内联的函数或者不能再编译时期计算的时候，常量折叠和常量传播就不可能起作用。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.4</span><br><span class="line"></span><br><span class="line">double a = sin(0.8);</span><br></pre></td></tr></table></figure>
+
+<p><code>sin</code>函数是在一个单独的函数库中定义的，不能期望编译器能够内联这个函数并在编译时计算它。一些编译器能够在编译时计算最常见的数学函数，如 <code>sqrt</code> 和 <code>pow</code>，但不能计算更复杂的函数，比如 <code>sin</code>。</p>
+<h4 id="1-3消除指针"><a href="#1-3消除指针" class="headerlink" title="1.3消除指针"></a>1.3消除指针</h4><p>如果指向的目标已知，则可以消除指针或引用。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.5a</span><br><span class="line"></span><br><span class="line">void Plus2 (int * p)</span><br><span class="line">&#123;</span><br><span class="line">    *p = *p + 2;</span><br><span class="line">&#125;</span><br><span class="line">int a;</span><br><span class="line">Plus2 (&amp;a);</span><br></pre></td></tr></table></figure>
+
+<p>可能被编译器替换成：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.5b</span><br><span class="line"></span><br><span class="line">a += 2;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-4消除公共子表达式"><a href="#1-4消除公共子表达式" class="headerlink" title="1.4消除公共子表达式"></a>1.4消除公共子表达式</h4><p>如果相同的子表达式出现多次，那么编译器可能只会计算一次。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.6a</span><br><span class="line"></span><br><span class="line">int a, b, c;</span><br><span class="line">b = (a+1) * (a+1);</span><br><span class="line">c = (a+1) / 4;</span><br></pre></td></tr></table></figure>
+
+<p>可能被编译器替换成：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.6b</span><br><span class="line"></span><br><span class="line">int a, b, c, temp;</span><br><span class="line">temp = a+1;</span><br><span class="line">b = temp * temp;</span><br><span class="line">c = temp / 4;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-5寄存器变量"><a href="#1-5寄存器变量" class="headerlink" title="1.5寄存器变量"></a>1.5寄存器变量</h4><p>最常用的变量存储被在寄存器中</p>
+<p>在 32位系统中，整数寄存器变量的最大数量大约是 6个，在 64位系统中大约是 14个。</p>
+<p>在 32位系统中，浮点寄存器变量的最大数量为 8个，在 64位系统中为 16个。一些编译器很难在 32位系统中生成浮点寄存器变量，除非启用了<em>SSE2</em>（或更高版本）指令集。</p>
+<p>编译器将选择最常用的变量做为寄存器变量。这包括指针和引用，它们可以存储在整数寄存器中。寄存器变量的典型候选对象是临时中间变量、循环计数器、函数参数、指针、引用、<code>this</code> 指针、公共子表达式和归纳变量（见下文）。</p>
+<p>如果一个变量被取地址，也就是有指针指向它，此时它一定在内存中就不能在寄存器中，因此，对于可能受益于寄存器存储的变量，尽量避免指针或者引用。</p>
+<h4 id="1-6活动范围分析"><a href="#1-6活动范围分析" class="headerlink" title="1.6活动范围分析"></a>1.6活动范围分析</h4><p>变量的活动范围是指变量被使用的代码范围。对于活动范围不重叠的变量，编译器优化可以使用相同的寄存器。这在可用寄存器数量有限的时候是非常有用的。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.7</span><br><span class="line">int SomeFunction (int a, int x[])</span><br><span class="line">&#123;</span><br><span class="line">    int b, c;</span><br><span class="line">    x[0] = a;</span><br><span class="line">    b = a + 1;</span><br><span class="line">    x[1] = b;</span><br><span class="line">    c = b + 1;</span><br><span class="line">    return c;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在本例中，<code>a</code>、<code>b</code> 和 <code>c</code> 可以共享同一个寄存器，因为它们的活动范围不重叠。如果 <code>c = b + 1</code> 更改为 <code>c = a + 2</code>，那么 <code>a</code> 和 <code>b</code> 就不能使用相同的寄存器，因为它们的活动范围现在重叠了。</p>
+<p>编译器通常不会将此原则用于存储在内存中的对象。对于不同的对象，它不会使用相同的内存区域，即使它们的活动范围不重叠。</p>
+<h4 id="1-7合并相同的分支"><a href="#1-7合并相同的分支" class="headerlink" title="1.7合并相同的分支"></a>1.7合并相同的分支</h4><p>通过合并相同的代码片段，可以使代码更加紧凑。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.8a</span><br><span class="line"></span><br><span class="line">double x, y, z; bool b;</span><br><span class="line">if (b)</span><br><span class="line">&#123;</span><br><span class="line">    y = sin(x);</span><br><span class="line">    z = y + 1.;</span><br><span class="line">&#125;</span><br><span class="line">else</span><br><span class="line">&#123;</span><br><span class="line">    y = cos(x);</span><br><span class="line">    z = y + 1.;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可能被编译器替换为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.8b</span><br><span class="line"></span><br><span class="line">double x, y; bool b;</span><br><span class="line">if (b)</span><br><span class="line">&#123;</span><br><span class="line">    y = sin(x);</span><br><span class="line">&#125;</span><br><span class="line">else</span><br><span class="line">&#123;</span><br><span class="line">    y = cos(x);</span><br><span class="line">&#125;</span><br><span class="line">z = y + 1.;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-8消除跳转"><a href="#1-8消除跳转" class="headerlink" title="1.8消除跳转"></a>1.8消除跳转</h4><p>可以通过复制它跳转到的代码来避免跳转。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">int SomeFunction (int a, bool b)</span><br><span class="line">&#123;</span><br><span class="line">    if (b)</span><br><span class="line">    &#123;</span><br><span class="line">        a = a * 2;</span><br><span class="line">    &#125;</span><br><span class="line">    else</span><br><span class="line">    &#123;</span><br><span class="line">        a = a * 3;</span><br><span class="line">    &#125;</span><br><span class="line">    return a + 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这段代码从<code>a=a*2</code>跳转到<code>return a+1;</code>,。编译器可以通过复制<code>return</code>语句来消除这个跳转：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.9b</span><br><span class="line"></span><br><span class="line">int SomeFunction (int a, bool b)</span><br><span class="line">&#123;</span><br><span class="line">    if (b)</span><br><span class="line">    &#123;</span><br><span class="line">        a = a * 2;</span><br><span class="line">        return a + 1;</span><br><span class="line">    &#125;</span><br><span class="line">    else</span><br><span class="line">    &#123;</span><br><span class="line">        a = a * 3;</span><br><span class="line">        return a + 1;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果条件可以被简化为永远为真或永远为假，则可以消除分支：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.10a</span><br><span class="line"></span><br><span class="line">if (true)</span><br><span class="line">&#123;</span><br><span class="line">    a = b;</span><br><span class="line">&#125;</span><br><span class="line">else</span><br><span class="line">&#123;</span><br><span class="line">    a = c;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以被简化为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.10b</span><br><span class="line"></span><br><span class="line">a = b;</span><br></pre></td></tr></table></figure>
+
+<p>如果可以从前一个分支知道某个分支的情况，那么也可以删除该分支。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.11a</span><br><span class="line"></span><br><span class="line">int SomeFunction (int a, bool b)</span><br><span class="line">&#123;</span><br><span class="line">    if (b)</span><br><span class="line">    &#123;</span><br><span class="line">        a = a * 2;</span><br><span class="line">    &#125;</span><br><span class="line">    else</span><br><span class="line">    &#123;</span><br><span class="line">        a = a * 3;</span><br><span class="line">    &#125;</span><br><span class="line">    if (b)</span><br><span class="line">    &#123;</span><br><span class="line">        return a + 1;</span><br><span class="line">    &#125;</span><br><span class="line">    else</span><br><span class="line">    &#123;</span><br><span class="line">        return a - 1;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译器可能会把这个简化成：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.11b</span><br><span class="line"></span><br><span class="line">int SomeFunction (int a, bool b)</span><br><span class="line">&#123;</span><br><span class="line">    if (b)</span><br><span class="line">    &#123;</span><br><span class="line">        a = a * 2;</span><br><span class="line">        return a + 1;</span><br><span class="line">    &#125;</span><br><span class="line">    else</span><br><span class="line">    &#123;</span><br><span class="line">        a = a * 3;</span><br><span class="line">        return a - 1;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-9循环展开"><a href="#1-9循环展开" class="headerlink" title="1.9循环展开"></a>1.9循环展开</h4><p>如果循环体非常小，或者它使进一步优化成为可能，那么这可能是有利的。重复计数非常小的循环可以完全展开，以避免循环开销。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.12a</span><br><span class="line"></span><br><span class="line">int i, a[2];</span><br><span class="line">for (i = 0; i &lt; 2; i++)</span><br><span class="line">    a[i] = i+1;</span><br></pre></td></tr></table></figure>
+
+<p>编译器可能会把这个简化成：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.12b</span><br><span class="line"></span><br><span class="line">int a[2];</span><br><span class="line">a[0] = 1;</span><br><span class="line">a[1] = 2;</span><br></pre></td></tr></table></figure>
+
+<p>这样就可以发挥流水线的优势。</p>
+<p>不幸的是，一些编译器展开太多。过多的循环展开不是最优的，因为它会占用太多的代码缓存空间，并且会填满某些微处理器的循环缓冲区。在某些情况下，关闭编译器中的循环展开选项是有用的。</p>
+<h4 id="1-10移动循环中的不变代码"><a href="#1-10移动循环中的不变代码" class="headerlink" title="1.10移动循环中的不变代码"></a>1.10移动循环中的不变代码</h4><p>如果计算独立于循环计数器，则可以将其移出循环。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.13a</span><br><span class="line"></span><br><span class="line">int i, a[100], b;</span><br><span class="line">for (i = 0; i &lt; 100; i++)</span><br><span class="line">&#123;</span><br><span class="line">    a[i] = b * b + 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可能会被编译器改成这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.13b</span><br><span class="line"></span><br><span class="line">int i, a[100], b, temp;</span><br><span class="line">temp = b * b + 1;</span><br><span class="line">for (i = 0; i &lt; 100; i++)</span><br><span class="line">&#123;</span><br><span class="line">    a[i] = temp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-11归纳变量（Induction-variables）"><a href="#1-11归纳变量（Induction-variables）" class="headerlink" title="1.11归纳变量（Induction variables）"></a>1.11归纳变量（Induction variables）</h4><p>循环计数器的线性函数表达式可以通过在前一个值上添加一个常数来计算。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.14a</span><br><span class="line"></span><br><span class="line">int i, a[100];</span><br><span class="line">for (i = 0; i &lt; 100; i++)</span><br><span class="line">&#123;</span><br><span class="line">    a[i] = i * 9 + 3;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译器可能会将其改成下面的形式以避免乘法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.14b</span><br><span class="line"></span><br><span class="line">int i, a[100], temp;</span><br><span class="line">temp = 3;</span><br><span class="line">for (i = 0; i &lt; 100; i++)</span><br><span class="line">&#123;</span><br><span class="line">    a[i] = temp;</span><br><span class="line">    temp += 9;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>归纳变量常用于计算数组元素的地址。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.15a</span><br><span class="line"></span><br><span class="line">struct S1 &#123;double a; double b;&#125;;</span><br><span class="line">S1 list[100]; int i;</span><br><span class="line">for (i = 0; i &lt; 100; i++)</span><br><span class="line">&#123;</span><br><span class="line">    list[i].a = 1.0;</span><br><span class="line">    list[i].b = 2.0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>为了访问 <code>list</code> 的元素，编译器必须计算它的地址。<code>list[i]</code> 的地址等于 <code>list</code> 的起始地址加上 <code>i*sizeof(S1)</code>。这是一个关于  <code>i</code> 的线性函数，这是可以通过归纳变量计算的。编译器可以使用相同的归纳变量来访问 <code>list[i].a</code> 和 <code>list[i].b</code>。当可以提前计算归纳变量的最终值时，也可以消去 <code>i</code>，用归纳变量作为循环计数器。这可以将代码简化为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.15b</span><br><span class="line"></span><br><span class="line">struct S1 &#123;double a; double b;&#125;;</span><br><span class="line">S1 list[100], *temp;</span><br><span class="line">for (temp = &amp;list[0]; temp &lt; &amp;list[100]; temp++)</span><br><span class="line">&#123;</span><br><span class="line">    temp-&gt;a = 1.0;</span><br><span class="line">    temp-&gt;b = 2.0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因子 <code>sizeof(S1) = 16</code> 实际上隐藏在<strong>例 8.15b</strong>中的<em>C++</em> 语法后面。<code>&amp;list[100]</code> 的整数表示形式为 <code>(int)(&amp;list[100]) = (int)(&amp;list[0]) + 100*16</code>，而 <code>temp++</code> 实际上是在 <code>temp</code> 的整数值上加上 16。</p>
+<p>编译器不需要归纳变量来计算简单类型的数组元素的地址，当地址可以表示为一个基地址加上一个常数加上索引乘以一个系数1，2，4或8（但不是任何其他因数）， CPU 中有硬件支持这样的计算。如果在<strong>例 8.15a</strong>中的 <code>a</code> 和 <code>b</code> 是 <code>float</code> 而不是 <code>double</code>，那么 <code>sizeof(S1)</code> 的值将是 8，那么就不需要归纳变量了，因为 CPU 有硬件可以寄计算 <code>index</code> 乘上 8。</p>
+<h4 id="1-12排序"><a href="#1-12排序" class="headerlink" title="1.12排序"></a>1.12排序</h4><p>编译器可以为了并行执行对指令重新排序。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.16</span><br><span class="line"></span><br><span class="line">float a, b, c, d, e, f, x, y;</span><br><span class="line">x = a + b + c;</span><br><span class="line">y = d + e + f;</span><br></pre></td></tr></table></figure>
+
+<p>在这个例子中，编译器可以交错这两个公式，先算 <code>a + b</code>，然后是 <code>d + e</code>，然后将 <code>c</code> 加到第一个和中，之后 <code>f</code> 被加到第二个和中，第一个结果是存储在 <code>x</code> 中，最后第二个结果存储在 <code>y</code> 中。这样做的目的是帮助<em>CPU</em> 同时进行多个计算。现代<em>CPU</em> 实际上可以在没有编译器帮助的情况下对指令进行重新排序（参见<strong>乱序执行</strong>），但是编译器可以使<em>CPU</em> 更容易地对指令进行重新排序。</p>
+<h4 id="1-13代数化简"><a href="#1-13代数化简" class="headerlink" title="1.13代数化简"></a>1.13代数化简</h4><p>多数编译器可以使用代数的基本定律来化简简单的代数表达式。例如，编译器可以将表达式 <code>-(-a)</code> 更改为 <code>a</code>。</p>
+<p>我不认为程序员会经常写出像 <code>-(-a)</code> 这样的表达式，但是这种表达式可能是其他优化（如函数内联）的结果。可化简的表达式也经常作为宏展开的结果出现。</p>
+<p>然而，程序员经常编写可以化简的表达式。这可能是因为未化简的表达式更好地解释了程序背后的逻辑，或者因为程序员没有考虑代数化简的可能性。例如，程序员可能更喜欢使用 <code>if(!a &amp;&amp; !b)</code> 而不是同等的 <code>if(!(a || b))</code> 即使后者少用一个运算符。幸运的是，在这种情况下，所有编译器都能够进行化简。</p>
+<p>你不能指望编译器化简复杂的代数表达式。例如，在我测试的编译器中，只有一个编译器能够将 <code>(a*b*c)+(c*b*a)</code> 化简为 <code>a*b*c*2</code>。在编译器中实现很多代数规则是相当困难的。一些编译器可以化简某些类型的表达式，而另一些编译器可以化简其他类型的表达式，但我所见过的编译器都不能化简所有类型的表达式。在布尔代数中，可以实现一种通用算法（例如，<em>Quine-McCluskey</em> 或者 <em>Espresso</em>）来化简任何表达式，但我测试过的编译器似乎都没有这样做。</p>
+<p>编译器在化简整数表达式上比浮点表达式做得更好，尽管这两种情况下的代数规则是相同的。这是因为浮点表达式的代数操作可能会产生我们不希望的效果。这种效果可以用下面的例子来说明：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.17</span><br><span class="line"></span><br><span class="line">char a = -100, b = 100, c = 100, y;</span><br><span class="line">y = a + b + c;</span><br></pre></td></tr></table></figure>
+
+<p>这里 <code>y</code> 的值是 $-100+100+100 &#x3D; 100$。现在，根据代数规则，我们可以这样写：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">y = c + b + a;</span><br></pre></td></tr></table></figure>
+
+<p>如果子表达式 <code>c+b</code> 可以在其他地方重用，那么这可能很有用。在这个例子中，我们使用的是 8 位整数，范围从-128到+127。整数溢出将使值反转（wrap around）。127 加 1 等于 -128，减 1 等于 -128。计算 <code>c+b</code> 会产生溢出，结果是 <code>-56</code> 而不是 <code>200</code>。接下来，我们将 <code>-100</code> 加到 <code>-56</code> 中，这将产生一个下溢，得到 <code>100</code>，而不是 <code>-156</code>。令人惊讶的是，我们得到了正确的结果，因为向上溢出和向下溢出相互抵消了。这就是为什么对整数表达式使用代数操作是安全的（<code>&lt;</code>、<code>&lt;=</code>、<code>&gt;</code> 和 <code>&gt;=</code> 运算符除外）。</p>
+<p>同样的讨论不适用于浮点表达式。浮点变量在上溢和下溢时，不会反转。浮点变量的范围非常大，除了在特殊的数学应用中，我们不必太担心上溢和下溢。但是我们必须担心精度的损失。让我们用浮点数重复上面的例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.18</span><br><span class="line"></span><br><span class="line">float a = -1.0E8, b = 1.0E8, c = 1.23456, y;</span><br><span class="line">y = a + b + c;</span><br></pre></td></tr></table></figure>
+
+<p>这里的计算结果先得出 <code>a+b=0</code>，然后 <code>0+1.23456 = 1.23456</code>。但是如果我们改变操作数的顺序，先加 <code>b</code> 和 <code>c</code>，就不会得到相同的结果。<code>b + c = 100000001.23456</code>。浮点类型的精度大约为7位有效数字，因此 <code>b+c</code> 的值四舍五入为 <code>100000000</code>。把 <code>a</code> 加到这个数上得到 <code>0</code>，而不是 <code>1.23456</code>。</p>
+<p>这里讨论的结果是，改变浮点操作数的顺序，就有丢失精度的风险。除非你指定一个允许不需要精确的浮点运算的选项，否则编译器不会这么做。即使打开了所有相关的优化选项，编译器也不会执行诸如 <code>0/a = 0</code>这样的明显简化，因为如果 <code>a</code> 为 0、无穷大或 <code>NAN</code>（不是一个数字），这将是无效的。不同的编译器的行为不同，因为对于哪些不精确应该被允许，哪些不应该被允许，存在不同的观点。</p>
+<p>不能依赖编译器对浮点代码执行任何代数消减，只能依赖于对整数代码进行最简单的缩减。手动消减会更安全。我测试了在7个不同的编译器，简化各种代数表达式的能力。结果如下表8.1所示。</p>
+<h4 id="1-14去虚拟化（Devirtualization）"><a href="#1-14去虚拟化（Devirtualization）" class="headerlink" title="1.14去虚拟化（Devirtualization）"></a>1.14去虚拟化（Devirtualization）</h4><p>如果知道所需要虚函数的版本，编译器优化可以绕过虚函数表查找，直接调用虚函数。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.19. Devirtualization</span><br><span class="line"></span><br><span class="line">class C0</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">    virtual void f();</span><br><span class="line">&#125;;</span><br><span class="line">class C1 : public C0</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">    virtual void f();</span><br><span class="line">&#125;;</span><br><span class="line">void g()</span><br><span class="line">&#123;</span><br><span class="line">    C1 obj1;</span><br><span class="line">    C0 * p = &amp; obj1;</span><br><span class="line">    p-&gt;f(); // Virtual call to C1::f</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果不进行优化，编译器需要在虚函数表中查找 <code>p-&gt;f()</code> 调用是否要转到 <code>C0::f</code> 或 <code>C1::f</code>。但是编译器优化将看到 <code>p</code> 总是指向类 <code>C1</code> 的对象，因此它可以直接调用 <code>C1::f</code>，而不使用虚函数表。不幸的是，很少有编译器能够进行这种优化。</p>
+<h3 id="2-不同编译器的比较"><a href="#2-不同编译器的比较" class="headerlink" title="2.不同编译器的比较"></a>2.不同编译器的比较</h3><p>Agner Fog对不同编译器做了比较，如下表，可以作为参考</p>
+<table>
+<thead>
+<tr>
+<th align="left"><strong>Optimization method</strong></th>
+<th align="center"><strong>Microsoft</strong></th>
+<th align="center"><strong>Borland</strong></th>
+<th align="center"><strong>Intel</strong></th>
+<th align="center"><strong>Gnu</strong></th>
+<th align="center"><strong>PathScale</strong></th>
+<th align="center"><strong>PGI</strong></th>
+<th align="center"><strong>Digital Mars</strong></th>
+<th align="center"><strong>Watcom</strong></th>
+<th align="center"><strong>Codeplay</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Function inlining</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left">Constant folding</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left">Constant propagation</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left">Pointer elimination</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left">Common subexpression elimin, integer</td>
+<td align="center">X</td>
+<td align="center">(X)</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left">Common subexpression elimin,  float</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left">Register variables, integer</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left">Register variables, float</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left">Live range analysis</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left">Join identical branches</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left">Eliminate jumps</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left">Eliminate branches</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left">Remove branch that is always true&#x2F;false</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left">Loop unrolling</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left">Loop invariant code motion</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left">Induction variables for array elements</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left">Induction variables for other integer expressions</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left">Induction variables for float expressions</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left">Automatic vectorization</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left">Devirtualization</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left">Profile-guided optimization</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left">Whole program optimization</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left"><strong>Integer algebra reductions:</strong></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left"><code>a+b = b+a</code></td>
+<td align="center">X</td>
+<td align="center">(X)</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>a*b = b*a</code></td>
+<td align="center">X</td>
+<td align="center">(X)</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>a+b+c = a+(b+c)</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a+b+c = c+a+b</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a+b+c+d = (a+b)+(c+d)</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a*b+a*c = a*(b+c)</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>a*x*x*x+b*x*x+c*x+d = &lt;br&gt;((a*x+b)*x+c)*x+d&lt;/br&gt;</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>X*X*X*X*X*X=((X&lt;sup&gt;2&lt;/sup&gt;)&lt;sup&gt;2&lt;/sup&gt;)&lt;sup&gt;2&lt;/sup&gt;</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a+a+a+a=a*4</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>-(-a)=a</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a-(-b)=a+b</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a-a = 0</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>a+0 = a</code></td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>a*0 = 0</code></td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>a*1 = a</code></td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>(-a)*(-b) = a*b</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a/a = 1</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>a/1 = a</code></td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>0/a = 0</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>(-a == -b) = (a == b)</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>(a-c == b+c) = (a == b)</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>!(a &lt; b) = (a &gt;= b)</code></td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>(a&lt;b &amp;&amp; b&lt;c &amp;&amp; a&lt;c) = (a&lt;b &amp;&amp; b&lt;c)</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left">Multiply by constant &#x3D; shift and add</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left">Divide by constant &#x3D; multiply and shift</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">(-)</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left"><strong>Floating point algebra reductions:</strong></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left"><code>a+b = b+a</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>a*b = b*a</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>a+b+c = a+(b+c)</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>(a+b)+c = a+(b+c)</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a*b*c = a*(b*c)</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a+b+c+d = (a+b)+(c+d)</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a*b+a*c = a*(b+c)</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a*x*x*x+b*x*x+c*x+d = &lt;br&gt;((a*x+b)*x+c)*x+d&lt;/br&gt;</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>X*X*X*X*X*X=((X&lt;sup&gt;2&lt;/sup&gt;)&lt;sup&gt;2&lt;/sup&gt;)&lt;sup&gt;2&lt;/sup&gt;</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a+a+a+a=a*4</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>-(-a)=a</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a-(-b)=a+b</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a+0 = a</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a*0 = 0</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>a*1 = a</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>(-a)*(-b) = a*b</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a/a = 1</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>a/1 = a</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>0/a = 0</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>(-a == -b) = (a == b)</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>(-a &gt; -b) = (a &lt; b)</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left">Divide by constant &#x3D; multiply by reciprocal</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left"><strong>Boolean algebra reductions:</strong></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left"><code>!(!a) = a</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>(a&amp;&amp;b)||(a&amp;&amp;c) = a&amp;&amp;(b||c)</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>!a &amp;&amp; !b = !(a||b)</code></td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>a &amp;&amp; !a = false</code>,<code>a || !b = true</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a &amp;&amp; true = a</code>,<code>a || false = a</code></td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a &amp;&amp; false = false</code>,<code>a || true = true</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a &amp;&amp; a = a</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>(a&amp;&amp;b) || (a&amp;&amp;!b) = a</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>(a&amp;&amp;b) || (!a&amp;&amp;c) = a ? b : c</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>(a&amp;&amp;b) || (!a&amp;&amp;c) || (b&amp;&amp;c) = a ? b : c</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>(a&amp;&amp;b) || (a&amp;&amp;b&amp;&amp;c) = a&amp;&amp;b</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>(a&amp;&amp;b) || (a&amp;&amp;c) || (a&amp;&amp;b&amp;&amp;c) = a&amp;&amp;(b||c)</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>(a&amp;&amp;!b) || (!a&amp;&amp;b) = a XOR b</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left"><strong>Bit vector algebra reductions:</strong></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left"><code>~(~a) = a</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>(a&amp;b)|(a&amp;c) = a&amp;(b|c)</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>(a|b)&amp;(a|c) = a|(b&amp;c)</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>~a &amp; ~b = ~(a | b)</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a &amp; a = a</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>a &amp; ~a = 0</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a &amp; -1 = a</code>,<code>a | 0 = a</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>a &amp; 0 = 0</code>,<code>a | -1 = -1</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>(a&amp;b) | (~a&amp;c) | (b&amp;c) = (a&amp;b) | (~a&amp;c)</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a&amp;b&amp;c&amp;d = (a&amp;b)&amp;(c&amp;d)</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a ^ 0 = a</code></td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>a ^ -1 = ~a</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a ^ a = 0</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>a ^ ~a = -1</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>(a&amp;~b) | (~a&amp;b) = a ^ b</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>~a ^ ~b = a ^ b</code></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a&lt;&lt;b&lt;&lt;c = a&lt;&lt;(b+c)</code></td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left"><strong>Integer XMM (vector) reductions:</strong></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left">Common subexpression elimination</td>
+<td align="center">X</td>
+<td align="center">n.a.</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left">Constant folding</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a+b = b+a</code>, <code>a*b = b*a</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>(a+b)+c = a+(b+c)</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a*b+a*c = a*(b+c)</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>X*X*X*X*X*X=((X&lt;sup&gt;2&lt;/sup&gt;)&lt;sup&gt;2&lt;/sup&gt;)&lt;sup&gt;2&lt;/sup&gt;</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a+a+a+a = a*4</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>-(-a) = a</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a-a = 0</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a+0 = a</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a*0 = 0</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a*1 = a</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>(-a)*(-b) = a*b</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>!(a &lt; b) = (a &gt;= b)</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left"><strong>Floating point XMM (vector) reductions:</strong></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left"><code>a+b = b+a</code>, <code>a*b = b*a</code></td>
+<td align="center">X</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="left"><code>(a+b)+c = a+(b+c)</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a*b+a*c = a*(b+c)</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>-(-a) = a</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a-a = 0</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a+0 = a</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a*0 = 0</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a*1 = a</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a/1 = a</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>0/a = 0</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left">Divide by constant &#x3D; multiply by reciprocal</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left"><strong>Boolean XMM (vector) reductions:</strong></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left"><code>~(~a) = a</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>(a&amp;b)|(a&amp;c) = a&amp;(b|c)</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a &amp; a = a</code>, <code>a | a = a</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a &amp; ~a = 0</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a &amp; -1 = a</code>, <code>a | 0 = a</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a &amp; 0 = 0</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a | -1 = -1</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a ^ a = 0</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>andnot(a,a) = 0</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><code>a&lt;&lt;b&lt;&lt;c = a&lt;&lt;(b+c)</code></td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">n.a.</td>
+<td align="center">n.a.</td>
+<td align="center">-</td>
+</tr>
+</tbody></table>
+<p><strong>Tabel 8.1. Comparison of optimizations in different C++ compilers</strong></p>
+<p>测试中所有相关的优化选项都被打开，包括放宽浮点精度。被测试的编译器版本如下：</p>
+<ol>
+<li>Microsoft C++ Compiler v. 14.00 for 80x86 &#x2F; x64 (Visual Studio 2005).</li>
+<li>Borland C++ 5.82 (Embarcadero&#x2F;CodeGear&#x2F;Borland C++ Builder 5, 2009).</li>
+<li>Intel C++ Compiler v. 11.1 for IA-32&#x2F;Intel64, 2009.</li>
+<li>Gnu C++ v. 4.1.0, 2006 (Red Hat).</li>
+<li>PathScale C++ v. 3.1, 2007.</li>
+<li>PGI C++ v. 7.1-4, 2008.</li>
+<li>Digital Mars Compiler v. 8.42n, 2004.</li>
+<li>Open Watcom C&#x2F;C++ v. 1.4, 2005.</li>
+<li>Codeplay VectorC v. 2.1.7, 2004.</li>
+</ol>
+<p>没有发现<em>Microsoft</em>、<em>Intel</em>、<em>Gnu</em> 和<em>PathScale</em> 编译器的 32位和 64位代码的优化功能有任何差异。</p>
+<h3 id="3-编译器优化的障碍"><a href="#3-编译器优化的障碍" class="headerlink" title="3.编译器优化的障碍"></a>3.编译器优化的障碍</h3><h4 id="3-1无法跨模块优化"><a href="#3-1无法跨模块优化" class="headerlink" title="3.1无法跨模块优化"></a>3.1无法跨模块优化</h4><p>编译器除了正在编译的模块外，没有关于其他模块中的函数的信息。这阻止了它对函数调用进行优化。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.20</span><br><span class="line">//module1.cpp</span><br><span class="line"></span><br><span class="line">int Func1(int x)</span><br><span class="line">&#123;</span><br><span class="line">    return x*x + 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//module2.cpp</span><br><span class="line">int Func2()</span><br><span class="line">&#123;</span><br><span class="line">    int a = Func1(2);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>假如 <code>Func1</code> 和 <code>Func2</code> 在同一个模块中，那么编译器将能够进行函数内联和常量传播，并将 <code>a</code> 化简为常量5。但是在编译 <em>module2.cpp</em> 时，编译器没有关于 <code>Func1</code> 的必要信息。</p>
+<p>解决这个问题最简单的方法是使用 <code>#include</code> 指令将多个 <em>.cpp</em> 模块组合成一个模块。这个方法适用于所有编译器。有些编译器有一个称为“全程序优化”的特性，它将支持跨模块的优化</p>
+<h4 id="3-2指针别名（pointer-aliasing）"><a href="#3-2指针别名（pointer-aliasing）" class="headerlink" title="3.2指针别名（pointer aliasing）"></a>3.2指针别名（pointer aliasing）</h4><p>当通过指针或引用访问变量时，编译器可能无法完全排除所指向的变量与代码中的其他变量相同的可能性。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.21</span><br><span class="line"></span><br><span class="line">void Func1 (int a[], int * p)</span><br><span class="line">&#123;</span><br><span class="line">    int i;</span><br><span class="line">    for (i = 0; i &lt; 100; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        a[i] = *p + 2;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void Func2()</span><br><span class="line">&#123;</span><br><span class="line">    int list[100];</span><br><span class="line">    Func1(list, &amp;list[8]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这里，需要重新加载 <code>*p</code> 并计算 <code>*p+2</code> 100次，因为 <code>p</code> 所指向的值与循环过程中会发生变化的 <code>a[]</code> 中的一个元素相同。不允许假定 <code>*p+2</code> 是可以移出循环的循环不变代码。<strong>例 8.21</strong>确实是一个非常刻意的例子，但关键是编译器不能排除这种刻意的例子存在的理论可能性。因此，编译器不能假设 <code>*p+2</code> 是一个可以移动到循环外部的循环不变表达式。</p>
+<p>大多数编译器都有一个假设没有指针别名（*&#x2F;Oa* ）的选项。克服可能的指针别名障碍的最简单方法是打开这个选项。这要求你仔细分析代码中的所有指针和引用，以确保在代码的同一部分中没有以一种以上的方式访问任何变量或对象。如果编译器支持的，还可以通过使用关键字 <code>__restrict</code> 或 <code>__restrict__</code> 告诉编译器某个特定指针不是任何变量的别名。</p>
+<p>我们永远不能确定编译器是否接受关于没有指针别名的提示。确保代码得到优化的唯一方法是显式地进行优化。在<strong>例 8.21</strong>中，如果你确信指针不是数组中的任何元素的别名，那么可以先计算 <code>*p+2</code> 并将其存储在循环外部的临时变量中。这种方法要求你能够预先知道优化的障碍在哪里。</p>
+<h4 id="3-3动态内存分配"><a href="#3-3动态内存分配" class="headerlink" title="3.3动态内存分配"></a>3.3动态内存分配</h4><p>动态分配（使用<code>new</code>或<code>malloc</code>）的任何数组或对象都必须通过指针进行访问。对于程序员来说，指向不同动态分配的对象的指针没有重叠或混淆是很明显的，但是编译器通常看不到这一点。它还阻止了编译器以最佳的方式来对齐数据，或者阻止编译器知道对象是对齐的。最好在需要的函数中声明对象和固定大小的数组。</p>
+<h4 id="3-4纯函数（Pure-functions）"><a href="#3-4纯函数（Pure-functions）" class="headerlink" title="3.4纯函数（Pure functions）"></a>3.4纯函数（Pure functions）</h4><p>纯函数的定义是：</p>
+<ol>
+<li>如果函数的调用参数相同，则永远返回相同的结果。它不依赖于程序执行期间函数外部任何状态或数据的变化，必须只依赖于其输入参数。</li>
+<li>该函数不会产生任何可观察的副作用，例如网络请求，输入和输出设备或数据突变（mutation）。</li>
+</ol>
+<p>多次使用相同参数调用纯函数肯定会得到相同的结果。编译器可以消除包含纯函数调用的常见子表达式，并且可以移出包含纯函数调用的循环不变代码。不幸的是，如果函数是在不同的模块或函数库中定义的，编译器则无法知道函数是否为纯函数。</p>
+<p>因此，当涉及纯函数调用时，如公共子表达式消除、常量传播和移动循环不变代码这种优化应该手动优化。</p>
+<p><em>Gnu</em> 编译器和用于<em>Linux</em> 的<em>Intel</em> 编译器都有一个属性，该属性可以用于声明函数原型，以告诉编译器这是一个纯函数。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.22</span><br><span class="line"></span><br><span class="line">#ifdef __GNUC__</span><br><span class="line">#define pure_function __attribute__((const))</span><br><span class="line">#else</span><br><span class="line">#define pure_function</span><br><span class="line">#endif</span><br><span class="line"></span><br><span class="line">double Func1(double) pure_function ;</span><br><span class="line">double Func2(double x)</span><br><span class="line">&#123;</span><br><span class="line">    return Func1(x) * Func1(x) + 1.;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这里，<em>Gnu</em> 编译器将只调用 <code>Func1</code>一次，而其他编译器将会调用两次。</p>
+<p>其他一些编译器（<em>Microsoft</em>，<em>Intel</em> )知道像 <code>sqrt</code>、<code>pow</code>和 <code>log</code> 这样的标准库函数是纯函数，但不幸的是，无法告诉这些编译器用户定义的函数是纯函数。</p>
+<h4 id="3-5虚函数和函数指针"><a href="#3-5虚函数和函数指针" class="headerlink" title="3.5虚函数和函数指针"></a>3.5虚函数和函数指针</h4><p>编译器几乎不可准确地预测将调用虚函数的哪个版本，或者函数指针指向什么。因此，它不能内联这些函数，也不能对函数调用进行优化。</p>
+<h4 id="3-6代数化简"><a href="#3-6代数化简" class="headerlink" title="3.6代数化简"></a>3.6代数化简</h4><p>大多数编译器可以做简单的代数化简，比如<code>-(a) = a</code>，但是它们不能做更复杂的化简。代数化简是一个复杂的过程，这很难在编译器中实现。</p>
+<p>由于数学的纯粹性（mathematical purity），许多代数化简是不被允许的。在许多情况下，可以构造一些晦涩的例子，其中化简会导致溢出或精度损失，特别是在浮点表达式中（参见第74页TODO）。编译器不能排除特定情况下某个特定化简无效的可能性，但是程序员可以。因此，在许多情况下有必要显式地进行代数化简。</p>
+<p>整数表达式不太容易出现溢出和精度损失的问题，原因见<strong>代数化简</strong>。因此，编译器可以对整数表达式进行比浮点数表达式更多的化简。大多数涉及整数加法、减法和乘法的化简在所有情况下都是被允许的，而许多涉及除法和关系运算符（如“<code>&gt;</code>”）的化简，由于数学的纯粹性是不被允许的。例如，由于存在隐藏的溢出的可能性，编译器不能将整数表达式 <code>-a &gt; -b</code> 化简为 <code>a &lt; b</code>。</p>
+<p><strong>六.2不同编译器的比较</strong>显示了编译器在某些情况下，能够进行哪些化简，以及不能进行哪些化简。编译器无法完成的所有化简都必须由程序员手动完成。</p>
+<h4 id="3-7浮点归纳变量"><a href="#3-7浮点归纳变量" class="headerlink" title="3.7浮点归纳变量"></a>3.7浮点归纳变量</h4><p>编译器不能生成浮点归纳变量的原因与它们不能对浮点表达式进行代数化简的原因相同。因此，有必要手动完成这项工作。当循环计数器的函数通过以前的值计算比使用循环计数器计算更有效时，这个方法就很有用。循环计数器的$n$次多项式的任何表达式都可以通过$n$次加法来计算，而不需要使用乘法。下面的例子展示了使用加法二阶多项式的原理：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.23a. Loop to make table of polynomial</span><br><span class="line"></span><br><span class="line">const double A = 1.1, B = 2.2, C = 3.3;  // Polynomial coefficients</span><br><span class="line">double Table[100];                       // Table</span><br><span class="line">int x; // Loop counter</span><br><span class="line">for (x = 0; x &lt; 100; x++)</span><br><span class="line">&#123;</span><br><span class="line">    Table[x] = A*x*x + B*x + C;          // Calculate polynomial</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个多项式的计算通过两个归纳变量，只需要两个加法就可以完成：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// Example 8.23b. Calculate polynomial with induction variables</span><br><span class="line"></span><br><span class="line">const double A = 1.1, B = 2.2, C = 3.3; // Polynomial coefficients</span><br><span class="line">double Table[100];                      // Table</span><br><span class="line">int x;                                  // Loop counter</span><br><span class="line">const double A2 = A + A;                // = 2*A</span><br><span class="line">double Y = C;                           // = A*x*x + B*x + C</span><br><span class="line">double Z = A + B;                       // = Delta Y</span><br><span class="line">for (x = 0; x &lt; 100; x++)</span><br><span class="line">&#123;</span><br><span class="line">    Table[x] = Y;                       // Store result</span><br><span class="line">    Y += Z;                             // Update induction variable Y</span><br><span class="line">    Z += A2;                            // Update induction variable Z</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>例8.23b</strong>中的循环中有两个循环依赖链（<em>loop-carried dependency chain</em>），即两个归纳变量 <code>Y</code> 和 <code>Z</code>。每个依赖链都有一个延迟，这个延迟与浮点加法的延迟相同。这个延迟足够小，说明该方法是合适的。一个较长的循环依赖链会使归纳变量方法变得不利，除非该值是从一个两次或多次迭代的值计算出来的。</p>
+<p>如果你考虑到每个值都是从序列中位于 <code>r</code> 位置之前的值计算出来的，其中 <code>r</code> 是一个向量中的元素数或循环展开因子，那么归纳变量的方法也可以向量化。要在每种情况下找到正确的公式，需要一点数学知识。</p>
+<h4 id="3-8内联函数的非内联副本"><a href="#3-8内联函数的非内联副本" class="headerlink" title="3.8内联函数的非内联副本"></a>3.8内联函数的非内联副本</h4><p>函数内联的复杂性在于，同一个函数可能从另一个模块调用。为了在另一个模块中调用该函数，编译器必须生成一个内联函数的非内联的副本，如果没有其他模块调用这个函数，那么这个非内联副本就是无用代码。这种代码片段降低了缓存的效率。</p>
+<p>有很多方法可以解决这个问题。如果一个函数没有被任何其他模块引用，那么将关键字 <code>static</code> 添加到函数定义中。这将告诉编译器不能从任何其他模块调用该函数。静态声明使编译器更容易评估使函数内联是否是最优的，并防止编译器生成未使用的内联函数副本。<code>static</code>关键字还使各种其他优化成为可能，由于这些函数在其他模块中是无法访问的，因此编译器不必遵守任何特定的函数调用约定。可以用 <code>static</code> 声明所有本地非成员函数。</p>
+<p>不幸的是，这个方法并不适用于类成员函数，因为 <code>static</code> 关键字对于成员函数有不同的含义。可以通过在类定义中声明函数体来强制使成员函数内联。这将防止编译器生成函数的非内联副本，但它的缺点是，即使在不适合内联的情况下（例如，如果成员函数很大，并且从许多不同的地方调用），函数也总是内联的。</p>
+<p>一些编译器有一个选项(<em>Windows</em>：<code>/Gy</code>,* Linux*：<code>- fffunction -sections</code>)，允许链接器删除未引用的函数。建议打开此选项</p>
+<h3 id="4-cpu优化的障碍"><a href="#4-cpu优化的障碍" class="headerlink" title="4.cpu优化的障碍"></a>4.cpu优化的障碍</h3><p>现代 <em>CPU</em> 可以通过乱序执行指令来进行很多优化，阻碍其优化的障碍就是第五节提到的依赖链。因此要避免长依赖链尤其是具有长延迟的循环依赖链。</p>
+<h3 id="5-编译器优化选项"><a href="#5-编译器优化选项" class="headerlink" title="5.编译器优化选项"></a>5.编译器优化选项</h3><p>一下介绍下常见的编译器优化选项</p>
+<p>debug与release，调试版本在开发期间使用，发行版本最终使用。</p>
+<p>大小优化与速度优化，当代码非常快时，希望可执行文件尽量小，或者当代码缓存非常关键时也希望软件大小尽量小。当cpu访问和内存访问消耗巨大时，应进行速度优化。</p>
+<p>一些编译器提供配置分析引导的优化。其工作方式如下。首先，编译程序并使之支持分析。然后使用分析器进行测试运行，分析器确定程序流以及每个函数和分支执行的次数。然后，编译器可以使用这些信息来优化代码，并将不同的函数按最佳顺序排列。</p>
+<p>一些编译器支持全程序优化。这可以通过两个步骤进行编译。所有源文件首先被编译成中间文件格式，而不是通常的目标文件格式。然后在第二步中将中间文件链接在一起后完成编译。寄存器分配和函数内联是在第二步中完成的。中间文件格式没有标准化。它甚至不兼容同一编译器的不同版本。因此，不可能以这种格式分发函数库。</p>
+<p>其他编译器提供了将多个 <code>.cpp</code> 文件编译为单个对象文件的可能性。这使编译器能够在启用过程间优化时进行跨模块优化。一种更原始但更有效的方法是通过 <code>#include</code> 指令将所有源文件连接到一个文件中，并声明所有函数为静态或内联的。这将使编译器能够对整个程序进行过程间优化。</p>
+<p>可以使用SSE2，AVX等向量指令集进行优化。</p>
+<p>可以选择使用较新的指令集（当不需要兼容旧版本的cpu时）</p>
+<p>可以选择关闭异常处理使代码更高效，前提是不需要异常处理。</p>
+<p>可以关闭对运行时类型识别（<strong>RTTI</strong>）的支持。</p>
+<p>如果你确定代码没有指针别名，请使用“假设没有指针混叠“（<em>assume no pointer aliasing</em>）选项。（在3.2中提到过）</p>
+<p>如果选项“函数级链接”（<em>function level linking</em>）可用，可以打开该选项。</p>
+<p>许多编译器都有“标准栈帧”（<em>standard stack frame</em>）或“帧指针“（<em>frame pointer</em>）选项。标准栈帧用于调试和异常处理。省略标准堆栈帧可以使函数调用更快，并节省出一个额外的寄存器用于其他目的。这是有利的，因为寄存器是一种稀缺资源。除非程序依赖异常处理，否则不要使用堆栈帧。</p>
+<h3 id="6-优化指令"><a href="#6-优化指令" class="headerlink" title="6.优化指令"></a>6.优化指令</h3><p>某些关键字可以使编译器给出特定的优化，当然许多指令使特定于编译器的。</p>
+<h4 id="6-1适用于所有c-编译器的关键字"><a href="#6-1适用于所有c-编译器的关键字" class="headerlink" title="6.1适用于所有c++编译器的关键字"></a>6.1适用于所有c++编译器的关键字</h4><p><code>register</code>：告诉编译器这是寄存器变量</p>
+<p><code>volatile</code>：告诉编译器不要优化此变量，此变量会一直在内存中</p>
+<p><code>const</code>：常量，编译器在许多情况下会优化常量，如常量展开和常量传递。</p>
+<p><code>static</code>：使用static修饰内联函数会使内联函数更加高效</p>
+<h4 id="6-2特定编译器的关键字"><a href="#6-2特定编译器的关键字" class="headerlink" title="6.2特定编译器的关键字"></a>6.2特定编译器的关键字</h4><p>快速函数调用。<code>__fastcall</code>或者 <code>__attribute__((fastcall))</code>。<code>fastcall</code> 修饰符可以使函数调用在 32位模式下更快。前两个整型参数将会在寄存器而不是栈中传递（对于 <code>CodeGear编译器</code> 则是前三个参数）。快速调用函数在编译器之间不兼容。在 64位模式下不需要快速调用，因为参数已经在寄存器中传递的。</p>
+<p>纯函数。<code>__attribute__((const))</code>（Linux only），制定函数位纯函数。这将允许消除公共子表达式和移动循环不变代码。</p>
+<p>假设没有指针别名。<code>__declspec(noalias)</code> 或 <code>__restrict</code> 或 <code>#pragma optimize(&quot;a&quot;, on)</code>，假设没有指针别名。</p>
+<p>数据对齐。<code>__declspec(align(16))</code> 或 <code>__atrribute__((aligned(16)))</code>，指定数组和结构体的对齐。</p>
+<h3 id="7-如何知道编译器做了什么"><a href="#7-如何知道编译器做了什么" class="headerlink" title="7.如何知道编译器做了什么"></a>7.如何知道编译器做了什么</h3><p>可以在编译器选中中加flag设置输出汇编语言。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://mightcoder.com">might</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://mightcoder.com/2022/03/30/optimizing-cpp-6/">https://mightcoder.com/2022/03/30/optimizing-cpp-6/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/hpc/">hpc</a><a class="post-meta__tags" href="/tags/cpp/">cpp</a></div><div class="post_share"><div class="social-share" data-image="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>请作者喝杯咖啡</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/03/30/linux%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA/" title="linux查漏补缺"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202203302134588.jpeg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">linux查漏补缺</div></div></a></div><div class="next-post pull-right"><a href="/2022/03/29/optimizing-cpp-5/" title="optimizing_cpp(5)"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next</div><div class="next_info">optimizing_cpp(5)</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2022/03/15/optimizing-cpp-1-4/" title="optimizing_cpp(1-4)"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-03-15</div><div class="title">optimizing_cpp(1-4)</div></div></a></div><div><a href="/2022/04/05/optimizing-cpp-10/" title="optimizing_cpp(10)"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-05</div><div class="title">optimizing_cpp(10)</div></div></a></div><div><a href="/2022/04/05/optimizing-cpp-11/" title="optimizing_cpp(11)"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-05</div><div class="title">optimizing_cpp(11)</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> Comment</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">might</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/shenghansen" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:shenghs@mail2.sysu.edu.cn" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">Hope you can find something useful here ᐕ)⁾⁾ .</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E7%BC%96%E8%AF%91%E5%99%A8%E5%B1%82%E6%AC%A1%E7%9A%84%E4%BC%98%E5%8C%96"><span class="toc-number">1.</span> <span class="toc-text">六、编译器层次的优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%BC%96%E8%AF%91%E5%99%A8%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96"><span class="toc-number">1.1.</span> <span class="toc-text">1.编译器如何优化</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-1%E5%86%85%E8%81%94%E5%87%BD%E6%95%B0"><span class="toc-number">1.1.1.</span> <span class="toc-text">1.1内联函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2%E5%B8%B8%E9%87%8F%E6%8A%98%E5%8F%A0%EF%BC%88constant-folding%EF%BC%89%E5%92%8C%E5%B8%B8%E9%87%8F%E4%BC%A0%E6%92%AD-constant-propagation"><span class="toc-number">1.1.2.</span> <span class="toc-text">1.2常量折叠（constant folding）和常量传播(constant propagation)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-3%E6%B6%88%E9%99%A4%E6%8C%87%E9%92%88"><span class="toc-number">1.1.3.</span> <span class="toc-text">1.3消除指针</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-4%E6%B6%88%E9%99%A4%E5%85%AC%E5%85%B1%E5%AD%90%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="toc-number">1.1.4.</span> <span class="toc-text">1.4消除公共子表达式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-5%E5%AF%84%E5%AD%98%E5%99%A8%E5%8F%98%E9%87%8F"><span class="toc-number">1.1.5.</span> <span class="toc-text">1.5寄存器变量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-6%E6%B4%BB%E5%8A%A8%E8%8C%83%E5%9B%B4%E5%88%86%E6%9E%90"><span class="toc-number">1.1.6.</span> <span class="toc-text">1.6活动范围分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-7%E5%90%88%E5%B9%B6%E7%9B%B8%E5%90%8C%E7%9A%84%E5%88%86%E6%94%AF"><span class="toc-number">1.1.7.</span> <span class="toc-text">1.7合并相同的分支</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-8%E6%B6%88%E9%99%A4%E8%B7%B3%E8%BD%AC"><span class="toc-number">1.1.8.</span> <span class="toc-text">1.8消除跳转</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-9%E5%BE%AA%E7%8E%AF%E5%B1%95%E5%BC%80"><span class="toc-number">1.1.9.</span> <span class="toc-text">1.9循环展开</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-10%E7%A7%BB%E5%8A%A8%E5%BE%AA%E7%8E%AF%E4%B8%AD%E7%9A%84%E4%B8%8D%E5%8F%98%E4%BB%A3%E7%A0%81"><span class="toc-number">1.1.10.</span> <span class="toc-text">1.10移动循环中的不变代码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-11%E5%BD%92%E7%BA%B3%E5%8F%98%E9%87%8F%EF%BC%88Induction-variables%EF%BC%89"><span class="toc-number">1.1.11.</span> <span class="toc-text">1.11归纳变量（Induction variables）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-12%E6%8E%92%E5%BA%8F"><span class="toc-number">1.1.12.</span> <span class="toc-text">1.12排序</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-13%E4%BB%A3%E6%95%B0%E5%8C%96%E7%AE%80"><span class="toc-number">1.1.13.</span> <span class="toc-text">1.13代数化简</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-14%E5%8E%BB%E8%99%9A%E6%8B%9F%E5%8C%96%EF%BC%88Devirtualization%EF%BC%89"><span class="toc-number">1.1.14.</span> <span class="toc-text">1.14去虚拟化（Devirtualization）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E4%B8%8D%E5%90%8C%E7%BC%96%E8%AF%91%E5%99%A8%E7%9A%84%E6%AF%94%E8%BE%83"><span class="toc-number">1.2.</span> <span class="toc-text">2.不同编译器的比较</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%BC%96%E8%AF%91%E5%99%A8%E4%BC%98%E5%8C%96%E7%9A%84%E9%9A%9C%E7%A2%8D"><span class="toc-number">1.3.</span> <span class="toc-text">3.编译器优化的障碍</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1%E6%97%A0%E6%B3%95%E8%B7%A8%E6%A8%A1%E5%9D%97%E4%BC%98%E5%8C%96"><span class="toc-number">1.3.1.</span> <span class="toc-text">3.1无法跨模块优化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2%E6%8C%87%E9%92%88%E5%88%AB%E5%90%8D%EF%BC%88pointer-aliasing%EF%BC%89"><span class="toc-number">1.3.2.</span> <span class="toc-text">3.2指针别名（pointer aliasing）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3%E5%8A%A8%E6%80%81%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D"><span class="toc-number">1.3.3.</span> <span class="toc-text">3.3动态内存分配</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-4%E7%BA%AF%E5%87%BD%E6%95%B0%EF%BC%88Pure-functions%EF%BC%89"><span class="toc-number">1.3.4.</span> <span class="toc-text">3.4纯函数（Pure functions）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-5%E8%99%9A%E5%87%BD%E6%95%B0%E5%92%8C%E5%87%BD%E6%95%B0%E6%8C%87%E9%92%88"><span class="toc-number">1.3.5.</span> <span class="toc-text">3.5虚函数和函数指针</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-6%E4%BB%A3%E6%95%B0%E5%8C%96%E7%AE%80"><span class="toc-number">1.3.6.</span> <span class="toc-text">3.6代数化简</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-7%E6%B5%AE%E7%82%B9%E5%BD%92%E7%BA%B3%E5%8F%98%E9%87%8F"><span class="toc-number">1.3.7.</span> <span class="toc-text">3.7浮点归纳变量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-8%E5%86%85%E8%81%94%E5%87%BD%E6%95%B0%E7%9A%84%E9%9D%9E%E5%86%85%E8%81%94%E5%89%AF%E6%9C%AC"><span class="toc-number">1.3.8.</span> <span class="toc-text">3.8内联函数的非内联副本</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-cpu%E4%BC%98%E5%8C%96%E7%9A%84%E9%9A%9C%E7%A2%8D"><span class="toc-number">1.4.</span> <span class="toc-text">4.cpu优化的障碍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E7%BC%96%E8%AF%91%E5%99%A8%E4%BC%98%E5%8C%96%E9%80%89%E9%A1%B9"><span class="toc-number">1.5.</span> <span class="toc-text">5.编译器优化选项</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E4%BC%98%E5%8C%96%E6%8C%87%E4%BB%A4"><span class="toc-number">1.6.</span> <span class="toc-text">6.优化指令</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#6-1%E9%80%82%E7%94%A8%E4%BA%8E%E6%89%80%E6%9C%89c-%E7%BC%96%E8%AF%91%E5%99%A8%E7%9A%84%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-number">1.6.1.</span> <span class="toc-text">6.1适用于所有c++编译器的关键字</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-2%E7%89%B9%E5%AE%9A%E7%BC%96%E8%AF%91%E5%99%A8%E7%9A%84%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-number">1.6.2.</span> <span class="toc-text">6.2特定编译器的关键字</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E5%A6%82%E4%BD%95%E7%9F%A5%E9%81%93%E7%BC%96%E8%AF%91%E5%99%A8%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88"><span class="toc-number">1.7.</span> <span class="toc-text">7.如何知道编译器做了什么</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2023/11/02/effective%20modern%20c++/" title="effective modern c++"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20231101213331.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="effective modern c++"/></a><div class="content"><a class="title" href="/2023/11/02/effective%20modern%20c++/" title="effective modern c++">effective modern c++</a><time datetime="2023-11-02T13:01:37.000Z" title="Created 2023-11-02 21:01:37">2023-11-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/11/01/CXL/" title="CXL"><img src="https://i.ytimg.com/vi/6TRbkes15Ok/maxresdefault.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CXL"/></a><div class="content"><a class="title" href="/2023/11/01/CXL/" title="CXL">CXL</a><time datetime="2023-11-01T12:31:37.000Z" title="Created 2023-11-01 20:31:37">2023-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/10/25/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/" title="性能优化技巧总结"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202208092121258.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="性能优化技巧总结"/></a><div class="content"><a class="title" href="/2023/10/25/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/" title="性能优化技巧总结">性能优化技巧总结</a><time datetime="2023-10-25T13:01:37.000Z" title="Created 2023-10-25 21:01:37">2023-10-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/05/28/cmake/" title="Cmake"><img src="data:image/jpeg;base64,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" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Cmake"/></a><div class="content"><a class="title" href="/2023/05/28/cmake/" title="Cmake">Cmake</a><time datetime="2023-05-28T13:39:37.000Z" title="Created 2023-05-28 21:39:37">2023-05-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/05/28/open%20mlsys/" title="open mlsys"><img src="https://openmlsys.github.io/_images/logo.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="open mlsys"/></a><div class="content"><a class="title" href="/2023/05/28/open%20mlsys/" title="open mlsys">open mlsys</a><time datetime="2023-05-28T13:39:37.000Z" title="Created 2023-05-28 21:39:37">2023-05-28</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By might</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">hope you can find something useful here ᐕ)⁾⁾ .</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="Scroll To Comments"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const initValine = () => {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'VBvzA6UUhphh1Tc1BtzWXzye-gzGzoHsz',
+      appKey: 'J0UlGcCok0khsrORkwxD1HwF',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  const loadValine = async () => {
+    if (typeof Valine === 'function') initValine()
+    else {
+      await getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js')
+      initValine()
+    }
+  }
+
+  if ('Valine' === 'Valine' || !false) {
+    if (false) btf.loadComment(document.getElementById('vcomment'),loadValine)
+    else setTimeout(loadValine, 0)
+  } else {
+    window.loadOtherComment = loadValine
+  }
+})()</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

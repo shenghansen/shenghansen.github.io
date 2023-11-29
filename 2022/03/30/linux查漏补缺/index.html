@@ -1,0 +1,336 @@
+<!DOCTYPE html><html lang="zh-cn" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>linux查漏补缺 | might's room</title><meta name="author" content="might"><meta name="copyright" content="might"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="linux查漏补缺 查漏补缺，打好基础  一、linux系统目录 &#x2F;bin：binaries二进制文件的缩写，里面都是二进制文件，且都是普通用户可以使用的命令 &#x2F;boot：引导程序，内核存放的目录 &#x2F;sbin：与bin类似，但是里面存放的都是超级（root）用户可以使用的命令 &#x2F;lib：根目录下所有程序所需的共享库 &#x2F;dev：设备文件目录(Linux中设备以文件形式存在，实体设备以设备文件的形式被">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux查漏补缺">
+<meta property="og:url" content="https://mightcoder.com/2022/03/30/linux%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA/index.html">
+<meta property="og:site_name" content="might&#39;s room">
+<meta property="og:description" content="linux查漏补缺 查漏补缺，打好基础  一、linux系统目录 &#x2F;bin：binaries二进制文件的缩写，里面都是二进制文件，且都是普通用户可以使用的命令 &#x2F;boot：引导程序，内核存放的目录 &#x2F;sbin：与bin类似，但是里面存放的都是超级（root）用户可以使用的命令 &#x2F;lib：根目录下所有程序所需的共享库 &#x2F;dev：设备文件目录(Linux中设备以文件形式存在，实体设备以设备文件的形式被">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202203302134588.jpeg">
+<meta property="article:published_time" content="2022-03-30T13:33:57.000Z">
+<meta property="article:modified_time" content="2022-07-15T08:13:03.060Z">
+<meta property="article:author" content="might">
+<meta property="article:tag" content="linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202203302134588.jpeg"><link rel="shortcut icon" href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg"><link rel="canonical" href="https://mightcoder.com/2022/03/30/linux%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//static.cloudflareinsights.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script defer="defer" data-pjax="data-pjax" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="{&quot;token&quot;: &quot;60e2c80ac4524b11b7168fad4fb0548b&quot;}"></script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: 'days',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'linux查漏补缺',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-07-15 16:13:03'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 8 || hour >= 22
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="might's room" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202203302134588.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="might's room"><img class="site-icon" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg"/><span class="site-name">might's room</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">linux查漏补缺</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2022-03-30T13:33:57.000Z" title="Created 2022-03-30 21:33:57">2022-03-30</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2022-07-15T08:13:03.060Z" title="Updated 2022-07-15 16:13:03">2022-07-15</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">Word Count:</span><span class="word-count">3.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">Reading Time:</span><span>11mins</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="linux查漏补缺"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="linux查漏补缺"><a href="#linux查漏补缺" class="headerlink" title="linux查漏补缺"></a>linux查漏补缺</h1><blockquote>
+<p>查漏补缺，打好基础</p>
+</blockquote>
+<h2 id="一、linux系统目录"><a href="#一、linux系统目录" class="headerlink" title="一、linux系统目录"></a>一、linux系统目录</h2><p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202203302134588.jpeg" alt="img"></p>
+<p><code>/bin</code>：binaries二进制文件的缩写，里面都是二进制文件，且都是普通用户可以使用的命令</p>
+<p><code>/boot</code>：引导程序，内核存放的目录</p>
+<p><code>/sbin</code>：与bin类似，但是里面存放的都是超级（root）用户可以使用的命令</p>
+<p><code>/lib</code>：根目录下所有程序所需的共享库</p>
+<p><code>/dev</code>：设备文件目录(Linux中设备以文件形式存在，实体设备以设备文件的形式被Linux得知，并通过设备驱动被linux使用)</p>
+<p><code>/home</code>：此目录下存放所有普通用户的主目录，一般每个用户都在&#x2F;home下有一个子目录，目录名为用户名</p>
+<p><code>/root</code>：root用户的主目录</p>
+<p><code>/etc</code>：全局的配置文件存放目录，当程序在用户主目录下时，会将配置文件在用户主目录下生成，系统也会优先去用户主目录下加载配置，若没有再去&#x2F;etc下加载。</p>
+<p><code>/opt</code>：optional的简称，可以将自定义软件包或第三方软件安装在此目录下</p>
+<p><code>/mnt</code>：临时挂载目录，用于挂载存储设备的，比如磁盘光驱网络文件系统等，例如WSL2的目录<code>/mnt/c</code>就是我们Windows下的c盘。</p>
+<p><code>/media</code>：用于挂载媒体设备，比如u盘等。</p>
+<p><code>/proc</code>：这是一个虚拟文件系统,以文件系统目录和文件形式,提供一个指向内核数据结构的接口，通过它能够查看和改变各种系统属性，详细信息可以参考这个链接 <a target="_blank" rel="noopener" href="https://blog.spoock.com/2019/10/08/proc/">&#x2F;proc目录介绍</a></p>
+<p><code>/sys</code>：该文件系统是内核设备树的一个直观反映。当一个内核对象被创建的时候，对应的文件和目录也在内核对象子系统中被创建。与<code>/dev</code>相似却不同，<code>/sys</code>是更偏内核方面的。</p>
+<p><code>/tmp</code>：存放临时文件，定期清理。</p>
+<p><code>/var</code>：variable的缩写，<code>/var </code>包括系统运行时要改变的数据。var目录存在的目的是把usr目录在运行过程中需要更改的文件或者临时生成的文件及目录提取出来，由此可以使usr目录挂载为只读的方式。隐含要求var目录必须挂载为可以读写的方式。</p>
+<p><code>/run</code>：是一个临时文件系统，存储系统启动以来的信息。当系统重启时，这个目录下的文件应该被删掉或清除。<code>/var/run</code>是个指向<code>/run</code>的链接。</p>
+<p><code>/usr</code>：usr不是user，而是unix System resources(系统资源) 的缩写，这是一个非常重要的目录，用户的很多应用程序和文件都放在这个目录下，类似于C:&#x2F;windows 目录。</p>
+<p><code>/usr</code>下比较重要的几个目录：</p>
+<p><code>/usr/bin</code>：与&#x2F;bin类似，也是存放二进制文件命令，但是<code>/bin</code>下一般为系统自带的，<code>/usr/bin</code>一般为用户后来安装的</p>
+<p><code>/usr/sbin</code>：root用户的命令</p>
+<p><code>/usr/include</code>：存放c程序的头文件</p>
+<p><code>/usr/local</code>：用户的程序目录，相当于C:&#x2F;windows:Program Files。<code>/usr/local</code>下也有<code>/bin</code>和<code>/lib</code> <code>/sbin</code>等。</p>
+<p>比较一下<code>/bin</code> <code>/usr/bin</code> <code>/usr/local/bin</code></p>
+<ul>
+<li><code>/bin</code> 放置系统的关键程序，比如 <code>ls</code> <code>cat</code> ，对于“关键”的定义，不同的发行版会有不同的理解；</li>
+<li><code>/usr/bin</code> 放置发行版管理的程序，比如 Ubuntu 自带 <code>md5sum</code> ，这个 binary 就会在这个目录下；</li>
+<li><code>/usr/local/bin</code> 放置用户自己的程序，比如你编译了一个 gcc，那么 gcc 这个可执行 binary 应该在这个目录下；</li>
+</ul>
+<h2 id="二、环境变量"><a href="#二、环境变量" class="headerlink" title="二、环境变量"></a>二、环境变量</h2><p><strong>一、环境变量文件介绍</strong>  </p>
+<p>Linux 中环境变量包括系统级和用户级，系统级的环境变量是每个登录到系统的用户都要读取的系统变量，而用户级的环境变量则是该用户使用系统时加载的环境变量，所以管理<a target="_blank" rel="noopener" href="https://so.csdn.net/so/search?q=%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F&spm=1001.2101.3001.7020">环境变量</a>的文件也分为系统级和用户级的。</p>
+<p><strong>二、Linux 的变量种类</strong></p>
+<p>按变量的生存周期来划分，Linux 变量可分为两类：</p>
+<ol>
+<li><p>永久的：需要修改配置文件，变量永久生效</p>
+</li>
+<li><p>临时的：使用 export 命令声明即可，变量在关闭 shell 时失效</p>
+</li>
+</ol>
+<p><strong>三、Linux 环境变量文件</strong></p>
+<p>linux 变量文件有 &#x2F; etc&#x2F;environment 或 &#x2F;etc&#x2F;profile 或 <del>&#x2F;.profile 或 &#x2F;etc&#x2F;bash.bashrc 或 ~&#x2F;.bashrc, 以及</del>&#x2F;.bash_profile(一般是用户在自己目录下新建的)，~&#x2F;.bash_logout.</p>
+<p><strong>系统级：</strong></p>
+<p>1.&#x2F;etc&#x2F;environment: 是系统在登录时读取的第一个文件，该文件设置的是整个系统的环境，只要启动系统就会读取该文件，用于为所有进程设置环境变量。系统使用此文件时并不是执行此文件中的命令，而是根据而是根据 KEY&#x3D;VALUE 模式的代码，对 KEY 赋值以 VALUE，因此文件中如果要定义 PATH 环境变量，只需加入一行形如 PATH&#x3D;$PATH:&#x2F;xxx&#x2F;bin 的代码即可</p>
+<p>2.&#x2F;etc&#x2F;profile: 此文件是系统登录时执行的第二个文件。 为系统的每个用户设置环境信息，当用户第一次登录时，该文件被执行。并从 &#x2F; etc&#x2F;profile.d 目录的配置文件中搜集 shell 的设置。（&#x2F;etc&#x2F;profile 可以用于设定针对全系统所有用户的环境变量，环境变量周期是永久性）</p>
+<p>3.&#x2F;etc&#x2F;bashrc: 是针对所有用户的 bash 初始化文件，在此中设定的环境变量将应用于所有用户的 shell 中，此文件会在用户每次打开 shell 时执行一次。（即每次新开一个终端，都会执行 &#x2F; etc&#x2F;bashrc）。</p>
+<p><strong>用户级（这些文件处于家目录下）：</strong></p>
+<ol>
+<li>~&#x2F;.profile: 对应当前登录用户的 profile 文件，用于定制当前用户的个人工作环境 (变量是永久性)，每个用户都可使用该文件输入专用于自己使用的 shell 信息, 当用户登录时, 该文件仅仅执行一次! 默认情况下, 他设置一些环境变量, 执行用户的. bashrc 文件。<strong>这里是推荐放置个人设置的地方</strong></li>
+</ol>
+<p>2.<del>&#x2F;.bashrc: 该文件包含专用于你的 bash shell 的 bash 信息，当登录时以及每次打开新的 shell 时，该文件被读取。(</del>&#x2F;.bashrc 只针对当前用户，变量的生命周期是永久的)</p>
+<p><strong>不推荐放到这儿，因为每开一个 shell，这个文件会读取一次，效率肯定有影响。</strong></p>
+<p>3.<del>&#x2F;.bash_profile or ~.&#x2F;bash_login:_**</del>&#x2F;.bash_profile 是交互式 login 方式进入 bash 运行的，<del>&#x2F;.bashrc 是交互式 non-login 方式进入 bash 运行的通常二者设置大致相同，所以通常前者会调用后者**_。每个用户都可使用该文件输入专用于自己使用的 shell 信息，当用户登录时，该文件仅仅执行一次。默认情况下，他设置一些环境变量，执行用户的. bashrc 文件。（如果</del>&#x2F; 目录下没有. bash_profile 则新建立一个）这里是推荐放置个人设置的地方</p>
+<p>当一个 shell 关闭时，在 bash_profile 中定义的系统变量则会失效。因此，每打开一个新的 shell 时都要运行一次 source bash_profile. 而且针对当前用户。</p>
+<p>4.~&#x2F;.pam_environment: 用户级的环境变量设置文件，没有做测试，不知道管不管用。</p>
+<p>5.<del>&#x2F;.bash_logout: 当每次退出系统（退出 bash shell）时，执行该文件。另外,&#x2F;etc&#x2F;profile 中设定的变量 (全局) 的可以作用于任何用户, 而</del>&#x2F;.bashrc 等中设定的变量 (局部) 只能继承 &#x2F;etc&#x2F;profile 中的变量, 他们是 “父子” 关系。</p>
+<p><strong>四、Linux 环境变量文件执行顺序</strong></p>
+<ol>
+<li>在登录 Linux 时要执行文件的过程如下：</li>
+</ol>
+<p>在刚登录 Linux 时，</p>
+<p>首先启动 &#x2F;etc&#x2F;profile 文件，</p>
+<p>然后再启动用户目录下的 ~&#x2F;.bash_profile、 ~&#x2F;.bash_login 或 ~&#x2F;.profile 文件中的其中一个，用户主目录下文件的执行的顺序为：</p>
+<p>　　　　　　　　　　~&#x2F;.bash_profile -&gt; ~&#x2F;.bash_login -&gt; ~&#x2F;.profile。</p>
+<p>如果 ~&#x2F;.bash_profile 文件存在的话，一般还会执行 ~&#x2F;.bashrc 文件。</p>
+<p>因为在 ~&#x2F;.bash_profile 文件中一般会有下面的代码：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if [ -f ~/.bashrc ] ; then</span><br><span class="line">   . ./bashrc</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
+<p>~&#x2F;.bashrc 中，一般还会有以下代码：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if [ -f /etc/bashrc ] ; then</span><br><span class="line">   . /etc/bashrc</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
+<p>所以，~&#x2F;.bashrc 会调用 &#x2F;etc&#x2F;bashrc 文件。最后，在退出 shell 时，还会执行 ~&#x2F;.bash_logout 文件。</p>
+<p>执行顺序为： <strong>&#x2F;etc&#x2F;profile -&gt; (~&#x2F;.bash_profile | ~&#x2F;.bash_login | ~&#x2F;.profile) -&gt; ~&#x2F;.bashrc -&gt; &#x2F;etc&#x2F;bashrc -&gt; ~&#x2F;.bash_logout</strong></p>
+<p><strong>&#x2F;etc&#x2F;profile 和 &#x2F; etc&#x2F;environment 等各种环境变量设置文件的用处</strong></p>
+<p>1）先将 export LANG&#x3D;zh_CN 加入 &#x2F; etc&#x2F;profile，退出系统重新登录，登录提示显示英文。</p>
+<p>2）先将 &#x2F; etc&#x2F;profile 中的 export LANG&#x3D;zh_CN 删除，将 LNAG&#x3D;zh_CN 加入 &#x2F; etc&#x2F;environment，退出系统重新登录，登录提示显示中文。</p>
+<p>用户环境建立的过程中总是先执行 &#x2F; etc&#x2F;profile，然后再读取 &#x2F; etc&#x2F;environment。</p>
+<p><strong>为什么会有如上所叙的不同呢？而不是先执行 &#x2F; etc&#x2F;environment，后执行 &#x2F; etc&#x2F;profile 呢？</strong></p>
+<p>这是因为： &#x2F;etc&#x2F;environment 是设置整个系统的环境，而 &#x2F; etc&#x2F;profile 是设置所有用户的环境，前者与登录用户无关，后者与登录用户有关。</p>
+<p>系统应用程序的执行与用户环境可以是无关的，但与系统环境是相关的，所以当你登录时，你看到的提示信息，如日期、时间信息的显示格式与系统环境的 LANG 是相关的，缺省 LANG&#x3D;en_US，如果系统环境 LANG&#x3D;zh_CN，则提示信息是中文的，否则是英文的。</p>
+<p><strong>对于用户的 shell 初始化而言是先执行 &#x2F; etc&#x2F;profile，再读取文件 &#x2F; etc&#x2F;environment；对整个系统而言是先执行 &#x2F; etc&#x2F;environment。这样理解正确吗？</strong></p>
+<p><strong>登陆系统时的顺序应该是：</strong></p>
+<p><strong>&#x2F;etc&#x2F;enviroment –&gt; &#x2F;etc&#x2F;profile –&gt;<em>HOME</em>&#x2F;._profile_−−&gt;HOME&#x2F;.env (如果存在)</strong></p>
+<p>&#x2F;etc&#x2F;profile 是所有用户的环境变量</p>
+<p>&#x2F;etc&#x2F;enviroment 是系统的环境变量</p>
+<p><strong>登陆系统时 shell 读取的顺序应该是：</strong></p>
+<p><strong>&#x2F;etc&#x2F;profile -&gt;&#x2F;etc&#x2F;enviroment –&gt;<em>HOME</em>&#x2F;._profile_−−&gt;HOME&#x2F;.env</strong></p>
+<p>原因应该是用户环境和系统环境的区别了，如果同一个变量在用户环境 (&#x2F;etc&#x2F;profile) 和系统环境 (&#x2F;etc&#x2F;environment) 有不同的值，那应该是以用户环境为准了。</p>
+<p><strong>五、Linux 中常见的环境变量及其作用</strong></p>
+<p>Linux 中常见的环境变量有：</p>
+<p>1.PATH：指定命令的搜索路径</p>
+<p>2.HOME：指定用户的主工作目录（即用户登陆到 Linux 系统中时，默认的目录）</p>
+<p>3.HISTSIZE：指保存历史命令记录的条数。</p>
+<p>4.LOGNAME：指当前用户的登录名。</p>
+<p>5.HOSTNAME：指主机的名称，许多应用程序如果要用到主机名的话，通常是从这个环境变量中来取得的。</p>
+<p>6.SHELL：指当前用户用的是哪种 Shell。</p>
+<p>7.LANG&#x2F;LANGUGE：和语言相关的环境变量，使用多种语言的用户可以修改此环境变量。</p>
+<p>8.MAIL：指当前用户的邮件存放目录。</p>
+<p>9.PS1：命令基本提示符，对于 root 用户是 #，对于普通用户是 $。</p>
+<p>10.PS2：附属提示符，默认是 “&gt;”。</p>
+<p>备注：可以通过修改此环境变量来修改当前的命令符，比如下列命令会将提示符修改成字符串 “Hello,MyNewPrompt”。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PS1=&quot;Hello,My NewPrompt&quot;</span><br></pre></td></tr></table></figure>
+
+<p>注意：上述变量的名字并不固定，如 HOSTNAME 在某些 Linux 系统中可能设置成 HOST</p>
+<p>当然，我所列举的上述环境变量并非穷尽列出！</p>
+<p><strong>Linux 也提供了修改和查看环境变量的命令！下面通过几个实例来说明：</strong></p>
+<p>1.echo 显示某个环境变量值 echo $PATH</p>
+<p>2.export 设置一个新的环境变量 export HELLO&#x3D;”hello” (可以无引号)，在 shell 的命令行下直接使用 [export 变量名 &#x3D; 变量值] 定义变量，该变量只在当前的 shell(BASH) 或其子 shell(BASH)下是有效的，shell 关闭了，变量也就失效了，再打开新 shell 时就没有这个变量，需要使用的话还需要重新定义。</p>
+<p>3.env 显示所有环境变量</p>
+<p>4.set 显示本地定义 (系统中已经存在) 的 shell 变量以及设置 shell 变量的新变量值, 如果未指定值，则该变量值将被设为 NULL。</p>
+<p>5.unset 清除环境变量 unset HELLO</p>
+<p>6.readonly 设置只读环境变量 readonly HELLO , 如果使用了 readonly 命令的话，变量就不可以被修改或清除了</p>
+<h2 id="三、常用技巧"><a href="#三、常用技巧" class="headerlink" title="三、常用技巧"></a>三、常用技巧</h2><h2 id="1-输入光标移动快捷键"><a href="#1-输入光标移动快捷键" class="headerlink" title="1.输入光标移动快捷键"></a>1.输入光标移动快捷键</h2><ul>
+<li>ctrl+左右键 : 在单词之间跳转</li>
+<li>ctrl+a : 跳到本行的行首</li>
+<li>ctrl+e : 跳到页尾</li>
+<li>Ctrl+u ：删除当前光标前面的文字 （还有剪切功能）</li>
+<li>ctrl+k ：删除当前光标后面的文字(还有剪切功能)</li>
+<li>Ctrl+L：进行清屏操作</li>
+<li>Ctrl+y : 粘贴Ctrl+u或ctrl+k剪切的内容</li>
+<li>Ctrl+w : 删除光标前面的单词的字符（以空格隔开的字符串）</li>
+<li>Alt – d ：由光标位置开始，往右删除单词，往行尾删</li>
+<li>Ctrl+r : 搜索执行过的命令</li>
+<li>! + 最近执行过的命令中的某个字符 ：可快速执行最近执行过的命令</li>
+<li>fs -l :显示部分历史命令</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://mightcoder.com">might</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://mightcoder.com/2022/03/30/linux%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA/">https://mightcoder.com/2022/03/30/linux%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/linux/">linux</a></div><div class="post_share"><div class="social-share" data-image="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202203302134588.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>请作者喝杯咖啡</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/04/05/optimizing-cpp-7/" title="optimizing_cpp(7)"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">optimizing_cpp(7)</div></div></a></div><div class="next-post pull-right"><a href="/2022/03/30/optimizing-cpp-6/" title="optimizing_cpp(6)"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next</div><div class="next_info">optimizing_cpp(6)</div></div></a></div></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> Comment</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">might</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/shenghansen" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:shenghs@mail2.sysu.edu.cn" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">Hope you can find something useful here ᐕ)⁾⁾ .</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#linux%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA"><span class="toc-number">1.</span> <span class="toc-text">linux查漏补缺</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81linux%E7%B3%BB%E7%BB%9F%E7%9B%AE%E5%BD%95"><span class="toc-number">1.1.</span> <span class="toc-text">一、linux系统目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="toc-number">1.2.</span> <span class="toc-text">二、环境变量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%B8%B8%E7%94%A8%E6%8A%80%E5%B7%A7"><span class="toc-number">1.3.</span> <span class="toc-text">三、常用技巧</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E8%BE%93%E5%85%A5%E5%85%89%E6%A0%87%E7%A7%BB%E5%8A%A8%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">1.4.</span> <span class="toc-text">1.输入光标移动快捷键</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2023/11/02/effective%20modern%20c++/" title="effective modern c++"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20231101213331.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="effective modern c++"/></a><div class="content"><a class="title" href="/2023/11/02/effective%20modern%20c++/" title="effective modern c++">effective modern c++</a><time datetime="2023-11-02T13:01:37.000Z" title="Created 2023-11-02 21:01:37">2023-11-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/11/01/CXL/" title="CXL"><img src="https://i.ytimg.com/vi/6TRbkes15Ok/maxresdefault.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CXL"/></a><div class="content"><a class="title" href="/2023/11/01/CXL/" title="CXL">CXL</a><time datetime="2023-11-01T12:31:37.000Z" title="Created 2023-11-01 20:31:37">2023-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/10/25/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/" title="性能优化技巧总结"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202208092121258.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="性能优化技巧总结"/></a><div class="content"><a class="title" href="/2023/10/25/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/" title="性能优化技巧总结">性能优化技巧总结</a><time datetime="2023-10-25T13:01:37.000Z" title="Created 2023-10-25 21:01:37">2023-10-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/05/28/cmake/" title="Cmake"><img src="data:image/jpeg;base64,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" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Cmake"/></a><div class="content"><a class="title" href="/2023/05/28/cmake/" title="Cmake">Cmake</a><time datetime="2023-05-28T13:39:37.000Z" title="Created 2023-05-28 21:39:37">2023-05-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/05/28/open%20mlsys/" title="open mlsys"><img src="https://openmlsys.github.io/_images/logo.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="open mlsys"/></a><div class="content"><a class="title" href="/2023/05/28/open%20mlsys/" title="open mlsys">open mlsys</a><time datetime="2023-05-28T13:39:37.000Z" title="Created 2023-05-28 21:39:37">2023-05-28</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202203302134588.jpeg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By might</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">hope you can find something useful here ᐕ)⁾⁾ .</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="Scroll To Comments"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const initValine = () => {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'VBvzA6UUhphh1Tc1BtzWXzye-gzGzoHsz',
+      appKey: 'J0UlGcCok0khsrORkwxD1HwF',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  const loadValine = async () => {
+    if (typeof Valine === 'function') initValine()
+    else {
+      await getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js')
+      initValine()
+    }
+  }
+
+  if ('Valine' === 'Valine' || !false) {
+    if (false) btf.loadComment(document.getElementById('vcomment'),loadValine)
+    else setTimeout(loadValine, 0)
+  } else {
+    window.loadOtherComment = loadValine
+  }
+})()</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

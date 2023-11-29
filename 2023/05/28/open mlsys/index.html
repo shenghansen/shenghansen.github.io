@@ -1,0 +1,573 @@
+<!DOCTYPE html><html lang="zh-cn" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>open mlsys | might's room</title><meta name="author" content="might"><meta name="copyright" content="might"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="编程接口编程接口：python等脚本语言作为上层接口，c&#x2F;c++等底层语言来保证性能。 机器学习工作流 数据处理 模型定义：定义神经网络结构 定义损失函数和优化器 训练及保存模型 测试和验证  神经网络层 全连接(Full Connected,FC)：当前层每个节点都和上一层节点一一连接，本质上是特征空间的线性变换。 卷积(Convolution)：  先定义一个卷积核，通常是N*M的张">
+<meta property="og:type" content="article">
+<meta property="og:title" content="open mlsys">
+<meta property="og:url" content="https://mightcoder.com/2023/05/28/open%20mlsys/index.html">
+<meta property="og:site_name" content="might&#39;s room">
+<meta property="og:description" content="编程接口编程接口：python等脚本语言作为上层接口，c&#x2F;c++等底层语言来保证性能。 机器学习工作流 数据处理 模型定义：定义神经网络结构 定义损失函数和优化器 训练及保存模型 测试和验证  神经网络层 全连接(Full Connected,FC)：当前层每个节点都和上一层节点一一连接，本质上是特征空间的线性变换。 卷积(Convolution)：  先定义一个卷积核，通常是N*M的张">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://openmlsys.github.io/_images/logo.png">
+<meta property="article:published_time" content="2023-05-28T13:39:37.000Z">
+<meta property="article:modified_time" content="2023-05-26T10:52:48.950Z">
+<meta property="article:author" content="might">
+<meta property="article:tag" content="hpc">
+<meta property="article:tag" content="mlsys">
+<meta property="article:tag" content="ai">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://openmlsys.github.io/_images/logo.png"><link rel="shortcut icon" href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg"><link rel="canonical" href="https://mightcoder.com/2023/05/28/open%20mlsys/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//static.cloudflareinsights.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script defer="defer" data-pjax="data-pjax" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="{&quot;token&quot;: &quot;60e2c80ac4524b11b7168fad4fb0548b&quot;}"></script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: 'days',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'open mlsys',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-05-26 18:52:48'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 8 || hour >= 22
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="might's room" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url('https://openmlsys.github.io/_images/logo.png')"><nav id="nav"><span id="blog-info"><a href="/" title="might's room"><img class="site-icon" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg"/><span class="site-name">might's room</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">open mlsys</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2023-05-28T13:39:37.000Z" title="Created 2023-05-28 21:39:37">2023-05-28</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2023-05-26T10:52:48.950Z" title="Updated 2023-05-26 18:52:48">2023-05-26</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">Word Count:</span><span class="word-count">8.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">Reading Time:</span><span>28mins</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="open mlsys"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="编程接口"><a href="#编程接口" class="headerlink" title="编程接口"></a>编程接口</h2><p>编程接口：python等脚本语言作为上层接口，c&#x2F;c++等底层语言来保证性能。</p>
+<h3 id="机器学习工作流"><a href="#机器学习工作流" class="headerlink" title="机器学习工作流"></a>机器学习工作流</h3><ul>
+<li>数据处理</li>
+<li>模型定义：定义神经网络结构</li>
+<li>定义损失函数和优化器</li>
+<li>训练及保存模型</li>
+<li>测试和验证</li>
+</ul>
+<p>神经网络层</p>
+<p>全连接(Full Connected,FC)：当前层每个节点都和上一层节点一一连接，本质上是特征空间的线性变换。</p>
+<p>卷积(Convolution)：</p>
+<ol>
+<li><p>先定义一个卷积核，通常是N*M的张量，NM通常是奇数，以便让卷积核有一个中心点，</p>
+</li>
+<li><p>将卷积核对准特征图的某个位置计算卷积。</p>
+</li>
+<li><p>卷积操作是将卷积核中的值与输入图像或特征图中的对应位置的像素值相乘并将所有成绩相加得到一个单一的值，这个值就是卷积核在当前位置的输出值</p>
+</li>
+<li><p>将卷积核在输入图像或特征图上沿x和y轴滑动，直到覆盖完整个输入图像或特征图。每次滑动都会计算出一个卷积核的输出值，最终得到一个新的输出图像或特征图。</p>
+<p>在卷积神经网络中，通常会将多个卷积核组合在一起使用，以提取不同的特征。这些卷积核可以并行进行卷积操作，产生多个特征图，然后将这些特征图合并在一起，以进一步提高模型的表达能力。</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/single_channel_conv.svg" alt="../_images/single_channel_conv.svg"></p>
+</li>
+</ol>
+<p>池化(Pooling)：</p>
+<p>常见的降维操作，有最大池化和平均池化。池化操作和卷积的执行类似，通过池化核、步长、填充决定输出；最大池化是在池化核区域范围内取最大值，平均池化则是在池化核范围内做平均。与卷积不同的是池化核没有训练参数；池化层的填充方式也有所不同，平均池化填充的是0，最大池化填充的是−inf。 <a target="_blank" rel="noopener" href="https://openmlsys.github.io/chapter_programming_interface/neural_network_layer.html#pooling">图3.3.5</a>是对4×4的输入进行2×2区域池化，步长为2，不填充；图左边是最大池化的结果，右边是平均池化的结果。</p>
+<p><a target="_blank" rel="noopener" href="https://openmlsys.github.io/_images/pooling.svg"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/pooling.svg" alt="../_images/pooling.svg"></a></p>
+<p><em>图3.3.5</em> 池化操作</p>
+<h3 id="定义深度神经网络"><a href="#定义深度神经网络" class="headerlink" title="定义深度神经网络"></a>定义深度神经网络</h3><p>对于用户来说，需要定义的是每个神经网络层的参数和计算方式，以及每层之间的连接方式。</p>
+<p>机器学习系统将神经网络层抽象出一个基类，所有的神经网络层都继承基类来实现，用户也可以定义自己的神经网络层。</p>
+<p>以MindSpore为例，要定义神经网络层，继承Cell后，需要重写<code>__init__</code> <code>__call__</code>两个方法，<code>__init__</code>定义本层的属性，<code>__call__</code>定义计算方法。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 接口定义：</span></span><br><span class="line">卷积层的接口：convolution(<span class="built_in">input</span>, filters, stride, padding)</span><br><span class="line">变量：Variable(value, trainable=<span class="literal">True</span>)</span><br><span class="line">高斯分布初始化方法：random_normal(shape)</span><br><span class="line">神经网络模型抽象方法：Cell</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义卷积层</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Conv2D</span>(<span class="title class_ inherited__">Cell</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, in_channels, out_channels, ksize, stride, padding</span>):</span><br><span class="line">        <span class="comment"># 卷积核大小为 ksize x ksize x inchannels x out_channels</span></span><br><span class="line">        filters_shape = (out_channels, in_channels, ksize, ksize)</span><br><span class="line">        self.stride = stride</span><br><span class="line">        self.padding = padding</span><br><span class="line">        self.filters = Variable(random_normal(filters_shape))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__call__</span>(<span class="params">self, inputs</span>):</span><br><span class="line">        outputs = convolution(inputs, self.filters, self.stride, self.padding)</span><br></pre></td></tr></table></figure>
+
+<p>要定义神经网络模型也是继承Cell后重写<code>__init__</code> <code>__call__</code>两个方法，<code>__init__</code>定义所有的神经网络层，<code>__call__</code>定义计算层与层之间的计算方法。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用Cell子类构建的神经网络层接口定义：</span></span><br><span class="line"><span class="comment"># 构建卷积神经网络的组件接口定义：</span></span><br><span class="line">全连接层接口：Dense(in_channel, out_channel)</span><br><span class="line">卷积层的接口：Conv2D(in_channel, out_channel, filter_size, stride, padding)</span><br><span class="line">最大池化接口：MaxPool2D(pool_size, stride, padding)</span><br><span class="line">张量平铺：Flatten()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用SubClass方式构建卷积模型</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">CNN</span>(<span class="title class_ inherited__">Cell</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        self.conv1 = Conv2D(in_channel=<span class="number">3</span>, out_channel=<span class="number">16</span>, filter_size=<span class="number">3</span>, stride=<span class="number">1</span>, padding=<span class="number">0</span>)</span><br><span class="line">        self.maxpool1 = MaxPool2D(pool_size=<span class="number">3</span>, stride=<span class="number">1</span>, padding=<span class="number">0</span>)</span><br><span class="line">        self.conv2 = Conv2D(in_channel=<span class="number">16</span>, out_channel=<span class="number">32</span>, filter_size=<span class="number">3</span>, stride=<span class="number">1</span>, padding=<span class="number">0</span>)</span><br><span class="line">        self.maxpool2 = MaxPool2D(pool_size=<span class="number">3</span>, stride=<span class="number">1</span>, padding=<span class="number">0</span>)</span><br><span class="line">        self.flatten = Flatten()</span><br><span class="line">        self.dense1 = Dense(in_channels=<span class="number">768</span>, out_channel=<span class="number">128</span>)</span><br><span class="line">        self.dense2 = Dense(in_channels=<span class="number">128</span>, out_channel=<span class="number">64</span>)</span><br><span class="line">        self.dense3 = Dense(in_channels=<span class="number">64</span>, out_channel=<span class="number">10</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__call__</span>(<span class="params">self, inputs</span>):</span><br><span class="line">        z = self.conv1(inputs)</span><br><span class="line">        z = self.maxpool1(z)</span><br><span class="line">        z = self.conv2(z)</span><br><span class="line">        z = self.maxpool2(z)</span><br><span class="line">        z = self.flatten(z)</span><br><span class="line">        z = self.dense1(z)</span><br><span class="line">        z = self.dense2(z)</span><br><span class="line">        z = self.dense3(z)</span><br><span class="line">        <span class="keyword">return</span> z</span><br><span class="line">net = CNN()</span><br></pre></td></tr></table></figure>
+
+<h3 id="C-C-编程接口"><a href="#C-C-编程接口" class="headerlink" title="C&#x2F;C++编程接口"></a>C&#x2F;C++编程接口</h3><p>如何在PYTHON中调用c&#x2F;c++函数</p>
+<p>现代机器学习框架（包括TensorFlow，PyTorch和MindSpore）主要依赖Pybind11来将底层的大量C和C++函数自动生成对应的Python函数，这一过程一般被称为Python绑定（ Binding）。</p>
+<p>添加c++编写的自定义算子</p>
+<p>以MindSpore为例，实现一个GPU算子需要如下步骤：</p>
+<ol>
+<li>Primitive注册：算子原语是构建网络模型的基础单元，用户可以直接或者间接调用算子原语搭建一个神经网络模型。</li>
+<li>GPU Kernel实现：GPU Kernel用于调用GPU实现加速计算。</li>
+<li>GPU Kernel注册：算子注册用于将GPU Kernel及必要信息注册给框架，由框架完成对GPU Kernel的调用。</li>
+</ol>
+<p>以mindscope为例：</p>
+<p><strong>1.注册算子原语</strong> 算子原语通常包括算子名、算子输入、算子属性（初始化时需要填的参数，如卷积的stride、padding）、输入数据合法性校验、输出数据类型推导和维度推导。假设需要编写加法算子，主要内容如下：</p>
+<ul>
+<li>算子名：TensorAdd</li>
+<li>算子属性：构造函数__init__中初始化属性，因加法没有属性，因此__init__不需要额外输入。</li>
+<li>算子输入输出及合法性校验：infer_shape方法中约束两个输入维度必须相同，输出的维度和输入维度相同。infer_dtype方法中约束两个输入数据必须是float32类型，输出的数据类型和输入数据类型相同。</li>
+<li>算子输出</li>
+</ul>
+<p>MindSpore中实现注册TensorAdd代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># mindspore/ops/operations/math_ops.py</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">TensorAdd</span>(<span class="title class_ inherited__">PrimitiveWithInfer</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    Adds two input tensors element-wise.</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line"><span class="meta">    @prim_attr_register</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        self.init_prim_io_names(inputs=[<span class="string">&#x27;x1&#x27;</span>, <span class="string">&#x27;x2&#x27;</span>], outputs=[<span class="string">&#x27;y&#x27;</span>])</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">infer_shape</span>(<span class="params">self, x1_shape, x2_shape</span>):</span><br><span class="line">        validator.check_integer(<span class="string">&#x27;input dims&#x27;</span>, <span class="built_in">len</span>(x1_shape), <span class="built_in">len</span>(x2_shape), Rel.EQ, self.name)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(x1_shape)):</span><br><span class="line">            validator.check_integer(<span class="string">&#x27;input_shape&#x27;</span>, x1_shape[i], x2_shape[i], Rel.EQ, self.name)</span><br><span class="line">        <span class="keyword">return</span> x1_shape</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">infer_dtype</span>(<span class="params">self, x1_dtype, x2_type</span>):</span><br><span class="line">        validator.check_tensor_type_same(&#123;<span class="string">&#x27;x1_dtype&#x27;</span>: x1_dtype&#125;, [mstype.float32], self.name)</span><br><span class="line">        validator.check_tensor_type_same(&#123;<span class="string">&#x27;x2_dtype&#x27;</span>: x2_dtype&#125;, [mstype.float32], self.name)</span><br><span class="line">        <span class="keyword">return</span> x1_dtype</span><br></pre></td></tr></table></figure>
+
+<p>在mindspore&#x2F;ops&#x2F;operations&#x2F;math_ops.py文件内注册加法算子原语后，需要在mindspore&#x2F;ops&#x2F;operations&#x2F;__init__中导出，方便python导入模块时候调用。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># mindspore/ops/operations/__init__.py</span></span><br><span class="line"><span class="keyword">from</span> .math_ops <span class="keyword">import</span> (Abs, ACos, ..., TensorAdd)</span><br><span class="line">__all__ = [</span><br><span class="line">  <span class="string">&#x27;ReverseSequence&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;CropAndResize&#x27;</span>,</span><br><span class="line">  ...,</span><br><span class="line">  <span class="string">&#x27;TensorAdd&#x27;</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p><strong>2.GPU算子开发</strong>继承GPUKernel，实现加法使用类模板定义TensorAddGpuKernel，需要实现以下方法：</p>
+<ul>
+<li>Init(): 用于完成GPU Kernel的初始化，通常包括记录算子输入&#x2F;输出维度，完成Launch前的准备工作；因此在此记录Tensor元素个数。</li>
+<li>GetInputSizeList():向框架反馈输入Tensor需要占用的显存字节数；返回了输入Tensor需要占用的字节数，TensorAdd有两个Input，每个Input占用字节数为element_num∗sizeof(T)。</li>
+<li>GetOutputSizeList():向框架反馈输出Tensor需要占用的显存字节数；返回了输出Tensor需要占用的字节数，TensorAdd有一个output，占用element_num∗sizeof(T)字节。</li>
+<li>GetWorkspaceSizeList():向框架反馈Workspace字节数，Workspace是用于计算过程中存放临时数据的空间；由于TensorAdd不需要Workspace，因此GetWorkspaceSizeList()返回空的std::vector<size_t>。</li>
+<li>Launch(): 通常调用CUDA kernel(CUDA kernel是基于Nvidia GPU的并行计算架构开发的核函数)，或者cuDNN接口等方式，完成算子在GPU上加速；Launch()接收input、output在显存的地址，接着调用TensorAdd完成加速。</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// mindspore/ccsrc/backend/kernel_compiler/gpu/math/tensor_add_v2_gpu_kernel.h</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">TensorAddGpuKernel</span> : <span class="keyword">public</span> GpuKernel &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">TensorAddGpuKernel</span>() : <span class="built_in">element_num_</span>(<span class="number">1</span>) &#123;&#125;</span><br><span class="line">  ~<span class="built_in">TensorAddGpuKernel</span>() <span class="keyword">override</span> = <span class="keyword">default</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">bool</span> <span class="title">Init</span><span class="params">(<span class="type">const</span> CNodePtr &amp;kernel_node)</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> shape = AnfAlgo::<span class="built_in">GetPrevNodeOutputInferShape</span>(kernel_node, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; shape.<span class="built_in">size</span>(); i++) &#123;</span><br><span class="line">      element_num_ *= shape[i];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">InitSizeLists</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">const</span> std::vector&lt;<span class="type">size_t</span>&gt; &amp;<span class="title">GetInputSizeList</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">override</span> </span>&#123; <span class="keyword">return</span> input_size_list_; &#125;</span><br><span class="line">  <span class="function"><span class="type">const</span> std::vector&lt;<span class="type">size_t</span>&gt; &amp;<span class="title">GetOutputSizeList</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">override</span> </span>&#123; <span class="keyword">return</span> output_size_list_; &#125;</span><br><span class="line">  <span class="function"><span class="type">const</span> std::vector&lt;<span class="type">size_t</span>&gt; &amp;<span class="title">GetWorkspaceSizeList</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">override</span> </span>&#123; <span class="keyword">return</span> workspace_size_list_; &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">bool</span> <span class="title">Launch</span><span class="params">(<span class="type">const</span> std::vector&lt;AddressPtr&gt; &amp;inputs, <span class="type">const</span> std::vector&lt;AddressPtr&gt; &amp;,</span></span></span><br><span class="line"><span class="params"><span class="function">              <span class="type">const</span> std::vector&lt;AddressPtr&gt; &amp;outputs, <span class="type">void</span> *stream_ptr)</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">    T *x1 = <span class="built_in">GetDeviceAddress</span>&lt;T&gt;(inputs, <span class="number">0</span>);</span><br><span class="line">    T *x2 = <span class="built_in">GetDeviceAddress</span>&lt;T&gt;(inputs, <span class="number">1</span>);</span><br><span class="line">    T *y = <span class="built_in">GetDeviceAddress</span>&lt;T&gt;(outputs, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">TensorAdd</span>(element_num_, x1, x2, y, <span class="built_in">reinterpret_cast</span>&lt;cudaStream_t&gt;(stream_ptr));</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">protected</span>:</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">InitSizeLists</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">    input_size_list_.<span class="built_in">push_back</span>(element_num_ * <span class="built_in">sizeof</span>(T));</span><br><span class="line">    input_size_list_.<span class="built_in">push_back</span>(element_num_ * <span class="built_in">sizeof</span>(T));</span><br><span class="line">    output_size_list_.<span class="built_in">push_back</span>(element_num_ * <span class="built_in">sizeof</span>(T));</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  <span class="type">size_t</span> element_num_;</span><br><span class="line">  std::vector&lt;<span class="type">size_t</span>&gt; input_size_list_;</span><br><span class="line">  std::vector&lt;<span class="type">size_t</span>&gt; output_size_list_;</span><br><span class="line">  std::vector&lt;<span class="type">size_t</span>&gt; workspace_size_list_;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>TensorAdd中调用了CUDA kernelTensorAddKernel来实现element_num个元素的并行相加:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// mindspore/ccsrc/backend/kernel_compiler/gpu/math/tensor_add_v2_gpu_kernel.h</span></span><br><span class="line"></span><br><span class="line"> <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"> <span class="function">__global__ <span class="type">void</span> <span class="title">TensorAddKernel</span><span class="params">(<span class="type">const</span> <span class="type">size_t</span> element_num, <span class="type">const</span> T* x1, <span class="type">const</span> T* x2, T* y)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">size_t</span> i = blockIdx.x * blockDim.x + threadIdx.x; i &lt; element_num; i += blockDim.x * gridDim.x) &#123;</span><br><span class="line">    y[i] = x1[i] + x2[i];</span><br><span class="line">  &#125;</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"> <span class="function"><span class="type">void</span> <span class="title">TensorAdd</span><span class="params">(<span class="type">const</span> <span class="type">size_t</span> &amp;element_num, <span class="type">const</span> T* x1, <span class="type">const</span> T* x2, T* y, cudaStream_t stream)</span></span>&#123;</span><br><span class="line">    <span class="type">size_t</span> thread_per_block = <span class="number">256</span>;</span><br><span class="line">    <span class="type">size_t</span> block_per_grid = (element_num + thread_per_block - <span class="number">1</span> ) / thread_per_block;</span><br><span class="line">    TensorAddKernel&lt;&lt;&lt;block_per_grid, thread_per_block, <span class="number">0</span>, stream&gt;&gt;&gt;(element_num, x1, x2, y);</span><br><span class="line">   <span class="keyword">return</span>;</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> <span class="function"><span class="keyword">template</span> <span class="type">void</span> <span class="title">TensorAdd</span><span class="params">(<span class="type">const</span> <span class="type">size_t</span> &amp;element_num, <span class="type">const</span> <span class="type">float</span>* x1, <span class="type">const</span> <span class="type">float</span>* x2, <span class="type">float</span>* y, cudaStream_t stream)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>3.GPU算子注册</strong>算子信息包含1.Primive；2.Input dtype, output dtype；3.GPU Kernel class； 4.CUDA内置数据类型。框架会根据Primive和Input dtype, output dtype，调用以CUDA内置数据类型实例化GPU Kernel class模板类。如下代码中分别注册了支持float和int的TensorAdd算子。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// mindspore/ccsrc/backend/kernel_compiler/gpu/math/tensor_add_v2_gpu_kernel.cc</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">MS_REG_GPU_KERNEL_ONE</span>(TensorAddV2, <span class="built_in">KernelAttr</span>()</span><br><span class="line">                                    .<span class="built_in">AddInputAttr</span>(kNumberTypeFloat32)</span><br><span class="line">                                    .<span class="built_in">AddInputAttr</span>(kNumberTypeFloat32)</span><br><span class="line">                                    .<span class="built_in">AddOutputAttr</span>(kNumberTypeFloat32),</span><br><span class="line">                      TensorAddV2GpuKernel, <span class="type">float</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">MS_REG_GPU_KERNEL_ONE</span>(TensorAddV2, <span class="built_in">KernelAttr</span>()</span><br><span class="line">                                    .<span class="built_in">AddInputAttr</span>(kNumberTypeInt32)</span><br><span class="line">                                    .<span class="built_in">AddInputAttr</span>(kNumberTypeInt32)</span><br><span class="line">                                    .<span class="built_in">AddOutputAttr</span>(kNumberTypeInt32),</span><br><span class="line">                      TensorAddV2GpuKernel, <span class="type">int</span>)</span><br></pre></td></tr></table></figure>
+
+<p>完成上述三步工作后，需要把MindSpore重新编译，在源码的根目录执行bash build.sh -e gpu，最后使用算子进行验证。</p>
+<h2 id="计算图"><a href="#计算图" class="headerlink" title="计算图"></a>计算图</h2><h3 id="计算图的基本构成"><a href="#计算图的基本构成" class="headerlink" title="计算图的基本构成"></a>计算图的基本构成</h3><p>张量(Tensor)和基本运算单元算子。在计算图中通常使用节点来表示算子，节点间的有向边（Directed Edge）来表示张量状态，同时也描述了计算间的依赖关系。</p>
+<p><img src="https://openmlsys.github.io/_images/simpledag.png" alt="../_images/simpledag.png"></p>
+<p>张量即多维数据的统称，使用秩来表示张量的轴数或维度。标量为零秩张量，包含单个数值，没有轴；向量为一秩张量，拥有一个轴；拥有RGB三个通道的彩色图像即为三秩张量，包含三个轴。</p>
+<p><img src="https://openmlsys.github.io/_images/tensor.png" alt="../_images/tensor.png"></p>
+<table>
+<thead>
+<tr>
+<th align="right">张量属性</th>
+<th align="right">功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">形状(shape)</td>
+<td align="right">存储张量的每个 维度的长度，如[3,3,3]</td>
+</tr>
+<tr>
+<td align="right">秩或维数（dim）</td>
+<td align="right">表 示张量的轴数或者维数 ，标量为0，向量为1。</td>
+</tr>
+<tr>
+<td align="right">数据类型(dtype)</td>
+<td align="right">表示存储的数据类型 ，如bool、uint8、int1 6、float32、float64等</td>
+</tr>
+<tr>
+<td align="right">存储位置(device)</td>
+<td align="right">创建张 量时可以指定存储的设 备位置，如CPU、GPU等</td>
+</tr>
+<tr>
+<td align="right">名字(name)</td>
+<td align="right">张量的标识符</td>
+</tr>
+</tbody></table>
+<p>算子类型：</p>
+<ul>
+<li>张量操作算子：张量的结构操作和数学运算；张量的形状、维度调整以及张量合并等；矩阵乘法、计算范数、行列式和特征值计算等。</li>
+<li>神经网络算子：包括特征提取、激活函数、损失函数、优化算法等</li>
+<li>数据流算子：包括数据的预处理与数据载入等相关算子</li>
+<li>控制流算子：控制计算图中的数据流向，有条件运算符和循环运算符。</li>
+</ul>
+<h4 id="计算依赖"><a href="#计算依赖" class="headerlink" title="计算依赖"></a>计算依赖</h4><p>算子之间存在依赖关系，计算图应当是有向无环图。如果形成循环依赖则不正确。机器学习框架中，表示循环关系通常以展开机制实现，即循环N次则将对应的计算子图复制N次，这些复制的所有张量和运算符会被赋予新的标识符。</p>
+<h4 id="控制流"><a href="#控制流" class="headerlink" title="控制流"></a>控制流</h4><p>目前主流机器学习语言使用两种方式来提供控制流</p>
+<p>- </p>
+<ul>
+<li>前端语言控制流：使用前端语言例如python进行控制决策，这种方式编程简单快捷，但是由于机器学习框架的数据计算运行在后端硬件，造成控制流和数据流之间的分离，计算图不能完整的运行在后算计算硬件上。这种方法称为图外方法</li>
+<li>机器学习框架控制原语：在内部设计低级别细粒度的控制原语运算符，能够直接执行在计算硬件上，整体在后端运算，这种实现方式被称为图内方法。</li>
+</ul>
+<p>前者能快速将算法转换为模型代码，后者高性能</p>
+<h3 id="计算图的生成"><a href="#计算图的生成" class="headerlink" title="计算图的生成"></a>计算图的生成</h3><ul>
+<li>静态图：根据前端语言描述网络结构及参数遍历等信息构建一份固定的计算图</li>
+<li>动态图：每一次执行神经网络模型都根据前端语言动态生成临时计算图。</li>
+</ul>
+<h4 id="静态生成"><a href="#静态生成" class="headerlink" title="静态生成"></a>静态生成</h4><p>静态计算图可以通过优化策略转换为等价的更加高效的结构。</p>
+<p><img src="https://openmlsys.github.io/_images/static.png" alt="../_images/static.png"></p>
+<p>静态计算图的两大优势</p>
+<ul>
+<li>计算性能：可以进行图优化，kernel fusion</li>
+<li>直接部署：机器学习框架可以将静态计算图转换为支持不同计算硬件直接调用的代码。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>难以调试，出错时难以直接找到错误信息</li>
+</ul>
+<h4 id="动态生成"><a href="#动态生成" class="headerlink" title="动态生成"></a>动态生成</h4><p>相较于静态图整个程序都在后端代码中执行，动态图是前端语言调用后端框架的算子，每个算子执行完后再将结果返回前端语言执行后面的操作。</p>
+<p><img src="https://openmlsys.github.io/_images/eager-gen.png" alt="../_images/eager-gen.png"></p>
+<p>优点：</p>
+<ul>
+<li>便于调试，对初学者友好，提高了算法开发和迭代的效率</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>难以进行模型优化以提高计算效率</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="right">特性</th>
+<th align="right">静态图</th>
+<th align="right">动态图</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">即时获取中间结果</td>
+<td align="right">否</td>
+<td align="right">是</td>
+</tr>
+<tr>
+<td align="right">代码调试难易</td>
+<td align="right">难</td>
+<td align="right">易</td>
+</tr>
+<tr>
+<td align="right">控制流实现方式</td>
+<td align="right">特定的语法</td>
+<td align="right">前端语言语法</td>
+</tr>
+<tr>
+<td align="right">性能</td>
+<td align="right">优化策略多，性能更佳</td>
+<td align="right">图优化受限，性能较差</td>
+</tr>
+<tr>
+<td align="right">内存占用</td>
+<td align="right">内存占用少</td>
+<td align="right">内存占用相对较多</td>
+</tr>
+<tr>
+<td align="right">内存占用</td>
+<td align="right">可直接部署</td>
+<td align="right">不可直接部署</td>
+</tr>
+</tbody></table>
+<p>目前TensorFlow、MindSpore、PyTorch、PaddlePaddle等主流机器学习框架都具备动态图转静态图的功能。</p>
+<h2 id="AI编译和前端技术"><a href="#AI编译和前端技术" class="headerlink" title="AI编译和前端技术"></a>AI编译和前端技术</h2><p><img src="https://openmlsys.github.io/_images/LLVM%E5%9F%BA%E7%A1%80%E7%BB%93%E6%9E%84.png" alt="../_images/LLVM%E5%9F%BA%E7%A1%80%E7%BB%93%E6%9E%84.png"></p>
+<p>LLVM包含前端，IR，和后端三个部分。前端将高级语言转换成IR，后端将IR转化成目标硬件上的机器指令。</p>
+<p>IR作为桥梁在前后端之间进行基于IR的各种优化。</p>
+<p>IR可以是单层的，也可以是多层的， LLVM IR是典型的单层IR，其前后端优化都基于相同的LLVM IR进行。</p>
+<p>AI编译器一般采用多层级IR设计。 <a target="_blank" rel="noopener" href="https://openmlsys.github.io/chapter_frontend_and_ir/ai_compiler_design_principle.html#tf-multi-ir">图6.1.2</a>展示了TensorFlow利用MLIR实现多层IR设计的例子（被称为TensorFlow-MLIR）。其包含了三个层次的IR，即TensorFlow Graph IR， XLA（Accelerated Linear Algebra，加速线性代数）、HLO（High Level Operations，高级运算）以及特定硬件的LLVM IR 或者TPU IR。</p>
+<p><img src="https://openmlsys.github.io/_images/TensorFlow-IR.png" alt="../_images/TensorFlow-IR.png"></p>
+<p>多层级IR的优势是IR表达上更加地灵活，可以在不同层级的IR上进行合适的PASS优化，更加便捷和高效。 但是多层级IR也存在一些劣势。首先，多层级IR需要进行不同IR之间的转换，而IR转换要做到完全兼容是非常困难的，工程工作量很大，还可能带来信息的损失。上一层IR优化掉某些信息之后，下一层需要考虑其影响，因此IR转换对优化执行的顺序有着更强的约束。其次，多层级IR有些优化既可以在上一层IR进行，也可以在下一层IR进行，让框架开发者很难选择。最后，不同层级IR定义的算子粒度大小不同，可能会给精度带来一定的影响。为了解决这一问题，机器学习框架如MindSpore采用统一的IR设计（MindIR）。 <a target="_blank" rel="noopener" href="https://openmlsys.github.io/chapter_frontend_and_ir/ai_compiler_design_principle.html#ms-compiler">图6.1.3</a>展示了MindSpore的AI编译器内部的运行流程。其中，编译器前端主要指图编译和硬件无关的优化，编译器后端主要指硬件相关优化、算子选择等。</p>
+<p><img src="https://openmlsys.github.io/_images/%E7%BC%96%E8%AF%91%E5%99%A8%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B.png" alt="../_images/%E7%BC%96%E8%AF%91%E5%99%A8%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B.png"></p>
+<h2 id="编译器后端和运行时"><a href="#编译器后端和运行时" class="headerlink" title="编译器后端和运行时"></a>编译器后端和运行时</h2><p>后端主要负责计算图优化、算子选择和内存分配的任务。</p>
+<p>计算图优化方面</p>
+<ul>
+<li>一个算子就能实现几个计算节点的功能，此时可以将这些IR节点合并成一个计算节点，该过程成为算子融合</li>
+<li>对于复杂计算，后端没有直接对应的算子，可以将几个基本运算的算子组合达到相同的计算效果。</li>
+</ul>
+<p>算子选择方面，本质上是一个模式匹配问题，用户代码产生的IR往往可以映射成多种不同的硬件算子。这些算子的效率有很大的差别，如何根据IR选择硬件算子是问题所在。</p>
+<p>现有编译器一般对每一个IR节点提供多个候选算子，要选择最优的算子作为最终执行在设备上的算子。</p>
+<p><img src="https://openmlsys.github.io/_images/compiler-backend-architecture.png" alt="../_images/compiler-backend-architecture.png"></p>
+<h3 id="计算图优化"><a href="#计算图优化" class="headerlink" title="计算图优化"></a>计算图优化</h3><h4 id="通用优化"><a href="#通用优化" class="headerlink" title="通用优化"></a>通用优化</h4><p>通用优化与硬件无关，优化的核心是子图的等价变化，即将目标子图等价替换成对硬件更友好的子图结构。</p>
+<p>比如：算子融合，将计算密集型和访存密集型的算子融合，减少内存访问延时和带宽压力</p>
+<ul>
+<li>计算密集型：卷积，全连接</li>
+<li>访存密集型：大部分是Element-Wise算子，例如 ReLU、Element-Wise Sum</li>
+</ul>
+<p>例如：“Conv + Conv + Sum + ReLU”的融合，从 <a target="_blank" rel="noopener" href="https://openmlsys.github.io/chapter_backend_and_runtime/graph_optimizer.html#conv-sum-relu">图7.2.1</a>中可以看到融合后的算子减少了两个内存的读和写的操作，优化了Conv的输出和Sum的输出的读和写的操作。</p>
+<p><a target="_blank" rel="noopener" href="https://openmlsys.github.io/_images/conv_sum_relu.png"><img src="https://openmlsys.github.io/_images/conv_sum_relu.png" alt="../_images/conv_sum_relu.png"></a></p>
+<p>除了对于特定类型算子的融合优化，还有自动算子生成技术，通过算子拆解、算子聚合、算子重建三阶段融合算子，减少低效的内存访问。</p>
+<p><img src="https://openmlsys.github.io/_images/graph_kernel.png" alt="../_images/graph_kernel.png"></p>
+<h4 id="特定硬件优化"><a href="#特定硬件优化" class="headerlink" title="特定硬件优化"></a>特定硬件优化</h4><p>针对某些硬件的限制，比如硬件指令的限制，硬件要求数据格式的限制进行优化。</p>
+<h3 id="算子选择"><a href="#算子选择" class="headerlink" title="算子选择"></a>算子选择</h3><p>根据哪些方面选择算子？</p>
+<ul>
+<li>数据排布格式：如NCHW和NHWC</li>
+<li>计算精度：fp32 fp16 int32</li>
+</ul>
+<h4 id="数据排布格式"><a href="#数据排布格式" class="headerlink" title="数据排布格式"></a>数据排布格式</h4><p>NCHW类型和NHWC类型。其中N代表了数据输入的批大小，C代表了图像的通道，H和W分别代表图像输入的高和宽</p>
+<p><img src="https://openmlsys.github.io/_images/data_format.png" alt="../_images/data_format.png"></p>
+<p>但是计算机的存储并不能够直接将这样的矩阵放到内存中，需要将其展平成1维后存储，这样就涉及逻辑上的索引如何映射成为内存中的索引，即如何根据逻辑数据索引来映射到内存中的1维数据索引。</p>
+<p>对于NCHW的数据是先取W轴方向数据，再取H轴方向数据，再取C轴方向，最后取N轴方向。其中物理存储与逻辑存储的之间的映射关系为</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/image-20230514191009217.png" alt="image-20230514191009217"></p>
+<p>NHWC批次优先适合CPU NCHW通道优先适合GPU（参考行主序列主序）</p>
+<p>除此之外还有比如oneDNN上的nChw16c 和nChw8c 格式，以及Ascend芯片的5HD等格式。</p>
+<h4 id="数据精度"><a href="#数据精度" class="headerlink" title="数据精度"></a>数据精度</h4><p><img src="https://openmlsys.github.io/_images/floatdtype.png" alt="../_images/floatdtype.png"></p>
+<p> 其中bfloat16并不属于一个通用的数据类型，是Google提出的一种特殊的类型，现在一般只在一些TPU上训练使用，其指数位数与float32位数保持一致，可以较快的与float32进行数据转换。由于bfloat16并不是一种通用类型，IEEE中也并没有提出该类型的标准。</p>
+<h3 id="内存分配"><a href="#内存分配" class="headerlink" title="内存分配"></a>内存分配</h3><p>随着深度学习的发展，深度神经网络的模型越来越复杂，AI芯片上的内存很可能无法容纳一个大型网络模型。因此，对内存进行复用是一个重要的优化手段。此外，通过连续内存分配和 In-Place内存分配还可以提高某些算子的执行效率。</p>
+<p>内存分配的流程</p>
+<ul>
+<li>首先根据数据类型和张量形状算出所需内存</li>
+<li>对内存进行对齐</li>
+</ul>
+<p><img src="https://openmlsys.github.io/_images/memory_allocate.png" alt="../_images/memory_allocate.png"></p>
+<p>如图所示一般有三种类型的内存，整张图的输入张量、算子权重、算子的输出。</p>
+<p>为了避免频繁申请释放内存的开销，使用内存池来管理内存。</p>
+<p>mindspore的申请方法：双游标法</p>
+<p><img src="https://openmlsys.github.io/_images/device_malloc.png" alt="../_images/device_malloc.png"></p>
+<p>从首地址开始为算子权重分配内存，声明周期长，从末尾开始为算子输出分配内存，声明周期短，若后续无需使用，即可通过移动指针放弃该部分内存。</p>
+<h4 id="内存复用"><a href="#内存复用" class="headerlink" title="内存复用"></a>内存复用</h4><p>内存复用即是若之前数据不再被需要，重用这部分内存。</p>
+<p>内存复用策略的求解是一个NP完全的问题。许多深度学习框架通常采用贪心的策略去分配内存。</p>
+<h4 id="常用内存分配优化手段"><a href="#常用内存分配优化手段" class="headerlink" title="常用内存分配优化手段"></a>常用内存分配优化手段</h4><ul>
+<li>内存融合：其实也是算子融合的一种，比如AllReduce算子，在分布式集群下通信往往是性能瓶颈，可以将多个通信算子融合成一个，减少通信次数。</li>
+<li>In-Place算子：in-place计算减少内存申请。</li>
+</ul>
+<h3 id="计算调度与执行"><a href="#计算调度与执行" class="headerlink" title="计算调度与执行"></a>计算调度与执行</h3><p>根据是否将算子编译成计算图，计算分为单算子调度和计算图调度。</p>
+<p>单算子调度由python运行时直接调度，便于调试。但是难以进行性能的优化，一般使用计算图调度。</p>
+<p>根据是否一次性将子图下发到硬件分为交互式执行和下沉式执行。</p>
+<p>交互式执行host和device之间有交互，下沉式执行避免了这种交互从而获得更好的性能，但是在动态shape算子、复杂的控制流等场景下会面临较大的技术挑战。</p>
+<h3 id="算子编译器"><a href="#算子编译器" class="headerlink" title="算子编译器"></a>算子编译器</h3><p>将动态语言描述的张量技算输出为特定硬件上的可执行文件</p>
+<ul>
+<li>子策略组合优化：比如通过平铺（Tile），循环移序（Reorder）和切分（Split）的调度策略优化矩阵乘</li>
+<li>调度空间算法优化：比如使用多面体模型编译（Polyhedral Compilation）来优化编译</li>
+<li>芯片指令集适配：</li>
+</ul>
+<h2 id="硬件加速器"><a href="#硬件加速器" class="headerlink" title="硬件加速器"></a>硬件加速器</h2><p>和传统CPU和GPU芯片相比，深度学习硬件加速器有更高的性能和更低的能耗。</p>
+<p>两个设计重要指标</p>
+<ul>
+<li>能效</li>
+<li>通用性</li>
+</ul>
+<p>华为昇腾AI芯片达芬奇架构</p>
+<p><img src="https://openmlsys.github.io/_images/davinci_architecture.svg" alt="../_images/davinci_architecture.svg"></p>
+<p>编程接口的层次</p>
+<ul>
+<li><strong>算子库层级</strong>：如cuBLAS基本矩阵与向量运算库，cuDNN深度学习加速库，均通过Host端调用算子库提供的核函数使能张量计算核心；</li>
+<li><strong>编程原语层级</strong>：如基于CUDA的WMMA API编程接口。同算子库相比，需要用户显式调用计算各流程，如矩阵存取至寄存器、张量计算核心执行矩阵乘累加运算、张量计算核心累加矩阵数据初始化操作等；</li>
+<li><strong>指令层级</strong>：如PTX ISA MMA指令集，提供更细粒度的mma指令，便于用户组成更多种形状的接口，通过CUDA Device端内联编程使能张量计算核心。</li>
+</ul>
+<p>cuda的一种gemm实现</p>
+<p><a target="_blank" rel="noopener" href="https://openmlsys.github.io/chapter_accelerator/accelerator_practise.html">8.4. 加速器实践 — 机器学习系统：设计和实现 1.0.0 documentation (openmlsys.github.io)</a></p>
+<h2 id="数据处理框架"><a href="#数据处理框架" class="headerlink" title="数据处理框架"></a>数据处理框架</h2><p>数据处理的核心组件</p>
+<ul>
+<li>**数据加载组件(Load)**：负责从存储设备中加载读取数据集，需要同时考虑存储设备的多样性（如本地磁盘&#x2F;内存，远端磁盘和内存等）和数据集格式的多样性（如csv格式，txt格式等）。根据机器学习任务的特点，AI框架也提出了统一的数据存储格式（如谷歌TFRecord, 华为MindRecord等）以提供更高性能的数据读取。</li>
+<li>**数据混洗组件(Shuffle)**：负责将输入数据的顺序按照用户指定方式随机打乱，以提升模型的鲁棒性。</li>
+<li>**数据变换组件(Map)**：负责完成数据的变换处理，内置面向各种数据类型的常见预处理算子，如图像中的尺寸缩放和翻转，音频中的随机加噪和变调、文本处理中的停词去除和随机遮盖(Mask)等。</li>
+<li>**数据组装组件(Batch)**：负责组装构造一个批次(mini-batch)的数据发送给训练&#x2F;推理。</li>
+<li>**数据发送组件(Send)**：负责将处理后的数据发送到GPU&#x2F;华为昇腾Ascend等加速器中以进行后续的模型计算和更新。高性能的数据模块往往选择将数据向设备的搬运与加速器中的计算异步执行，以提升整个训练的吞吐率。</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://openmlsys.github.io/_images/pipeline.png"><img src="https://openmlsys.github.io/_images/pipeline.png" alt="../_images/pipeline.png"></a></p>
+<p>这些组件应当具有：</p>
+<ul>
+<li>易用性</li>
+<li>高效性</li>
+<li>保序性：机器学习模型训练对数据输入顺序敏感。为了帮助用户更好的调试和确保不同次实验的可复现性，我们需要在系统中设计相应机制使得数据最终送入模型的顺序由数据混洗组件的数据输出顺序唯一确定，不会由于并行数据变换而带来最终数据模块的数据输出顺序不确定。</li>
+</ul>
+<h3 id="高效性设计"><a href="#高效性设计" class="headerlink" title="高效性设计"></a>高效性设计</h3><p>深度学习模型执行流程分为数据加载、数据处理、芯片计算三个过程。为了追求最高的训练吞吐率，一般将这三个步骤异步并行执行。</p>
+<p><img src="https://openmlsys.github.io/_images/async_data_process.png" alt="../_images/async_data_process.png"></p>
+<p>通常情况下我们希望G &lt; min(F, P)，此时加速芯片不会因为等待数据而阻塞。然而现实情况下，我们常常要么因为数据加载速率F过低(称为I&#x2F;O Bound)，要么因为数据预处理速率P过低(称为CPU Bound)导致G&gt;min(F, P)而使得芯片无法被充分利用。</p>
+<p>TODO</p>
+<h2 id="模型部署"><a href="#模型部署" class="headerlink" title="模型部署"></a>模型部署</h2><p>模型部署的过程：将训练好的模型和参数持久化成文件，但是不同训练框架导出的模型文件中存储的数据结构不同，这就为模型的推理系统带来了不便。推理系统为了支持不同的训练框架的模型，需要将模型文件中的数据转换成统一的数据结构。此外，在训练模型转换成推理模型的过程中，需要进行一些如算子融合、常量折叠等模型的优化以提升推理的性能。</p>
+<p>模型压缩：为了满足不同硬件设备的限制，在边缘设备或者低功耗的微控制器上只能部署简单的机器学习模型。为了满足这些硬件的限制，在有些场景下要对训练好的模型进行压缩，降低其复杂度或数据的精度，减少模型参数。</p>
+<p>常见方法：</p>
+<ul>
+<li><strong>算子融合</strong></li>
+</ul>
+<p>通过表达式简化、属性融合等方式将多个算子合并为一个算子的技术，融合可以降低模型的计算复杂度及模型的体积。</p>
+<ul>
+<li><strong>常量折叠</strong></li>
+</ul>
+<p>将符合条件的算子在离线阶段提前完成前向计算，从而降低模型的计算复杂度和模型的体积。常量折叠的条件是算子的所有输入在离线阶段均为常量。</p>
+<ul>
+<li><strong>模型压缩</strong></li>
+</ul>
+<p>通过量化、剪枝等手段减小模型体积以及计算复杂度的技术，可以分为需要重训的压缩技术和不需要重训的压缩技术两类。</p>
+<ul>
+<li><strong>数据排布</strong></li>
+</ul>
+<p>根据后端算子库支持程度和硬件限制，搜索网络中每层的最优数据排布格式，并进行数据重排或者插入数据重排算子，从而降低部署时的推理时延</p>
+<ul>
+<li><strong>模型混淆</strong></li>
+</ul>
+<p>对训练好的模型进行混淆操作，主要包括新增网络节点和分支、替换算子名的操作，攻击者即使窃取到混淆后的模型也不能理解原模型的结构。此外，混淆后的模型可以直接在部署环境中以混淆态执行，保证了模型在运行过程中的安全性。</p>
+<h3 id="训练模型到推理模型的转换及优化"><a href="#训练模型到推理模型的转换及优化" class="headerlink" title="训练模型到推理模型的转换及优化"></a>训练模型到推理模型的转换及优化</h3><h4 id="模型转换"><a href="#模型转换" class="headerlink" title="模型转换"></a>模型转换</h4><p>ONNX（Open Neural Network Exchange）开放神经网络交换协议支持将不同的训练框架定义的数据结构转换成统一的数据结构上。</p>
+<p>完成模型转换后，会进行一些不依赖输入的工作，如常量折叠、算子融合、算子替换、算子重排等一些优化手段。</p>
+<h4 id="算子融合"><a href="#算子融合" class="headerlink" title="算子融合"></a>算子融合</h4><p>推理阶段的算子融合：在推理阶段某些算子的中的符号是常量，可以进行融合，但是在训练过程中是参数，如果融合会导致模型参数的缺少。因此有些算子融合只能在推理阶段进行。</p>
+<h4 id="算子替换"><a href="#算子替换" class="headerlink" title="算子替换"></a>算子替换</h4><p>算子替换，即将模型中某些算子替换计算逻辑一致但对于在线部署更友好的算子。算子替换的原理是通过合并同类项、提取公因式等数学方法，将算子的计算公式加以简化，并将简化后的计算公式映射到某类算子上。算子替换可以达到降低计算量、降低模型大小的效果。</p>
+<p>同样，算子替换优化策略只能在部署阶段进行，因为一方面在部署阶段Batchnorm计算公式中被认为是常量的符号，在训练时是参数并非常量。另一方面该优化策略会降低模型的参数量，改变模型的结构，降低模型的表达能力，影响训练收敛时模型的准确率。</p>
+<h4 id="算子重排"><a href="#算子重排" class="headerlink" title="算子重排"></a>算子重排</h4><p>算子重排是指将模型中算子的拓扑序按照某些规则进行重新排布，在不降低模型的推理精度的前提下，降低模型推理的计算量。常用的算子重排技术有针对于Slice算子、StrideSlice算子、Crop算子等裁切类算子的前移、Reshape算子和Transpose算子的重排、BinaryOp算子的重排等。</p>
+<p><a target="_blank" rel="noopener" href="https://openmlsys.github.io/_images/crop-reorder.png"><img src="https://openmlsys.github.io/_images/crop-reorder.png" alt="../_images/crop-reorder.png"></a></p>
+<p><em>图10.2.4</em> Crop算子重排 </p>
+<p>如 <a target="_blank" rel="noopener" href="https://openmlsys.github.io/chapter_model_deployment/model_converter_and_optimizer.html#ch08-fig-crop-reorder">图10.2.4 </a>，Crop算子是从输入的特征图中裁取一部分作为输出，经过Crop算子后，特征图的大小就降低了。如果将这个裁切的过程前移，提前对特征图进行裁切，那么后续算子的计算量也会相应地减少，从而提高模型部署时的推理性能。Crop算子前移带来的性能提升跟Crop算子的参数有关。但是Crop算子一般只能沿着的element wise类算子前移。</p>
+<h3 id="模型压缩"><a href="#模型压缩" class="headerlink" title="模型压缩"></a>模型压缩</h3><h4 id="量化"><a href="#量化" class="headerlink" title="量化"></a>量化</h4><p>将连续取值的浮点型权重（通常为float32或者大量可能的离散值）近似为有限多个离散值（通常为int8）的过程.</p>
+<p>工业界最常用的量化位数是8比特</p>
+<p>根据量化数据表示的原始数据范围是否均匀，还可以将量化方法分为线性量化和非线性量化。实际的深度神经网络的权重和激活值通常是不均匀的，因此理论上使用非线性量化导致的精度损失更小，但在实际推理中非线性量化的计算复杂度较高，通常使用线性量化。下面着重介绍线性量化的原理。</p>
+<p>假设r表示量化前的浮点数，量化后的整数q可以表示为：</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/image-20230515171753778.png" alt="image-20230515171753778">(10.3.1)</p>
+<p>round和clip分别表示取整和截断操作，q<del>min</del>和q<del>max</del>是量化后的最小值和最大值。s是数据量化的间隔，z是表示数据偏移的偏置，z为0的量化被称为对称（Symmetric）量化，不为0的量化称为非对称（Asymmetric）量化。对称量化可以避免量化算子在推理中计算z相关的部分，降低推理时的计算复杂度；非对称量化可以根据实际数据的分布确定最小值和最小值，可以更加充分的利用量化数据信息，使得量化导致的损失更低。</p>
+<p>根据量化参数s和z的共享范围，量化方法可以分为逐层量化和逐通道量化。逐层量化以一层网络为量化单位，每层网络的一组量化参数；逐通道量化以一层网络的每个量化通道为单位，每个通道单独使用一组量化参数。逐通道量化由于量化粒度更细，能获得更高的量化精度，但计算也更复杂。</p>
+<p>根据量化过程中是否需要训练，可以将模型量化分为量化感知训练（Quantization Aware Training, QAT）和训练后量化（Post Training Quantization, PTQ）两种,其中感知量化训练是指在模型训练过程中加入伪量化算子，通过训练时统计输入输出的数据范围可以提升量化后模型的精度，适用于对模型精度要求较高的场景；训练后量化指对训练后的模型直接量化，只需要少量校准数据，适用于追求高易用性和缺乏训练资源的场景。</p>
+<p>量化落地的三大挑战</p>
+<p>精度挑战：</p>
+<p>- </p>
+<ul>
+<li>量化方法：线性量化对数据分布的描述不准确</li>
+<li>低比特：比特数越低，精度损失越大</li>
+<li>任务：任务越复杂，精度损失越大</li>
+<li>大小：模型越小，精度损失越大</li>
+</ul>
+<p>硬件支持程度：</p>
+<ul>
+<li>不同硬件支持低比特指令不同</li>
+<li>不同硬件提供不同的低比特指令计算方式不同</li>
+<li>不同硬件体系结构kernel优化方式不同</li>
+</ul>
+<p>量化是否真的有效：</p>
+<ul>
+<li>混合精度需要量化与反量化，cast转换会影响性能</li>
+<li>模型参数效，压缩比高，不代表执行内存占用少</li>
+</ul>
+<p>量化方法</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/image-20230515174146367.png" alt="image-20230515174146367"></p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/image-20230515174505313.png" alt="image-20230515174505313"></p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/image-20230515174523917.png" alt="image-20230515174523917"></p>
+<p>量化建立数据映射关系</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/image-20230515175334164.png" alt="image-20230515175334164"></p>
+<p>对称量化和非对称量化</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/image-20230515175151923.png" alt="image-20230515175151923"></p>
+<p>量化原理</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/image-20230515175534004.png" alt="image-20230515175534004"></p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/image-20230515175633887.png" alt="image-20230515175633887"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://mightcoder.com">might</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://mightcoder.com/2023/05/28/open%20mlsys/">https://mightcoder.com/2023/05/28/open%20mlsys/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/hpc/">hpc</a><a class="post-meta__tags" href="/tags/mlsys/">mlsys</a><a class="post-meta__tags" href="/tags/ai/">ai</a></div><div class="post_share"><div class="social-share" data-image="https://openmlsys.github.io/_images/logo.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>请作者喝杯咖啡</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/05/28/cmake/" title="Cmake"><img class="cover" src="data:image/jpeg;base64,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" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">Cmake</div></div></a></div><div class="next-post pull-right"><a href="/2023/05/27/kokkos/" title="Kokkos编程指南"><img class="cover" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAoHCBYWEhgUFRQYGBYWHBoYHRUZGhgcHBwcGBgaHBoaGR4cIS4lIx44HxgaJkYmKzAxNTY1HCU7QDszPy40NTEBDAwMEA8QHxISHjUrJCE0NjQ0MTQxMTExNDQxNDQ0NDQ0NTQ0MT80NDQ0MTQ/NDQ0NDQ0ND0xNDU0NDQ0NjU0Mf/AABEIAGcB5wMBIgACEQEDEQH/xAAcAAEAAgMBAQEAAAAAAAAAAAAABgcBBAUCAwj/xABIEAACAQICBwQFCAULBQEAAAABAgADEQQxBQYSIUFRYQdxgZEiMnKxshM0QlJic6HBM1OC4fAUFRZDVJKTs8LD0SM1otLxY//EABoBAQEBAAMBAAAAAAAAAAAAAAABAgMEBQb/xAArEQEBAAIBBAECBAcBAAAAAAAAAQIRAwQSITFRBUETMnGBIjM0UpGxwRT/2gAMAwEAAhEDEQA/ALmiIgeZydKaew9BgtbEU6RIuAzC5HO3KdUyote0DY6qrAEWTcfYE5eLj78tOz0nT/j53DevG07/AKZ4H+20PP8AfH9M8D/baHn++UhjNDEb6Zv9k5+B/wCZyXQg2III4HcZzf8Anx+W+bo8+G6yn7/Z+hf6Z4H+20PP98x/TPA/26h5/vn55mQL7hnykvBPlwfhx+hf6Z4H+3UPP9838DpqlVTbpVUqoG2WdGB2Scgw4Zjzn52pYA5vu6cfGWx2e6GNHCs5FmxZTZXlTS5DHqds+BXmZnk4ZhjvbgvJjcu3HyscGZnhBYAT3Ou0RE+VSoFUsxAABJJNgAMySchA+sThUNa8G7/JrXXaJsLh1UnkGYBfx3zuwEREBERAREQEREBERAREQEREBETjaR1lwtB9ipWAYZqquxHtbANu4wOzE18LikqIHpurK2TKbj/70mxAREQEREBETkaT1hw1BtmrVCtnsgMzAHiQoNvGB14mpgMdTrIHpOHU8Rz5EZg9DNuAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiIHk5Sodefn9X9j/LWW8cpUOvPz+r+x/lrO10n57+j0vpn879v+xxVM+WJwqOLOP2siO4zdwGAeqfQXdxc7lHjxPQST4PQyU959N/rEbh7I4d+8zsZWSvQ6z6r0vDjcM7Mr8TzVePqvWttgEpzt6VvZzPfMUsMqD0Rv5nOWZVnF0lotHubbL/WHHvHH3zWM2+P5+oy5srZ4nxHG1Y0L/KsSqNupqNuo2VlXMX4End5nhLlwFO5L2sLBVW1rKMhbhOBqzoL+T0RRNjVqkPVYcFHqp5f6uclqiwsOE6PNyd2Xj1HPwcfZj5917iInC52JE+0eqVwQANg9RFbqLM1vNRJZIh2l/NE+9X4Kks9pfSrzLs1cqlsJQZjdjTS5OZOyN56ylJdOq3zLD/dp8IlyZxdaIiZbIiICIiAiIgIiICIiAiIgeWNgTKDaoXJdjdmJYk5ktvJPiZfdTI9xlApkO6ajGSwuy+q1sQt/RBpsByLbYY+Sr5SfSvuy31sT3Uv9yWDJl7ax9MxESKREQMSitKVS2IqsTdmdyT+0fy3eEvUyiMd+lqe2/xmXFjJMOzCqflay39EqrW6g2B8iZY8rXsx+cVfux8QllRl7ax9MxESKREQEREBERAREQEREBERAREQEREBERAREQPBykC09ohHxj1XN77NkyG5QN/PLu75PWkV01+nbw905+C2ZXXw8z6r1XL03B3cWVlt1bPitKmgAAAAA3ADKenyhZ7tOavmem5rjyd1/do1Zt6FwgLGqw9Clvtzb6IH4HynwNJmYKouxIAHUyTYPCgFaQ3pT3sfrOc/K/8AFo5eTtw1PdfU9Nj33u+zdwVIgFm9Zzc/kO626bkxMzpPQIiIGJEO0v5on3q/BUkvkQ7S/mifer8FSWe0vpWEunVb5lh/u0+ESlpdOq3zLD/dp8IlyZxdWfHE4hKalnZUUZsxCjzM4esOtVLDAqP+pW4U1OXVz9EdM+nGVjpfS9XEPtVWvb1VG5V6Kv559ZJNrctLowuMp1FvTqI6jddGDC/LcZsyndScQ6Y6kFJ9MlWXgV2STfutfwlwxZpZdsxESKxPLMALk2A4mR/WbWVMKuyAHrMLql9wH1m5Dpmbd5FYaT0tWxDbVaozcQuSr7KjcO/PrLJtm5aW8+nsKpscTRB5fKJ/zNrDY6nU306iP7DK3uMomekcqQykhhvDAkEdxG8S9qdy/ZmVlq5rs6MKeJJdMvlM3X2vrL+PflLJpuGAYEEEAgg3BB3gg8pLNNS7fSIiRXh8j3GUCmQ7pfz5HuMoFMh3TWLGSf8AZb62J7qX+5LCle9lvrYnupf7kmmk9JUqCF6rhV4cyeSjMnukvtcfTdmnS0pQd9ha9Nn+orqW3Z7gbysdYtbquIuiXp0Tu2QfSYfaI4fZG7neRtTYgg2I3gjcQRkQeBjSXJf8Tn6FrM+Gou/rtTRm4byoJ3ToSNsGURjv0tT23+My9zKIx36Wp7b/ABmXFjJLezH5xV9gfGJZcrTsx+cVfYHxiWBj8dTo0zUquFUcT7gMyeg3xfa4+m1NIaUoF/kxXp7d7bG2u1fls3vfpK51j1zqVr06N6dLItk7DqR6o6Df14SJ2iYlyfoCJxtVK7vgqL1CS5XeTmQCQrHmSoBv1nZkaIia2LxK00ao7BVUXJPD9/C3GBsTUxWk6NPdUrU0PJnVT5Eys9P65Vq5KUi1KlluNnYcywy7h5mRjrzmpixcl20dOYZzZcRSJ5Col/K86MoCdXQ2n6+GI+TcleNNrlT4fR7xaNEyXXE42r2nKeKp7a+i62D0yblSfeDwPuNxOzMtkREDETmac0smGomq+/6KqM2Y5KPIm/AAyq9LayYiux2qhVOFNCVUDkbb28b+Esm2bdLkNUA2LC/K4nufn/ZHITf0dpavQINKq6AfRvdT3qfR/CO1O5eUSPap6wjF0ztALUp2DAZb77LLfgbHdwtMyNpBERA8GRXTXzhvD3SVGRXTXzhvD3Tm4PzPE+vf08/Wf6rUWe1nhZ9aKXYCc1fOcU34jo6Jw/pF9wbZKqTkDz/LznT0Xb5O30gSGvntX338Zr0RawHCfWo2wwqD1WsrdDkG/LynW5L/ABPr+guuOYfDpRMAzMw75ERAxIh2l/NE+9X4Kkl8iHaX80T71fgqSz2l9Kwknra31Fw1PD0AU2EVWqfSJAsQv1R9rPukYiacewm5ud5O8k5knMmdDRGh62JfZpLcD1nO5F9o/kLnpN7VHRFHEVtmrV2bbxTG5n5gNwtyG+2VrXlsYTCpTQJTRVUZKosP46yW6ak24+rmrFLCi49KqRY1Du3cQo+iPx6yQxEy2xNPSmNWhRes2SKWtzPBR1JsPGbkiHaTXK4RVH06ig9yqze9VliX0rbG4p6tR6rm7udon3AdALADkBNvQmhquJfYpgWG9mPqoDzPPkOPgSOdLf1LwIpYKnYb6iiox5lxceS2HhNW6Yk3XIodndEL6daqzc12FHgCrH8ZxtPajVKSmpRY1VXeVIs4A4i25vCx6GWhEz3Vrtj8/wAsHs50wSGwrm+yC6E8r+mvmQR3nlIzrhgVo42oqiytZwOW0Lkd21teFp8tVcQUxtBhxcJ/ieh/qmr5jM8VdUREw5Hh8j3GUCmQ7pfz5HuMoFMh3TWLGSQataw/yRKxVdt6nyYW/qjZ27luJ9YbhnzE5OkMfUrualVizHnkByUZAdBNefTDIrOquwRWIBcgkKDxIG8ys7Yo0mdgiKWZjYKoJJPQCT7V7UUC1TFWJzFEbwPbI9b2Ru6mSTV/QVDDoDSALMATVNizA79xG4L0G7vznZktbmPyzERMtMGURjv0tT23+My9zKIx36Wp7b/GZcWMnU1Y04MI1R9guzoFVb2F9q92PLu/fNDSulauIfbqttHguSqOSrw954kzTnqmoLAFtkEgFrE2F95sN57hNM7YRCSFUEkmwUAkknIADMyc6uaik2qYrcMxRB3n2yMvZHnwkk1Z0BQoIHpkVGYX+XNjcH6ltyr0HiTJBJa3Mfl4poFACgAAAAAWAAyAHKfSImWmJWPaHpgvW/k6n0KVi32nIvv6AHzJ5SzpQ+Orl6ruc3d3/vMT+csZyr4qpJAAJJNgBvJJyAHOTfRHZ+zKHxFQpff8mliw9pjcX6AHvml2d4EPii5FxSXaA+0xsp8BteNpaktqYxBsX2d09n/pVnDf/oFZT09EKR375A9JaPqUKhpVV2WG/mGByZTxH8Zy9ZEO0bAhsKK1vSpMu/7LkKR5lT4SSlxV/oTSjYeulZb7tzL9ZT6y/n3gS66VQMqspurAMDzBFwfKULLf1Irl8BSJzUMngjsq/wDiBLkY1IIiJltWXaZiicTTp/RVNq32nZgfwQSJYPDNUqJTW207BBfK7G2/pJp2maPO3TxAF1K/JseRBLJfv2mHgOcg6OVIZSQykEEbiCDcEHnebnpx5e1gJ2crs+liDtcwg2fItf8AGR/SWp2KpPsqhqocnT81JuD+HWeV1yxo/r796U//AFnS0d2gV1YfLIrpxKjZfvG/ZPdYd8nlf4Ug1G0C+GR3qjZqVNkbNwdlUva5G65LHyHWZne0ZpKnXpipSa6ncRxU8Qw4GYkadCIiRXk5SutYtNfJ46pTdbqNizDMXQHeOIuf/ssU5SoNev8AuFXuT/LWcvF+Z5v1Tjxz4ZMvlJMNXV12lYMOY/PkZ1sDTsL8T7pV+CxDo20rFT049CMiO+TTRGsyNZaw2G+uPVPfxX3d07OngcPB2Z734S5J91UEEHJhYzVpuLbVxs2vtX3W535SL6c19pUrphwKr5bf9Wp7xvf9nd1nWvBycuWuObr6Lo8bfSZ4GoRem3rJx5jgfKbkhGqOsDYmkWcj5eifTsANqmxJVgOm8fsn6wk0p1AQCOMzyceXHlccvcehZq6fSIiYRiRDtL+aJ96vwVJL5EO0v5on3q/BUlntL6VhN3G6LqUkp1GX0KyqysMt4vsnk3Tjw4zSlwaEwiVdHUadRQytSQFT7Iy5HqMpq3TEm1QI5BDAkEEEEGxBGRBGRllaoa3CtahXIFXJXyD9DyfpkeHKRPWfVl8K20LvRY+i/Fb5K9uPXI/hOBHslsX9MyBana3liuHxDXY2VKp+kcgr/a4BuPHfvM8mbNNy7ZkR7SKBbBhh/V1FY9xDJ73El01MfhFq0npN6rqVPPeMx14+EQqi5bWo+kVq4NFB9KiBTZeI2dynuK28b8pV2ksC1Cq9JxZlNr8GHBl6Eb560ZpOph3FSk2y2RGasOTDiP4FpqzbEuqvSYlfUO0b0fTw9zzV7A+BXd5mcfTuuNbEKaaqKVM7iqkliOTNYbugA63Ez21rujR1q0itfF1Kim63CKeaoLXHQm57jGqeHL46go4OHPcgLf6R5zkSxuzvQpRWxLixqDZQH6l7lvEgW6C/GaviMzzU5iImHI8Pke4ygUyHdL+fI9xlApkO6axYyb+B0XUq06j012hR2Syj1rPtbwONtjv3zRk+7LvWxPdS/wByfXW/U/a2sRhl9PeXpD6XNkH1vs8eG/O78p2+NuHqprU2GIp1LtQJyzZL8U5rzXxG/cbTw9dXUOjBlYXDA3BB5Shp3tWNZXwr7Ju1Fj6ScR9pL5N0yP4iWLjkuGJrYPFJVRaiMGRhcEcv+ZszLbBlEY79LU9t/jMvcyiMd+lqe2/xmaxYyfbRuiqlcP8AJLtNTUOU+kwvY7PM8bceG/dNKTTsx+cVfux8YnX1v1RFa9egAKubJkH6jk/XI8ecu/KdvjaJ6sazPhW2Wu9Fj6ScVvmyX49Mj0zlrYLFpVprUpsGVhcMP43HoZRbqQSCCCCQQRYgjMEHIzr6u6wVMK919Kmx9OmTuP2l5N148eksWXS54mno3HpXpLVpm6t5gjcQRwIM3JltiUTpHDmnWqUz9B3XyYgHyl7St+0XQpWoMUo9BrK9vosNysehFh3gc5YzlPDQ1A0itLF7LGy1hsA/auCl+/eO9hLXlAyWaI17rUlCVVFZcgxbZe3U2IbxF+ZMtiS6WlIZ2j6SVcOtAH06rAkckQ3uf2go8DynOxfaIxW1KgFb6zvcD9kAX85C8Zi3qu1SoxZmzY+4cAOgkkW5PjLg1Jw5TAUQc2DP4VHZl/8AEiVjq9ohsTXWmL7HrO31VGfich1PQy6UQKAALAAAAcAMhLkYx9IiJlpr4rDJURkcBlYWKnIiV9pTs/qBicO6svBHOyw6XtZu82nR190/UolKFFihZdtnGezcqAp4bwd+e4SMaI1uxFBrs7VkOaVGJPerm5B8x0mpKzbHhtTsd+oJ7qlL/wB5x8Vh2psUdSrLmGFiP3dZYqdoeHt6VKsDyAQjwO0PdITrHpg4quauxsAKEVb3OypJux53Y+7rLNs2T7N3UnSpoYkBj/06oIcdVUsrd9xb9oxOfoDANXxK0147RJ5AITc+Nh4xHhZvS7oiJht5MqDXr/uFXuT/AC1lvmU72iV1pY+oznZDKhW+bDZC3Ucd4I8Jy8Mtz1HR67G5cckn3clBNfG6VSnuJ2n+qufieE4OM04z+ihCL3jaPjw8POczbHMec9PDh/udbi6K+8/8OviNYK7gptkUib/IgnZPeOJ/i094fGK+7I8j+RnF2xzHnMbY5jznd47MJqTw9Hjy/DmsZ4+E11f0s2FxKV1uQvoso+kjW2l79wI6qJdWja67gpDU3UPTIyKsL7vPyIn5rw+kCu4kMOp3+Blt9mulGq4Som8pQZCjngXJ2qfhn+2Ok6X1Hjxyx/Enue3Yuczm57WdE8UzcAz3PHZYkX7QcIz4MlQT8myuQM9kBlJ8Nq/cDJREQUCovYAXJ3ADeSTkBzMu7QOHanhaNNhZkporDkQouPOe6Oi6CPtrQpq/11RQ2/PeBebstu2ZNPlXoq6FXUMrCxUi4IPAiVbrZqo2HJq0wXoHxZOjc15N4HmbYmIl0tm1GaIwb1q6U6YJYspuPogEXc8gM5ec+dKiq+qoW+dgB7p9Yt2SaIiJFcPWLV6nikAb0XX1agFyOhHFenlaVnpbVvE4cnbpllH9YgLLbmbb18QJc8Sy6ZuO35/2hzn3wuGeo2zTRnbkilvO2UvJ8KjG7IpPMqCfxE+qoALAADkN0vcnagGrmox2hUxVrDeKAIN/vCN1vsi9+JzEsDpMzMlu2pNEREivLC4lDYjDNTdqbizodlh1H5cb8jL6mnitG0apBqUabkZF0ViOlyMpZdM2bRDsxwrCnWqkWSoUVTz2NvaI6ekBfmDyk7nhEAAAAAG4AbgAOAn0i3ayaQzW7VEVr16AArZsuQf/AIbrx485WjoVYqwIYGxUggg8iDvv0l+z5Giu1tFRtD6VhfzziVLjtxNScG9LBItQFWJZtk5qGYkAjgbb7dZIYiRpiUdprDNTxNVGFmDse9WYlWHQg3l4zVxej6VW3ytJKlsttVa3dcSy6Zs2gvZlhW2qtW3obIQNwLXuQO4AeYliT50qSooVVCqNwUAAAdAJ9Yt2smkU1s1VXEA1adlrgZ5BwODfa5N4Hda1W16TI7K6lWU2KtuIPWX5Pk1FSQxUEjIkAkdxiVLjtGuz/AvTwhLgr8o5qKp3EKVVQSDlfZJ7iJK5iZkWE+VekrqVYBlYEEEXBBzBE+sQqstP6jOhL4b00z+TJ9Jegv6w/HvzkQr0mRtl1ZGH0WBU+R3y+54qUlYWZQRyIB98syYuKgweE7+htUsRXIJU004u4I3fZU72/AdZbVLDqvqoq+yoHun2l2drm6F0PTw1PYpjqzn1mPNj+WQnTiJlsiIgRnWzVsYpAysFqoCFJ9Vgd+y1t438eG/dvlY6R0XWoNatTZOG0R6J7mG4+cvOeWW4sRfpLLpm47UFeffB4R6r7FJGduSi/ieAHU7pdLaHw5Nzh6JPM00J9026VJVFlVVHIAAeQl7k7Uc1P1b/AJKpd7Gs4sbZKuewp4795PQcrlJPEy1pmIiFJrV8Kr22lVrZbShrd15mIHx/m5P1dL+4I/m5P1dL+4IiXdD+bk/V0v7gj+bl/V0v8MREbofzen6ul/hie1wY3DcFBuFUBRfnYTERujbmYiQIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiIH/2Q==" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next</div><div class="next_info">Kokkos编程指南</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2022/03/22/DeePMD/" title="DeePMD"><img class="cover" src="https://opengraph.githubassets.com/d898d41940ad810016642ba5050f4f9269cb9162d43131d73ee7342b779c1ffa/deepmodeling/deepmd-kit" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-03-22</div><div class="title">DeePMD</div></div></a></div><div><a href="/2022/07/31/PAC22-%E5%88%9D%E8%B5%9B/" title="PAC22-初赛"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202208092121258.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-07-31</div><div class="title">PAC22-初赛</div></div></a></div><div><a href="/2023/11/02/effective%20modern%20c++/" title="effective modern c++"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20231101213331.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-11-02</div><div class="title">effective modern c++</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> Comment</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">might</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/shenghansen" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:shenghs@mail2.sysu.edu.cn" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">Hope you can find something useful here ᐕ)⁾⁾ .</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E7%A8%8B%E6%8E%A5%E5%8F%A3"><span class="toc-number">1.</span> <span class="toc-text">编程接口</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="toc-number">1.1.</span> <span class="toc-text">机器学习工作流</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E6%B7%B1%E5%BA%A6%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="toc-number">1.2.</span> <span class="toc-text">定义深度神经网络</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-C-%E7%BC%96%E7%A8%8B%E6%8E%A5%E5%8F%A3"><span class="toc-number">1.3.</span> <span class="toc-text">C&#x2F;C++编程接口</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E5%9B%BE"><span class="toc-number">2.</span> <span class="toc-text">计算图</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E5%9B%BE%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%9E%84%E6%88%90"><span class="toc-number">2.1.</span> <span class="toc-text">计算图的基本构成</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E4%BE%9D%E8%B5%96"><span class="toc-number">2.1.1.</span> <span class="toc-text">计算依赖</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8E%A7%E5%88%B6%E6%B5%81"><span class="toc-number">2.1.2.</span> <span class="toc-text">控制流</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E5%9B%BE%E7%9A%84%E7%94%9F%E6%88%90"><span class="toc-number">2.2.</span> <span class="toc-text">计算图的生成</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9D%99%E6%80%81%E7%94%9F%E6%88%90"><span class="toc-number">2.2.1.</span> <span class="toc-text">静态生成</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E7%94%9F%E6%88%90"><span class="toc-number">2.2.2.</span> <span class="toc-text">动态生成</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AI%E7%BC%96%E8%AF%91%E5%92%8C%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF"><span class="toc-number">3.</span> <span class="toc-text">AI编译和前端技术</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E5%99%A8%E5%90%8E%E7%AB%AF%E5%92%8C%E8%BF%90%E8%A1%8C%E6%97%B6"><span class="toc-number">4.</span> <span class="toc-text">编译器后端和运行时</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E5%9B%BE%E4%BC%98%E5%8C%96"><span class="toc-number">4.1.</span> <span class="toc-text">计算图优化</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%9A%E7%94%A8%E4%BC%98%E5%8C%96"><span class="toc-number">4.1.1.</span> <span class="toc-text">通用优化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%89%B9%E5%AE%9A%E7%A1%AC%E4%BB%B6%E4%BC%98%E5%8C%96"><span class="toc-number">4.1.2.</span> <span class="toc-text">特定硬件优化</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%97%E5%AD%90%E9%80%89%E6%8B%A9"><span class="toc-number">4.2.</span> <span class="toc-text">算子选择</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%8E%92%E5%B8%83%E6%A0%BC%E5%BC%8F"><span class="toc-number">4.2.1.</span> <span class="toc-text">数据排布格式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%B2%BE%E5%BA%A6"><span class="toc-number">4.2.2.</span> <span class="toc-text">数据精度</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D"><span class="toc-number">4.3.</span> <span class="toc-text">内存分配</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E5%A4%8D%E7%94%A8"><span class="toc-number">4.3.1.</span> <span class="toc-text">内存复用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E4%BC%98%E5%8C%96%E6%89%8B%E6%AE%B5"><span class="toc-number">4.3.2.</span> <span class="toc-text">常用内存分配优化手段</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E8%B0%83%E5%BA%A6%E4%B8%8E%E6%89%A7%E8%A1%8C"><span class="toc-number">4.4.</span> <span class="toc-text">计算调度与执行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%97%E5%AD%90%E7%BC%96%E8%AF%91%E5%99%A8"><span class="toc-number">4.5.</span> <span class="toc-text">算子编译器</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A1%AC%E4%BB%B6%E5%8A%A0%E9%80%9F%E5%99%A8"><span class="toc-number">5.</span> <span class="toc-text">硬件加速器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E6%A1%86%E6%9E%B6"><span class="toc-number">6.</span> <span class="toc-text">数据处理框架</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%AB%98%E6%95%88%E6%80%A7%E8%AE%BE%E8%AE%A1"><span class="toc-number">6.1.</span> <span class="toc-text">高效性设计</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2"><span class="toc-number">7.</span> <span class="toc-text">模型部署</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E5%88%B0%E6%8E%A8%E7%90%86%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%BD%AC%E6%8D%A2%E5%8F%8A%E4%BC%98%E5%8C%96"><span class="toc-number">7.1.</span> <span class="toc-text">训练模型到推理模型的转换及优化</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="toc-number">7.1.1.</span> <span class="toc-text">模型转换</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AE%97%E5%AD%90%E8%9E%8D%E5%90%88"><span class="toc-number">7.1.2.</span> <span class="toc-text">算子融合</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AE%97%E5%AD%90%E6%9B%BF%E6%8D%A2"><span class="toc-number">7.1.3.</span> <span class="toc-text">算子替换</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AE%97%E5%AD%90%E9%87%8D%E6%8E%92"><span class="toc-number">7.1.4.</span> <span class="toc-text">算子重排</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E5%8E%8B%E7%BC%A9"><span class="toc-number">7.2.</span> <span class="toc-text">模型压缩</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%87%8F%E5%8C%96"><span class="toc-number">7.2.1.</span> <span class="toc-text">量化</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2023/11/02/effective%20modern%20c++/" title="effective modern c++"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20231101213331.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="effective modern c++"/></a><div class="content"><a class="title" href="/2023/11/02/effective%20modern%20c++/" title="effective modern c++">effective modern c++</a><time datetime="2023-11-02T13:01:37.000Z" title="Created 2023-11-02 21:01:37">2023-11-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/11/01/CXL/" title="CXL"><img src="https://i.ytimg.com/vi/6TRbkes15Ok/maxresdefault.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CXL"/></a><div class="content"><a class="title" href="/2023/11/01/CXL/" title="CXL">CXL</a><time datetime="2023-11-01T12:31:37.000Z" title="Created 2023-11-01 20:31:37">2023-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/10/25/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/" title="性能优化技巧总结"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202208092121258.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="性能优化技巧总结"/></a><div class="content"><a class="title" href="/2023/10/25/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/" title="性能优化技巧总结">性能优化技巧总结</a><time datetime="2023-10-25T13:01:37.000Z" title="Created 2023-10-25 21:01:37">2023-10-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/05/28/cmake/" title="Cmake"><img src="data:image/jpeg;base64,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" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Cmake"/></a><div class="content"><a class="title" href="/2023/05/28/cmake/" title="Cmake">Cmake</a><time datetime="2023-05-28T13:39:37.000Z" title="Created 2023-05-28 21:39:37">2023-05-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/05/28/open%20mlsys/" title="open mlsys"><img src="https://openmlsys.github.io/_images/logo.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="open mlsys"/></a><div class="content"><a class="title" href="/2023/05/28/open%20mlsys/" title="open mlsys">open mlsys</a><time datetime="2023-05-28T13:39:37.000Z" title="Created 2023-05-28 21:39:37">2023-05-28</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://openmlsys.github.io/_images/logo.png')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By might</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">hope you can find something useful here ᐕ)⁾⁾ .</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="Scroll To Comments"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const initValine = () => {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'VBvzA6UUhphh1Tc1BtzWXzye-gzGzoHsz',
+      appKey: 'J0UlGcCok0khsrORkwxD1HwF',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  const loadValine = async () => {
+    if (typeof Valine === 'function') initValine()
+    else {
+      await getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js')
+      initValine()
+    }
+  }
+
+  if ('Valine' === 'Valine' || !false) {
+    if (false) btf.loadComment(document.getElementById('vcomment'),loadValine)
+    else setTimeout(loadValine, 0)
+  } else {
+    window.loadOtherComment = loadValine
+  }
+})()</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

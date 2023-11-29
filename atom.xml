@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>might&#39;s room</title>
+  <icon>https://mightcoder.com/icon.png</icon>
+  <subtitle>Hope you can find something useful here.</subtitle>
+  <link href="https://mightcoder.com/atom.xml" rel="self"/>
+  
+  <link href="https://mightcoder.com/"/>
+  <updated>2023-11-01T13:33:47.439Z</updated>
+  <id>https://mightcoder.com/</id>
+  
+  <author>
+    <name>might</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>effective modern c++</title>
+    <link href="https://mightcoder.com/2023/11/02/effective%20modern%20c++/"/>
+    <id>https://mightcoder.com/2023/11/02/effective%20modern%20c++/</id>
+    <published>2023-11-02T13:01:37.000Z</published>
+    <updated>2023-11-01T13:33:47.439Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;条款一：类型推导&quot;&gt;&lt;a href=&quot;#条款一：类型推导&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="hpc" scheme="https://mightcoder.com/tags/hpc/"/>
+    
+    <category term="c++" scheme="https://mightcoder.com/tags/c/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>CXL</title>
+    <link href="https://mightcoder.com/2023/11/01/CXL/"/>
+    <id>https://mightcoder.com/2023/11/01/CXL/</id>
+    <published>2023-11-01T12:31:37.000Z</published>
+    <updated>2023-11-01T12:31:33.373Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;CXL简介：&quot;&gt;&lt;a href=&quot;#CXL简介：&quot; class=&quot;headerlink&quot; title=&quot;CXL简介：&quot;&gt;&lt;/a&gt;CXL简介：&lt;/h1&gt;&lt;p&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="cxl" scheme="https://mightcoder.com/tags/cxl/"/>
+    
+    <category term="存储" scheme="https://mightcoder.com/tags/%E5%AD%98%E5%82%A8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>性能优化技巧总结</title>
+    <link href="https://mightcoder.com/2023/10/25/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/"/>
+    <id>https://mightcoder.com/2023/10/25/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/</id>
+    <published>2023-10-25T13:01:37.000Z</published>
+    <updated>2023-10-25T04:00:29.488Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;&quot;&gt;&lt;a href=&quot;#&quot; class=&quot;headerlink&quot; title=&quot;&quot;&gt;&lt;/a&gt;&lt;/h1&gt;&lt;h2 id=&quot;0-前言&quot;&gt;&lt;a href=&quot;#0-前言&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="hpc" scheme="https://mightcoder.com/tags/hpc/"/>
+    
+    <category term="竞赛" scheme="https://mightcoder.com/tags/%E7%AB%9E%E8%B5%9B/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Cmake</title>
+    <link href="https://mightcoder.com/2023/05/28/cmake/"/>
+    <id>https://mightcoder.com/2023/05/28/cmake/</id>
+    <published>2023-05-28T13:39:37.000Z</published>
+    <updated>2023-05-26T10:50:21.566Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;cmake步骤&quot;&gt;&lt;a href=&quot;#cmake步骤&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="c++" scheme="https://mightcoder.com/tags/c/"/>
+    
+    <category term="cmake" scheme="https://mightcoder.com/tags/cmake/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>open mlsys</title>
+    <link href="https://mightcoder.com/2023/05/28/open%20mlsys/"/>
+    <id>https://mightcoder.com/2023/05/28/open%20mlsys/</id>
+    <published>2023-05-28T13:39:37.000Z</published>
+    <updated>2023-05-26T10:52:48.950Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;编程接口&quot;&gt;&lt;a href=&quot;#编程接口&quot; class=&quot;headerlink&quot; title=&quot;编程接口&quot;&gt;&lt;/a&gt;编程接口&lt;/h2&gt;&lt;p&gt;编程接口：python等脚本语言作为上层接口，c&amp;#x2F;c++等底层语言来保证性能。&lt;/p&gt;
+&lt;h3</summary>
+        
+      
+    
+    
+    
+    
+    <category term="hpc" scheme="https://mightcoder.com/tags/hpc/"/>
+    
+    <category term="mlsys" scheme="https://mightcoder.com/tags/mlsys/"/>
+    
+    <category term="ai" scheme="https://mightcoder.com/tags/ai/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Kokkos编程指南</title>
+    <link href="https://mightcoder.com/2023/05/27/kokkos/"/>
+    <id>https://mightcoder.com/2023/05/27/kokkos/</id>
+    <published>2023-05-27T13:39:37.000Z</published>
+    <updated>2023-05-26T10:48:42.437Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;KOKKOS编程指南&quot;&gt;&lt;a href=&quot;#KOKKOS编程指南&quot; class=&quot;headerlink&quot; title=&quot;KOKKOS编程指南&quot;&gt;&lt;/a&gt;KOKKOS编程指南&lt;/h1&gt;&lt;h2 id=&quot;1-简介&quot;&gt;&lt;a href=&quot;#1-简介&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="hpc" scheme="https://mightcoder.com/tags/hpc/"/>
+    
+    <category term="gpu" scheme="https://mightcoder.com/tags/gpu/"/>
+    
+    <category term="kokkos" scheme="https://mightcoder.com/tags/kokkos/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Rocm</title>
+    <link href="https://mightcoder.com/2023/05/26/rocm/"/>
+    <id>https://mightcoder.com/2023/05/26/rocm/</id>
+    <published>2023-05-26T13:39:37.000Z</published>
+    <updated>2023-05-26T10:37:08.184Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;ROCm——open-software-platform-for-accelerated-computing&quot;&gt;&lt;a href=&quot;#ROCm——open-software-platform-for-accelerated-computing&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="hpc" scheme="https://mightcoder.com/tags/hpc/"/>
+    
+    <category term="gpu" scheme="https://mightcoder.com/tags/gpu/"/>
+    
+    <category term="rocm" scheme="https://mightcoder.com/tags/rocm/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>cuda c权威编程指南笔记</title>
+    <link href="https://mightcoder.com/2023/05/25/cuda%20c%E6%9D%83%E5%A8%81%E7%BC%96%E7%A8%8B%E6%8C%87%E5%8D%97%E7%AC%94%E8%AE%B0/"/>
+    <id>https://mightcoder.com/2023/05/25/cuda%20c%E6%9D%83%E5%A8%81%E7%BC%96%E7%A8%8B%E6%8C%87%E5%8D%97%E7%AC%94%E8%AE%B0/</id>
+    <published>2023-05-25T13:39:37.000Z</published>
+    <updated>2023-05-25T13:35:23.351Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;cuda-c权威编程指南笔记&quot;&gt;&lt;a href=&quot;#cuda-c权威编程指南笔记&quot; class=&quot;headerlink&quot; title=&quot;cuda c权威编程指南笔记&quot;&gt;&lt;/a&gt;cuda c权威编程指南笔记&lt;/h1&gt;&lt;h2</summary>
+        
+      
+    
+    
+    
+    
+    <category term="hpc" scheme="https://mightcoder.com/tags/hpc/"/>
+    
+    <category term="gpu" scheme="https://mightcoder.com/tags/gpu/"/>
+    
+    <category term="cuda" scheme="https://mightcoder.com/tags/cuda/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>【live house】2023.3.15 脆莓 《重返舞台》</title>
+    <link href="https://mightcoder.com/2023/03/15/%E3%80%90live%20house%E3%80%912023-3-15-%E8%84%86%E8%8E%93-%E3%80%8A%E9%87%8D%E5%9B%9E%E8%88%9E%E5%8F%B0%E3%80%8B/"/>
+    <id>https://mightcoder.com/2023/03/15/%E3%80%90live%20house%E3%80%912023-3-15-%E8%84%86%E8%8E%93-%E3%80%8A%E9%87%8D%E5%9B%9E%E8%88%9E%E5%8F%B0%E3%80%8B/</id>
+    <published>2023-03-15T15:57:59.000Z</published>
+    <updated>2023-04-25T10:16:27.828Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;第二次爱上脆莓，整张专辑都可以循环一整天&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/IMG_20230315_203415.jpg&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="livehouse" scheme="https://mightcoder.com/tags/livehouse/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>PAC22-初赛</title>
+    <link href="https://mightcoder.com/2022/07/31/PAC22-%E5%88%9D%E8%B5%9B/"/>
+    <id>https://mightcoder.com/2022/07/31/PAC22-%E5%88%9D%E8%B5%9B/</id>
+    <published>2022-07-31T13:01:37.000Z</published>
+    <updated>2023-05-15T09:33:48.218Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;0-赛题分析&quot;&gt;&lt;a href=&quot;#0-赛题分析&quot; class=&quot;headerlink&quot; title=&quot;0.赛题分析&quot;&gt;&lt;/a&gt;0.赛题分析&lt;/h2&gt;&lt;p&gt;&lt;img</summary>
+        
+      
+    
+    
+    
+    
+    <category term="hpc" scheme="https://mightcoder.com/tags/hpc/"/>
+    
+    <category term="pac" scheme="https://mightcoder.com/tags/pac/"/>
+    
+    <category term="gpu" scheme="https://mightcoder.com/tags/gpu/"/>
+    
+    <category term="竞赛" scheme="https://mightcoder.com/tags/%E7%AB%9E%E8%B5%9B/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>optimizing_cpp(10)</title>
+    <link href="https://mightcoder.com/2022/04/05/optimizing-cpp-10/"/>
+    <id>https://mightcoder.com/2022/04/05/optimizing-cpp-10/</id>
+    <published>2022-04-05T13:11:37.000Z</published>
+    <updated>2022-07-15T08:13:03.060Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;十、向量操作&quot;&gt;&lt;a href=&quot;#十、向量操作&quot; class=&quot;headerlink&quot; title=&quot;十、向量操作&quot;&gt;&lt;/a&gt;十、向量操作&lt;/h2&gt;&lt;p&gt;现代处理器基本都支持向量指令了，这种技术叫SIMD(single instruction multiple</summary>
+        
+      
+    
+    
+    
+    
+    <category term="hpc" scheme="https://mightcoder.com/tags/hpc/"/>
+    
+    <category term="cpp" scheme="https://mightcoder.com/tags/cpp/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>optimizing_cpp(11)</title>
+    <link href="https://mightcoder.com/2022/04/05/optimizing-cpp-11/"/>
+    <id>https://mightcoder.com/2022/04/05/optimizing-cpp-11/</id>
+    <published>2022-04-05T13:11:37.000Z</published>
+    <updated>2022-07-15T08:13:03.060Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;十一、具体优化策略&quot;&gt;&lt;a href=&quot;#十一、具体优化策略&quot; class=&quot;headerlink&quot; title=&quot;十一、具体优化策略&quot;&gt;&lt;/a&gt;十一、具体优化策略&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;跳过了anger手册中关于cpu</summary>
+        
+      
+    
+    
+    
+    
+    <category term="hpc" scheme="https://mightcoder.com/tags/hpc/"/>
+    
+    <category term="cpp" scheme="https://mightcoder.com/tags/cpp/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>optimizing_cpp(12)</title>
+    <link href="https://mightcoder.com/2022/04/05/optimizing-cpp-12/"/>
+    <id>https://mightcoder.com/2022/04/05/optimizing-cpp-12/</id>
+    <published>2022-04-05T13:11:37.000Z</published>
+    <updated>2022-07-15T08:13:03.059Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;十二、元编程&quot;&gt;&lt;a href=&quot;#十二、元编程&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="hpc" scheme="https://mightcoder.com/tags/hpc/"/>
+    
+    <category term="cpp" scheme="https://mightcoder.com/tags/cpp/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>optimizing_cpp(9)</title>
+    <link href="https://mightcoder.com/2022/04/05/optimizing-cpp-9/"/>
+    <id>https://mightcoder.com/2022/04/05/optimizing-cpp-9/</id>
+    <published>2022-04-05T13:11:37.000Z</published>
+    <updated>2022-07-15T08:13:03.053Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;九、乱序执行&quot;&gt;&lt;a href=&quot;#九、乱序执行&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="hpc" scheme="https://mightcoder.com/tags/hpc/"/>
+    
+    <category term="cpp" scheme="https://mightcoder.com/tags/cpp/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>optimizing_cpp(8)</title>
+    <link href="https://mightcoder.com/2022/04/05/optimizing-cpp-8/"/>
+    <id>https://mightcoder.com/2022/04/05/optimizing-cpp-8/</id>
+    <published>2022-04-05T13:11:37.000Z</published>
+    <updated>2022-07-15T08:13:03.056Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;八、多线程&quot;&gt;&lt;a href=&quot;#八、多线程&quot; class=&quot;headerlink&quot; title=&quot;八、多线程&quot;&gt;&lt;/a&gt;八、多线程&lt;/h2&gt;&lt;p&gt;有三种方法可以并行地执行任务：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;使用多个 &lt;em&gt;CPU&lt;/em&gt; 或 &lt;em&gt;多 核</summary>
+        
+      
+    
+    
+    
+    
+    <category term="hpc" scheme="https://mightcoder.com/tags/hpc/"/>
+    
+    <category term="cpp" scheme="https://mightcoder.com/tags/cpp/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>optimizing_cpp(7)</title>
+    <link href="https://mightcoder.com/2022/04/05/optimizing-cpp-7/"/>
+    <id>https://mightcoder.com/2022/04/05/optimizing-cpp-7/</id>
+    <published>2022-04-05T13:01:37.000Z</published>
+    <updated>2022-07-15T08:13:03.057Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;七、内存访问优化&quot;&gt;&lt;a href=&quot;#七、内存访问优化&quot; class=&quot;headerlink&quot; title=&quot;七、内存访问优化&quot;&gt;&lt;/a&gt;七、内存访问优化&lt;/h2&gt;&lt;h3 id=&quot;1-缓存&quot;&gt;&lt;a href=&quot;#1-缓存&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="hpc" scheme="https://mightcoder.com/tags/hpc/"/>
+    
+    <category term="cpp" scheme="https://mightcoder.com/tags/cpp/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>linux查漏补缺</title>
+    <link href="https://mightcoder.com/2022/03/30/linux%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA/"/>
+    <id>https://mightcoder.com/2022/03/30/linux%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA/</id>
+    <published>2022-03-30T13:33:57.000Z</published>
+    <updated>2022-07-15T08:13:03.060Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;linux查漏补缺&quot;&gt;&lt;a href=&quot;#linux查漏补缺&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="linux" scheme="https://mightcoder.com/tags/linux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>optimizing_cpp(6)</title>
+    <link href="https://mightcoder.com/2022/03/30/optimizing-cpp-6/"/>
+    <id>https://mightcoder.com/2022/03/30/optimizing-cpp-6/</id>
+    <published>2022-03-30T13:11:37.000Z</published>
+    <updated>2022-07-15T08:13:03.059Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;六、编译器层次的优化&quot;&gt;&lt;a href=&quot;#六、编译器层次的优化&quot; class=&quot;headerlink&quot; title=&quot;六、编译器层次的优化&quot;&gt;&lt;/a&gt;六、编译器层次的优化&lt;/h2&gt;&lt;h3 id=&quot;1-编译器如何优化&quot;&gt;&lt;a href=&quot;#1-编译器如何优化&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="hpc" scheme="https://mightcoder.com/tags/hpc/"/>
+    
+    <category term="cpp" scheme="https://mightcoder.com/tags/cpp/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>optimizing_cpp(5)</title>
+    <link href="https://mightcoder.com/2022/03/29/optimizing-cpp-5/"/>
+    <id>https://mightcoder.com/2022/03/29/optimizing-cpp-5/</id>
+    <published>2022-03-29T03:11:37.000Z</published>
+    <updated>2022-07-15T08:13:03.058Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;五-不同c-结构的效率&quot;&gt;&lt;a href=&quot;#五-不同c-结构的效率&quot; class=&quot;headerlink&quot; title=&quot;五.不同c++结构的效率&quot;&gt;&lt;/a&gt;五.不同c++结构的效率&lt;/h2&gt;&lt;h3 id=&quot;1-不同种类变量存储&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="hpc" scheme="https://mightcoder.com/tags/hpc/"/>
+    
+    <category term="cpp" scheme="https://mightcoder.com/tags/cpp/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>DeePMD</title>
+    <link href="https://mightcoder.com/2022/03/22/DeePMD/"/>
+    <id>https://mightcoder.com/2022/03/22/DeePMD/</id>
+    <published>2022-03-22T02:12:51.000Z</published>
+    <updated>2022-07-15T08:13:03.061Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;DeepMD&quot;&gt;&lt;a href=&quot;#DeepMD&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="hpc" scheme="https://mightcoder.com/tags/hpc/"/>
+    
+    <category term="ASC" scheme="https://mightcoder.com/tags/ASC/"/>
+    
+  </entry>
+  
+</feed>

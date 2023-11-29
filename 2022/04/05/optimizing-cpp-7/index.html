@@ -1,0 +1,449 @@
+<!DOCTYPE html><html lang="zh-cn" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>optimizing_cpp(7) | might's room</title><meta name="author" content="might"><meta name="copyright" content="might"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="七、内存访问优化1.缓存优化访存主要就是优化cahce的访问，因此先系统复习下关于cache的相关知识。 现代cpu大多拥有三级缓存L1L2L3。   L1缓存分成两种，一种是指令缓存，一种是数据缓存。L2缓存和L3缓存不分指令和数据。 L1和L2缓存在每一个CPU核中，L3则是所有CPU核心共享的内存。 L1、L2、L3的越离CPU近就越小，速度也越快，越离CPU远，速度也越慢。  三级缓存和R">
+<meta property="og:type" content="article">
+<meta property="og:title" content="optimizing_cpp(7)">
+<meta property="og:url" content="https://mightcoder.com/2022/04/05/optimizing-cpp-7/index.html">
+<meta property="og:site_name" content="might&#39;s room">
+<meta property="og:description" content="七、内存访问优化1.缓存优化访存主要就是优化cahce的访问，因此先系统复习下关于cache的相关知识。 现代cpu大多拥有三级缓存L1L2L3。   L1缓存分成两种，一种是指令缓存，一种是数据缓存。L2缓存和L3缓存不分指令和数据。 L1和L2缓存在每一个CPU核中，L3则是所有CPU核心共享的内存。 L1、L2、L3的越离CPU近就越小，速度也越快，越离CPU远，速度也越慢。  三级缓存和R">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg">
+<meta property="article:published_time" content="2022-04-05T13:01:37.000Z">
+<meta property="article:modified_time" content="2022-07-15T08:13:03.057Z">
+<meta property="article:author" content="might">
+<meta property="article:tag" content="hpc">
+<meta property="article:tag" content="cpp">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg"><link rel="shortcut icon" href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg"><link rel="canonical" href="https://mightcoder.com/2022/04/05/optimizing-cpp-7/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//static.cloudflareinsights.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script defer="defer" data-pjax="data-pjax" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="{&quot;token&quot;: &quot;60e2c80ac4524b11b7168fad4fb0548b&quot;}"></script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: 'days',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'optimizing_cpp(7)',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-07-15 16:13:03'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 8 || hour >= 22
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="might's room" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="might's room"><img class="site-icon" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg"/><span class="site-name">might's room</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">optimizing_cpp(7)</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2022-04-05T13:01:37.000Z" title="Created 2022-04-05 21:01:37">2022-04-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2022-07-15T08:13:03.057Z" title="Updated 2022-07-15 16:13:03">2022-07-15</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">Word Count:</span><span class="word-count">7.9k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">Reading Time:</span><span>26mins</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="optimizing_cpp(7)"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="七、内存访问优化"><a href="#七、内存访问优化" class="headerlink" title="七、内存访问优化"></a>七、内存访问优化</h2><h3 id="1-缓存"><a href="#1-缓存" class="headerlink" title="1.缓存"></a>1.缓存</h3><p>优化访存主要就是优化cahce的访问，因此先系统复习下关于cache的相关知识。</p>
+<p>现代cpu大多拥有三级缓存L1L2L3。</p>
+<p><img src="https://coolshell.cn/wp-content/uploads/2020/02/cache.architecture.png" alt="di"></p>
+<ul>
+<li>L1缓存分成两种，一种是指令缓存，一种是数据缓存。L2缓存和L3缓存不分指令和数据。</li>
+<li>L1和L2缓存在每一个CPU核中，L3则是所有CPU核心共享的内存。</li>
+<li>L1、L2、L3的越离CPU近就越小，速度也越快，越离CPU远，速度也越慢。</li>
+</ul>
+<p>三级缓存和RAM读取速度的对比：</p>
+<ul>
+<li>L1 的存取速度：<strong>4 个CPU时钟周期</strong></li>
+<li>L2 的存取速度： <strong>11 个CPU时钟周期</strong></li>
+<li>L3 的存取速度：<strong>39 个CPU时钟周期</strong></li>
+<li>RAM内存的存取速度<strong>：107 个CPU时钟周期</strong></li>
+</ul>
+<p><strong>cache与RAM的映射方式</strong>：</p>
+<p>直接映射：一个cache块对应多个内存块，一个内存块只能对应一个cache块</p>
+<p>全相联映射：任何一个内存块都能对应任何一个cache块，但是比较块号所需时间长</p>
+<p>组相联映射：将前两者结合起来，cache分为多个每个组内有多个块，内存也分块，每一块对应一cahce组，可以占用组内的任意cache块</p>
+<p>离cpu最近的可以直接相联，较近的可以组相联，最远的可以全相联，距离越远对cache速度的要求就越低对利用率的强调就越高。</p>
+<p>cache的最小存储单位：cache line即上面所说的块，一般大小为64byte（512位）</p>
+<p>在组相联映射中（N-wayassociative cache fill）将N个cache line绑成一组，先找到相关的组，再在这个组中找到相关的cacheline</p>
+<p>我们举个栗子：</p>
+<p>Intel 大多数处理器的L1 Cache都是32KB，8-Way 组相联，Cache Line 是64 Bytes。这意味着，</p>
+<ul>
+<li>32KB的可以分成，32KB &#x2F; 64 &#x3D; 512 条 Cache Line。</li>
+<li>因为有8 Way，于是会每一Way 有 512 &#x2F; 8 &#x3D; 64 条 Cache Line。</li>
+<li>于是每一way就有 64 x 64 &#x3D; 4096 Bytes 的内存。</li>
+</ul>
+<p>为了方便索引内存地址，</p>
+<ul>
+<li><strong>Tag</strong>：每条 Cache Line 前都会有一个独立分配的 24 bits来存的 tag，其就是内存地址的前24bits</li>
+<li><strong>Index</strong>：内存地址后续的6个bits则是在这一Way的是Cache Line 索引，2^6 &#x3D; 64 刚好可以索引64条Cache Line</li>
+<li><strong>Offset</strong>：再往后的6bits用于表示在Cache Line 里的偏移量</li>
+</ul>
+<p>如下图所示：（图片来自《<a target="_blank" rel="noopener" href="https://manybutfinite.com/post/intel-cpu-caches/">Cache: a place for concealment and safekeeping</a>》）</p>
+<p>当拿到一个内存地址的时候，先拿出中间的 6bits 来，找到是哪组。</p>
+<p><img src="https://coolshell.cn/wp-content/uploads/2020/03/L1CacheExample.png"></p>
+<p>然后，在这一个 8 组的 cache line 中，再进行 O(n) n&#x3D;8 的遍历，主是要匹配前 24bits 的 tag。如果匹配中了，就算命中，如果没有匹配到，那就是 cache miss，如果是读操作，就需要进向后面的缓存进行访问了。L2&#x2F;L3 同样是这样的算法。而淘汰算法有两种，一种是随机一种是 LRU。现在一般都是以 LRU 的算法（通过增加一个访问计数器来实现）</p>
+<p><img src="https://coolshell.cn/wp-content/uploads/2020/03/selectingCacheLine.png" alt="img"></p>
+<p>这也意味着：</p>
+<ul>
+<li>L1 Cache 可映射 36bits 的内存地址，一共 2^36 &#x3D; 64GB的内存</li>
+<li>当CPU要访问一个内存的时候，通过这个内存中间的6bits 定位是哪个set，通过前 24bits 定位相应的Cache Line。</li>
+<li>就像一个hash Table的数据结构一样，先是O(1)的索引，然后进入冲突搜索。</li>
+<li>因为中间的 6bits 决定了一个同一个set，所以，对于一段连续的内存来说，每隔4096的内存会被放在同一个组内，导致缓存冲突(解释一下，随着地址的增加，后12位数字会不断循环，间隔就是2的12次方4096，所以每隔4096的地址就会缓存冲突)</li>
+</ul>
+<p>此外，当有数据没有命中缓存的时候，CPU就会以最小为Cache Line的单元向内存更新数据。当然，CPU并不一定只是更新64Bytes，因为访问主存实在是太慢了，所以，一般都会多更新一些。好的CPU会有一些预测的技术，如果找到一种pattern的话，就会预先加载更多的内存，包括指令也可以预加载。这叫 Prefetching 技术 （参看，Wikipedia 的 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Cache_prefetching">Cache Prefetching</a> 和 <a target="_blank" rel="noopener" href="http://compas.cs.stonybrook.edu/~nhonarmand/courses/sp16/cse502/slides/13-prefetch.pdf">纽约州立大学的 Memory Prefetching</a>）。比如，你在for-loop访问一个连续的数组，你的步长是一个固定的数，内存就可以做到prefetching。</p>
+<p><strong>缓存的一致性问题</strong></p>
+<p>cache的写策略：</p>
+<ul>
+<li>write back(写回)写到cache，等需要时再flush到内存中</li>
+<li>write throuth(写直达)直接写道内存和cache中</li>
+</ul>
+<p>为了提高写的性能，一般采用write back</p>
+<p>缓存一致性协议：</p>
+<ul>
+<li>监听cache一致性协议：当多个核共享总线时，总线上传递的信号都能被连接到总线的所有核“看”到。当某个核更新它cache中x的副本时，它将更新消息在总线上广播，若核1在监听总线，它就会知道x已经更新并且将自己cache中x的副本标记为非法的。实际情况是广播会通知其它核包含x的整个Cache行已经更新。</li>
+<li>基于目录的cache一致性协议：使用一个叫目录的数据结构来存储每个内存行的状态。一般的，这个数据结构是分布式的。当一个高速缓存行被读入时，如核0的cache，与这个高速缓存行相对应的目录项就会更新，表示核0有这个行的副本。当一个变量需要更新时，就会查询目录，并将所有包含该变量高速缓存行设置为非法。</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://coolshell.cn/articles/20793.html">与程序员相关的CPU缓存知识 | 酷 壳 - CoolShell</a>酷壳的这篇文章还有示例，可以好好看一下，加深理解。</p>
+<h3 id="2-一起使用的函数应该放在一起"><a href="#2-一起使用的函数应该放在一起" class="headerlink" title="2.一起使用的函数应该放在一起"></a>2.一起使用的函数应该放在一起</h3><p>如果在代码内存中使用的函数彼此接近，那么代码缓存的工作效率最高。函数通常按照它们在源代码中出现的顺序存储。因此，最好将代码中最关键部分中使用的函数集中在同一个源文件中，这些函数彼此相邻。将经常使用的函数与很少使用的函数分开，并将很少使用的分支（如错误处理）放在函数的末尾或单独的函数中。</p>
+<p>有时，为了模块化，函数被保存在不同的源文件中。例如，在一个源文件中有父类的成员函数，在另一个源文件中有派生类的成员函数，这样做可能比较方便。如果父类和派生类的成员函数是在程序的相同关键部分被调用的，那么在程序内存中保持这两个模块的连续是有利的。这可以通过控制模块链接的顺序来实现。链接顺序通常是模块在项目窗口或<code>makefile</code>中出现的顺序。你可以通过向链接器请求映射文件来检查内存中函数的顺序。映射文件告诉每个函数相对于程序开始的地址。映射文件包含从静态库链接（*.lib<em>或</em>.a* ）的库函数的地址，但不是动态库（*.dll<em>或</em>.so*)。没有一种简单的方法可以控制动态链接库函数的地址。</p>
+<h3 id="3-一起使用的变量应该放在一起"><a href="#3-一起使用的变量应该放在一起" class="headerlink" title="3.一起使用的变量应该放在一起"></a>3.一起使用的变量应该放在一起</h3><p>如果cpu缓存没有命中，那么代价会非常高，所以经常一起使用的数据片段应该在内存中彼此靠近，以便cpu缓存能够同时命中。如果可能，避免全局变量和静态变量，并避免动态内存分配（<code>new</code>和<code>delete</code>）。</p>
+<p>如果代码中有大数据结构，那么存储数据的顺序可能非常重要。例如，如果一个程序有两个数组，<code>a</code> 和 <code>b</code>，并且元素的访问顺序是<code>a[0]</code>， <code>b[0]</code>， <code>a[1]</code>， <code>b[1]</code>，…，然后，你可以通过将数据组织为结构体的数组来提高性能：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Example 9.1a</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">Func</span><span class="params">(<span class="type">int</span>)</span></span>;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> size = <span class="number">1024</span>;</span><br><span class="line"><span class="type">int</span> a[size], b[size], i;</span><br><span class="line">...</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; size; i++)</span><br><span class="line">&#123;</span><br><span class="line">    b[i] = <span class="built_in">Func</span>(a[i]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果按如下方法组织数据，那么这个例子中的数据可以在内存中被按顺序访问：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Example 9.1b</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">Func</span><span class="params">(<span class="type">int</span>)</span></span>;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> size = <span class="number">1024</span>;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Sab</span> &#123;<span class="type">int</span> a; <span class="type">int</span> b;&#125;;</span><br><span class="line">Sab ab[size];</span><br><span class="line"><span class="type">int</span> i;</span><br><span class="line">...</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; size; i++)</span><br><span class="line">&#123;</span><br><span class="line">    ab[i].b = <span class="built_in">Func</span>(ab[i].a);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用<strong>例 9.1b</strong>中这样的数据结构，程序代码中将不会有额外的开销。相反的，代码将变的更加简单，因为只需要计算一个数组的地址，而不是两个。</p>
+<p>一些编译器将为不同的数组使用不同的内存空间，即使它们从未同时被使用过。例如：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Example 9.2a</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">F1</span><span class="params">(<span class="type">int</span> x[])</span></span>;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">F2</span><span class="params">(<span class="type">float</span> x[])</span></span>;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">F3</span><span class="params">(<span class="type">bool</span> y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (y)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> a[<span class="number">1000</span>];</span><br><span class="line">        <span class="built_in">F1</span>(a);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">float</span> b[<span class="number">1000</span>];</span><br><span class="line">        <span class="built_in">F2</span>(b);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这里，可以为 <code>a</code> 和 <code>b</code> 使用相同的内存区域，因为它们的活动范围不重叠。通过将 <code>a</code> 和 <code>b</code> 放入 <code>union</code> 中，可以节省大量缓存空间：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Example 9.2b</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">F3</span><span class="params">(<span class="type">bool</span> y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">union</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> a[<span class="number">1000</span>];</span><br><span class="line">        <span class="type">float</span> b[<span class="number">1000</span>];</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="keyword">if</span> (y)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">F1</span>(a);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">F2</span>(b);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当然，使用 <code>union</code> 不是一种安全的编程实践，因为如果 <code>a</code> 和 <code>b</code> 的使用重叠，编译器不会发出警告。你应该只对占用大量缓存空间的大型对象使用此方法。将简单变量放入<code>union</code>中不是最佳选择，因为它会阻止寄存器变量的使用。</p>
+<h3 id="4-数据对齐"><a href="#4-数据对齐" class="headerlink" title="4.数据对齐"></a>4.数据对齐</h3><p>如果将变量存储在可被变量大小整除的内存地址中，则访问该变量的效率最高。例如，<code>double</code> 占用 8字节的存储空间。因此，最好将其存储在可被 8整除的地址中。大小应该总是 2的幂。大于 16字节的对象应该存储在可被 16整除的地址中。你通常可以假设编译器会自动处理这种对齐。</p>
+<p>你可以选择按cache line大小对齐大型对象和数组（通常是 64字节）。这可以确保对象或数组的开头与cache line的开头一致。一些编译器会自动对齐大的静态数组，但你也可以通过以下方式显示指定：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">__declspec(<span class="built_in">align</span>(<span class="number">64</span>)) <span class="type">int</span> BigArray[<span class="number">1024</span>]; <span class="comment">// Windows syntax</span></span><br></pre></td></tr></table></figure>
+
+<p>或</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> BigArray[<span class="number">1024</span>] __attribute__((<span class="built_in">aligned</span>(<span class="number">64</span>))); <span class="comment">// Linux syntax</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="5-动态分配内存"><a href="#5-动态分配内存" class="headerlink" title="5.动态分配内存"></a>5.动态分配内存</h3><p>对象和数组可以通过 <code>new</code> 和 <code>delete</code> 或 <code>malloc</code> 和 <code>free</code> 动态分配。在编译时期不知道所需的内存大小时，这可能非常有用。下面是动态内存分配的四种典型用法：</p>
+<ol>
+<li>可以在编译时不知道数组大小的情况下动态分配大数组。</li>
+<li>当编译时不知道对象总数时，可以动态分配可变数量的对象。</li>
+<li>可以动态分配文本字符串和类似大小可变对象。</li>
+<li>对于栈来说太大的数组可以动态分配。</li>
+</ol>
+<p>动态分配内存的优点有：</p>
+<ol>
+<li>在某些情况下提供了更清晰的程序结构。</li>
+<li>不会分配超过所需的空间。缓存效率与为了覆盖最坏的情况下最大可能的内存要求，固定大小的数组变的很大时相比，会高的多。</li>
+<li>当不能预先给出所需内存空间的合理上限时，这是非常有用的。</li>
+</ol>
+<p>动态分配内存的缺点有：</p>
+<ol>
+<li>动态分配和释放内存的过程比其他类型的存储需要更多的时间。见<strong>7.1 不同类型变量的存储</strong>。</li>
+<li>当以随机顺序分配和释放不同大小的对象时，堆空间就会变得碎片化。这使得数据缓存效率低下。</li>
+<li>如果已分配的数组已满，则可能需要调整其大小。这可能需要分配一个新的更大的内存块，并将整个内容复制到新块中。指向旧块中的数据的任何指针都将失效。</li>
+<li>当堆空间变得过于碎片化时，堆管理器将启动垃圾收集。此垃圾收集可能在不可预测的时间开始，并在用户等待响应的不方便的时间导致程序执行的延迟。</li>
+<li>程序员有责任确保已分配的所有内容也被释放。如果不这样做，将导致堆被填满。这是一种常见的编程错误，称为内存泄漏。</li>
+<li>序员有责任确保在释放对象之后没有对象被访问。没有这么做也是一个常见的编程错误。</li>
+<li>所分配的内存可能不是最佳对齐的。有关如何对齐动态分配的内存，请参见<strong>12.8 对齐动态分配的内存</strong>。</li>
+<li>编译器很难优化使用指针的代码，因为它不能排除别名（参见<strong>8.3 编译器优化的障碍：指针别名</strong>）。</li>
+<li>当行长度在编译时是未知的，矩阵或多维数组的效率较低，因为在每次访问时需要额外的工作来计算行地址。编译器可能无法使用归纳变量对其进行优化。</li>
+</ol>
+<p>在决定是否使用动态内存分配时，权衡利弊是很重要的。当数组的大小或对象的数量在编译时已知或可以知道合理的上限时，没有理由使用动态内存分配。</p>
+<p>当分配的数量有限时，动态内存分配的成本可以忽略不计。因此，当一个程序有一个或几个可变大小的数组时，动态内存分配是有利的。另一种解决方案是将数组设置得非常大，以覆盖最坏的情况，但这会浪费缓存空间。如果一个程序有几个大数组，并且每个数组的大小是关键步长（参见<strong>9.2 缓存结构</strong>）的倍数，那么很可能会在数据缓存中引起竞争。</p>
+<p>如果一个数组中的元素数量在程序执行期间增长，那么最好从一开始就分配最终的数组大小，而不是一步一步地分配更多的空间。在大多数系统中，你无法增加已经分配的内存块的大小。如果最终大小无法预测，或者预测结果太小，那么就需要分配一个新的更大内存块，并将旧内存块的内容复制到新的更大内存块的开头。当然，这是低效的，并且会导致堆空间变得碎片化。另一种方法是保留多个内存块，要么以链表的形式，要么以内存块的索引的形式。具有多个内存块的方法使得对单个数组元素的访问更加复杂和耗时。</p>
+<p>一个可变数量的对象集合通常被实现为一个链表。链表中的每个元素都有自己的内存块和指向下一个块的指针。链表的效率不如线性数组，原因如下：</p>
+<ol>
+<li>每个对象都是单独分配的。分配、释放和垃圾收集需要大量的时间。</li>
+<li>对象没有连续地存储在内存中。这会降低数据缓存的效率。</li>
+<li>额外的内存空间用于链接指针和堆管理器为每个分配的块存储的信息。</li>
+<li>遍历链表比遍历线性数组要花费更多的时间。在加载前一个元素指针之前，不能加载任何指针。这就形成了一个关键的依赖链，这会妨碍乱序执行。</li>
+</ol>
+<p>为所有对象分配一个大内存块（内存池）通常比为每个对象分配一个小内存块效率更高。</p>
+<p>使用 <code>new</code> 和 <code>delete</code> 分配可变大小的数组的一个鲜为人知的替代方法是使用 <code>alloca</code> 分配来代替。这是一个在栈上而不是堆上分配内存的函数。内存空间在当从调用 <code>alloca</code> 的函数返回时会被自动释放。在使用 <code>alloca</code> 时，不需要显式地释放空间。与 <code>new</code> 和 <code>delete</code> 或 <code>malloc</code> 和 <code>free</code> 相比，<code>alloca</code> 的优势有：</p>
+<ol>
+<li>分配过程的开销很小，因为微处理器有硬件支持对栈的操作。</li>
+<li>由于堆栈的先入后出特性，内存空间不会变得支离破碎。</li>
+<li>重新分配没有成本，因为它在函数返回时将自动执行。不需要垃圾收集。</li>
+<li>所分配的内存与栈上的其他对象是连续的，这使得数据缓存非常高效。</li>
+</ol>
+<p>下面的例子将展示如何适应<code>alloca</code>分配可变大小的数组：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;malloc.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">SomeFunction</span> <span class="params">(<span class="type">int</span> n)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (n &gt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="comment">// Make dynamic array of n floats:</span></span><br><span class="line">        <span class="type">float</span> * DynamicArray = (<span class="type">float</span> *)<span class="built_in">alloca</span>(n * <span class="built_in">sizeof</span>(<span class="type">float</span>));</span><br><span class="line">    <span class="comment">// (Some compilers use the name _alloca)</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            DynamicArray[i] = <span class="built_in">WhateverFunction</span>(i);</span><br><span class="line">            <span class="comment">// ...</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>显然，函数不应该返回任何使用 <code>alloca</code> 分配的指针或引用，因为它在函数返回时被释放。<code>alloca</code> 可能与结构化异常处理不兼容。有关使用 <code>alloca</code> 的限制，请参阅编译器手册。</p>
+<p><em>C99</em> 扩展支持可变大小的数组。这个特性是有争议的，并且只在 <em>C</em> 中可用，而不能在<em>C++</em> 中使用。你可以使用 <code>alloca</code> 而不是可变大小的数组，因为它提供了相同的功能。</p>
+<h3 id="6-容器类"><a href="#6-容器类" class="headerlink" title="6.容器类"></a>6.容器类</h3><p>当使用动态内存分配，建议使用容器类，因为容器类有析构函数可以避免内存泄漏和空指针等问题。容器类还可以添加边界检查等功能。</p>
+<p>可以使用c++STL标准模板库，然而STL的特点是通用性和灵活性，在内存分配时会浪费内存。如 <code>list</code>、<code>set</code> 和 <code>map</code>，甚至可能分配比容器中对象更大的内存块。<em>STL</em>  <code>deque</code>（双向链表）为每四个对象分配一个内存块。<em>STL</em>  <code>vector</code> 将所有的对象都存储在同一个内存块中，当这快内存被填满时会重新分配，这种情况经常发生，因为块大小每次只增长 50%或更少。针对<code>vector</code>，可以创建<code>vector</code>后调用<code>vector::reserve</code>重新分配预估的大小避免多次进行内存分配。其他 <em>STL</em> 容器没有预先分配内存的功能。</p>
+<p>anger实现了一组示例容器类来提高效率<a target="_blank" rel="noopener" href="https://www.agner.org/optimize/cppexamples.zip">www.agner.org/optimize/cppexamples.zip</a></p>
+<p>在为特定用途选择容器时，应考虑以下因素：</p>
+<ol>
+<li>包含一个还是多个元素？如果容器包含一个元素，那么可以使用智能指针（见<strong>7.9 智能指针</strong>）。</li>
+<li>编译时是否知道大小？如果在编译时已知元素的数量，或者可以设置不太大的上限，那么最优解决方案是一个固定大小的数组或容器，而不需要动态内存分配。但是，如果数组或容器对于栈来说太大的时候，则可能需要动态内存分配。</li>
+<li>在存储第一个元素之前，大小是否已知？如果在存储第一个元素之前可以知道元素的总数（或者有一个合理的估计），那么最好使用允许预先分配（<code>reserve</code>）内存的容器,而不是分段分配内存或当内存块太小的时候重新分配。</li>
+<li>对象是连续编号的么？如果对象是由连续的索引或有限范围内的键标识的，那么简单的数组是高效的解决方案。</li>
+<li>对象是以先进先出的方式访问的么？如果在先进先出（<strong>FIFO</strong>）的基础上访问对象，则使用队列。将队列作为循环缓冲区而不是链表使用更高效。</li>
+<li>对象是以先进后出的方式访问的么？如果对象是在先入后出（<strong>FILO</strong>）的基础上访问的，那么使用带有栈顶部索引的线性数组。</li>
+<li>对象是由键标识的么？如果键值被限制在一个较窄的范围内，那么可以使用一个简单的数组。如果对象的数量很多，那么最高效的解决方案可能是二叉树或哈希图。</li>
+<li>对象有顺序吗？如果你需要做这样的搜素：“离元素 x 最近的是哪个？”或者 “在 x 和 y之间有多少个元素？”，那么你可以使用有序列表或者二叉树。</li>
+<li>添加所有对象之后是否需要搜索？如果需要搜索工具，但必须在容器中存储了所有对象之后，那么线性数组将是一个高效的解决方案。在添加所有元素之后对数组进行排序，然后使用二分搜索来查找元素。哈希表也可能是一种高效的解决方案。</li>
+<li>添加所有对象之前是否需要搜索？如需要搜索工具，并且可以随时添加新对象，那么解决方案就更复杂了。如果元素的总数很少，那么有序列表是最高效的解决方案，因为它的简单。但是如果列表很大，有序列表会非常低效，因为在列表中插入一个新元素会导致所有后续元素都需要移动。在这种情况下我们需要二叉树或者哈希表。如果元素是有序的，并且在一定间隔后就会有搜素请求，那么可以使用二叉树。哈希表则可以在元素没有特定顺序但又唯一的键标识时使用。</li>
+<li>对象是否具有混合类型或大小？可以在同一个内存池中存储不同类型的对象或不同长度的字符串。见 <a target="_blank" rel="noopener" href="https://www.agner.org/optimize/cppexamples.zip">www.agner.org/optimize/cppexamples.zip</a>。如果在编译时知道元素的数量和类型，那么就不需要使用容器或内存池。</li>
+<li>是否要对齐？一些应用程序要求数据按可以被整除的地址对齐。特别是使用向量指令时，需要对齐的地址可以被 16整出。在某些情况下，将数据结构对齐到可被缓存线大小整除的地址（通常为64）可以提高性能。</li>
+<li>是否使用多线程？如果多个线程可以同时添加、删除或修改对象，那么容器类通常不是线程安全的。在多线程应用程序中，为每个线程设置单独的容器要比临时锁定一个容器以供每个线程独占访问高效的多。</li>
+<li>有指向包含的对象的指针么？将指针指向包含的对象可能是不安全的，因为容器可能在需要重新分配内存时移动对象。容器内的对象应该通过其在容器中的索引或键来标识，而不是通过指针或引用。但是，如果没有其他线程访问容器，则可以将指向此类对象的指针或引用传递给不添加或删除任何对象的函数。</li>
+<li>容器可以被回收么？创建和删除容器的消耗很大。如果程序的逻辑允许，复用一个容器可能比删除它再重新创建一个更高效。</li>
+</ol>
+<h3 id="7-字符串"><a href="#7-字符串" class="headerlink" title="7.字符串"></a>7.字符串</h3><p>常用的字符串一般是<code>char*</code> <code>string</code> <code>cstring </code> <code>char*</code>是最原始的字符串，<code>string</code>是STL库中的，<code>cstring</code>是是包含一些C字符串的操作函数.</p>
+<p>补充一下：包含头文件时，若有<code>.h</code>后缀表示是c的头文件，若没有<code>.h</code>后缀表示是cpp的头文件，同时cpp还有一些c开头的头文件，比如<code>cmath</code>,<code>cstring</code>，这意味着保留了c风格的cpp库</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;string&gt;</span><span class="comment">//cpp</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;string.h&gt;</span><span class="comment">//c</span></span></span><br></pre></td></tr></table></figure>
+
+<p>使用c风格的string处理函数如 <code>strcpy</code>、<code>strcat</code>、<code>strlen</code>、<code>sprintf</code>效率会高些。如果你想在不损害安全的情况下提高速度，你可以将所有字符串存储在内存池中，如上所述。anger手册的附录(<a target="_blank" rel="noopener" href="http://www.agner.org/optimize/cppexamples.zip)%E4%B8%AD%E6%8F%90%E4%BE%9B%E4%BA%86%E7%A4%BA%E4%BE%8B">www.agner.org/optimize/cppexamples.zip)中提供了示例</a></p>
+<h3 id="8-按顺序访问数据"><a href="#8-按顺序访问数据" class="headerlink" title="8.按顺序访问数据"></a>8.按顺序访问数据</h3><p>这一小节其实是对cpu缓存的应用，当你按顺序访问数据时，cpucache命中会增多，程序效率就高，比如经典的行访问和列访问的例子。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Example 9.4</span></span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> NUMROWS = <span class="number">100</span>, NUMCOLUMNS = <span class="number">100</span>;</span><br><span class="line"><span class="type">int</span> matrix[NUMROWS][NUMCOLUMNS];</span><br><span class="line"><span class="type">int</span> row, column;</span><br><span class="line"><span class="keyword">for</span> (row = <span class="number">0</span>; row &lt; NUMROWS; row++)</span><br><span class="line">    <span class="keyword">for</span> (column = <span class="number">0</span>; column &lt; NUMCOLUMNS; column++)</span><br><span class="line">        matrix[row][column] = row + column;</span><br></pre></td></tr></table></figure>
+
+<p>不要交换这两个循环的顺序（除非是在 <em>Fortran</em> 中，具有相反的存储顺序）。</p>
+<h3 id="9-在大数据结构中的缓存冲突"><a href="#9-在大数据结构中的缓存冲突" class="headerlink" title="9.在大数据结构中的缓存冲突"></a>9.在大数据结构中的缓存冲突</h3><p>按顺序访问多维数组并不总是可能的。一些应用程序（例如，在线性代数中）需要其他访问模式。如果一个大矩阵中的行之间的距离恰好等于关键步长，就会导致严重的延迟，如<strong>9.2 缓存组织</strong>所述。如果矩阵行的大小（以字节为单位）是 2 的高次幂，就会发生这种情况。</p>
+<p>下面的例子说明了这一点。我的例子是一个对二次矩阵进行转置的函数，即每个元素矩阵 <code>[r][c]</code> 与元素矩阵 <code>[c][r]</code> 交换。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Example 9.5a</span></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> SIZE = <span class="number">64</span>;<span class="comment">// number of rows/columns in matrix</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">transpose</span><span class="params">(<span class="type">double</span> a[SIZE][SIZE])</span><span class="comment">// function to transpose matrix</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// define a macro to swap two array elements:</span></span><br><span class="line">    <span class="meta">#<span class="keyword">define</span> swapd(x,y) &#123;temp=x; x=y; y=temp;&#125;</span></span><br><span class="line">    <span class="type">int</span> r, c; <span class="type">double</span> temp;</span><br><span class="line">    <span class="keyword">for</span> (r = <span class="number">1</span>; r &lt; SIZE; r++)</span><br><span class="line">    &#123; <span class="comment">// loop through rows</span></span><br><span class="line">        <span class="keyword">for</span> (c = <span class="number">0</span>; c &lt; r; c++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// loop columns below diagonal</span></span><br><span class="line">            <span class="built_in">swapd</span>(a[r][c], a[c][r]); <span class="comment">// swap elements</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">test</span> <span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    __declspec(__align(<span class="number">64</span>))     <span class="comment">// align by cache line size</span></span><br><span class="line">    <span class="type">double</span> matrix[SIZE][SIZE]; <span class="comment">// define matrix</span></span><br><span class="line">    <span class="built_in">transpose</span>(matrix);         <span class="comment">// call transpose function</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>矩阵的转置和以对角线为轴做镜像是一样的。对角线以下的每个元素矩阵 <code>[r][c]</code> 在对角线以上的镜像位置与元素矩阵 <code>[c][r] </code>交换。<strong>例 9.5a</strong>中的循环 <em>c</em>   从最左边的列到对角线。对角线上的元素保持不变。</p>
+<p>这段代码的问题是，如果对角线以下的元素矩阵 <code>[r][c]</code> 是逐行访问的，那么对角线以上的镜像元素矩阵 <code>[c][r]</code> 是逐列访问的。</p>
+<p>假设现在我们在奔腾4电脑上运行这段代码，矩阵的大小是 64。电脑的一级缓存为 <code>8 kb = 8192 bytes</code>，4 路，行大小为 64。每个缓存行可以保存8个 <code>double</code> 变量，每个变量的大小为8个字节。关键步长为 $8192&#x2F;4&#x3D;2048  bytes &#x3D; 4 rows$。</p>
+<p>让我们看看循环内部发生了什么，例如当 <code>r = 28</code> 时。我们从对角线以下的第  28行取出元素，并将这些元素与对角线以上的第 28列交换。第 28行中的前 8个元素共享同一缓存线。因为缓存线按行而不是按列缓存，在第 28列中的 8个元素将进入 8个不同的缓存行中。每四个高速缓存线属于同一组高速缓存。当我们操作到第 28列中的16号元素时，缓存将收回该列中0号使用的缓存线。17号元素将覆盖1号元素使用的缓存线，18号元素将覆盖 2号元素使用的缓存线，依此类推。这意味着当我们将第 29列与第 29行交换时，对角线以上使用的所有缓存线都被覆盖了。因为在我们需要下一个元素之前，它会被删除，每个缓存线必须重新加载 8次。我已经通过使用不同矩阵大小的奔腾4上的<strong>示例9.5a</strong>来测量转置矩阵所需的时间来证实这一点。我的实验结果如下，时间单位是每个数组元素所需要要的时钟周期。</p>
+<center>
+
+
+<table>
+<thead>
+<tr>
+<th align="center">Matrix Size</th>
+<th align="center">Total kilobytes</th>
+<th align="center">Time per element</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">63*63</td>
+<td align="center">31</td>
+<td align="center">11.6</td>
+</tr>
+<tr>
+<td align="center">64*64</td>
+<td align="center">32</td>
+<td align="center">16.4</td>
+</tr>
+<tr>
+<td align="center">65*65</td>
+<td align="center">33</td>
+<td align="center">11.8</td>
+</tr>
+<tr>
+<td align="center">127*127</td>
+<td align="center">126</td>
+<td align="center">12.2</td>
+</tr>
+<tr>
+<td align="center">128*128</td>
+<td align="center">128</td>
+<td align="center">17.4</td>
+</tr>
+<tr>
+<td align="center">129*129</td>
+<td align="center">130</td>
+<td align="center">14.4</td>
+</tr>
+<tr>
+<td align="center">511*511</td>
+<td align="center">2040</td>
+<td align="center">38.7</td>
+</tr>
+<tr>
+<td align="center">512*512</td>
+<td align="center">2048</td>
+<td align="center">230.7</td>
+</tr>
+<tr>
+<td align="center">513*513</td>
+<td align="center">2056</td>
+<td align="center">38.1</td>
+</tr>
+</tbody></table>
+<p><strong>Table 9.1. Time for transposition of different size matrices, clock cycles per element.</strong></p>
+</center>
+
+<p>从表中可以看出，当矩阵的大小是一级缓存大小的倍数时，转置矩阵要多花 40%的时间。这是因为关键步长是矩阵行的倍数。由于无序执行机制可以预先加载数据，延迟比一级缓存从二级缓存中重新加载数据的时间少。</p>
+<p>当竞争发生在二级缓存中时，这种效果更为显著。二级缓存$512 kb$，8路。二级缓存的关键步长是$512 kb &#x2F; 8 &#x3D; 64 kb$。这对应于$512*512$矩阵中的16行数据。我在<strong>表 9.1</strong>中的实验结果表明，在二级缓存中发生竞争时，转置矩阵所需的时间是不发生竞争时的 6倍。这种效果在二级缓存竞争中比在一级缓存竞争中强得多的原因是二级缓存一次不能预加载多行。</p>
+<p>解决这个问题的一个简单方法是使矩阵中的行比需要的长，以避免关键步长是矩阵行大小的倍数。我试着让矩阵的大小为$512*520$，包含不使用最后 8列。这消除了竞争，时间消耗减少到 36个时钟周期。</p>
+<p>在某些情况下，不可能向矩阵中添加未使用的列。例如，一个数学函数库应该能够有效地处理所有大小的矩阵。在这种情况下，一个有效的解决方案是将矩阵分成更小的正方形，一次处理一个正方形。这被称为<strong>square blocking <strong>或</strong>tiling</strong>。<strong>示例9.5b</strong>演示了这种技术：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Example 9.5b</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">transpose</span><span class="params">(<span class="type">double</span> a[SIZE][SIZE])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Define macro to swap two elements:</span></span><br><span class="line">    <span class="meta">#<span class="keyword">define</span> swapd(x,y) &#123;temp=x; x=y; y=temp;&#125;</span></span><br><span class="line">    <span class="comment">// Check if level-2 cache contentions will occur:</span></span><br><span class="line">    <span class="keyword">if</span> (SIZE &gt; <span class="number">256</span> &amp;&amp; SIZE % <span class="number">128</span> == <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Cache contentions expected. Use square blocking:</span></span><br><span class="line">        <span class="type">int</span> r1, r2, c1, c2; <span class="type">double</span> temp;</span><br><span class="line">        <span class="comment">// Define size of squares:</span></span><br><span class="line">        <span class="type">const</span> <span class="type">int</span> TILESIZE = <span class="number">8</span>; <span class="comment">// SIZE must be divisible by TILESIZE</span></span><br><span class="line">        <span class="comment">// Loop r1 and c1 for all squares:</span></span><br><span class="line">        <span class="keyword">for</span> (r1 = <span class="number">0</span>; r1 &lt; SIZE; r1 += TILESIZE)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span> (c1 = <span class="number">0</span>; c1 &lt; r1; c1 += TILESIZE)</span><br><span class="line">            &#123;</span><br><span class="line">            <span class="comment">// Loop r2 and c2 for elements inside sqaure:</span></span><br><span class="line">                <span class="keyword">for</span> (r2 = r1; r2 &lt; r1+TILESIZE; r2++)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">for</span> (c2 = c1; c2 &lt; c1+TILESIZE; c2++)</span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="built_in">swapd</span>(a[r2][c2],a[c2][r2]);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">           <span class="comment">// At the diagonal there is only half a square.</span></span><br><span class="line">           <span class="comment">// This triangle is handled separately:</span></span><br><span class="line">            <span class="keyword">for</span> (r2 = r1+<span class="number">1</span>; r2 &lt; r1+TILESIZE; r2++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">for</span> (c2 = r1; c2 &lt; r2; c2++)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="built_in">swapd</span>(a[r2][c2],a[c2][r2]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// No cache contentions. Use simple method.</span></span><br><span class="line">        <span class="comment">// This is the code from example 9.5a:</span></span><br><span class="line">        <span class="type">int</span> r, c; <span class="type">double</span> temp;</span><br><span class="line">        <span class="keyword">for</span> (r = <span class="number">1</span>; r &lt; SIZE; r++)</span><br><span class="line">        &#123; <span class="comment">// loop through rows</span></span><br><span class="line">            <span class="keyword">for</span> (c = <span class="number">0</span>; c &lt; r; c++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// loop columns below diagonal</span></span><br><span class="line">                <span class="built_in">swapd</span>(a[r][c], a[c][r]); <span class="comment">// swap elements</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在我的实验中，使用这段代码，对于512*512的矩阵来说，每个元素消耗50个时钟周期。</p>
+<p>二级缓存中竞争的代价是如此的昂贵，因此对它们采取措施非常重要。因此，你应该了解矩阵中列数为 2的高次幂的情况。一级缓存中的竞争消耗较少，可能不值得为了一级缓存中使用像<strong>square blocking</strong>这么复杂的技术。</p>
+<p><strong>Squre blocking</strong>以及类似的技术在 S. Goedecker 和 A. Hoisie 2001年出版的 “Performance Optimization of Numerically Intensive Codes”一书中有更详细的描述。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://mightcoder.com">might</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://mightcoder.com/2022/04/05/optimizing-cpp-7/">https://mightcoder.com/2022/04/05/optimizing-cpp-7/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/hpc/">hpc</a><a class="post-meta__tags" href="/tags/cpp/">cpp</a></div><div class="post_share"><div class="social-share" data-image="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>请作者喝杯咖啡</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/04/05/optimizing-cpp-8/" title="optimizing_cpp(8)"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">optimizing_cpp(8)</div></div></a></div><div class="next-post pull-right"><a href="/2022/03/30/linux%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA/" title="linux查漏补缺"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202203302134588.jpeg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next</div><div class="next_info">linux查漏补缺</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2022/03/15/optimizing-cpp-1-4/" title="optimizing_cpp(1-4)"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-03-15</div><div class="title">optimizing_cpp(1-4)</div></div></a></div><div><a href="/2022/04/05/optimizing-cpp-10/" title="optimizing_cpp(10)"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-05</div><div class="title">optimizing_cpp(10)</div></div></a></div><div><a href="/2022/04/05/optimizing-cpp-11/" title="optimizing_cpp(11)"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-05</div><div class="title">optimizing_cpp(11)</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> Comment</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">might</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/shenghansen" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:shenghs@mail2.sysu.edu.cn" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">Hope you can find something useful here ᐕ)⁾⁾ .</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E5%86%85%E5%AD%98%E8%AE%BF%E9%97%AE%E4%BC%98%E5%8C%96"><span class="toc-number">1.</span> <span class="toc-text">七、内存访问优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%BC%93%E5%AD%98"><span class="toc-number">1.1.</span> <span class="toc-text">1.缓存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E4%B8%80%E8%B5%B7%E4%BD%BF%E7%94%A8%E7%9A%84%E5%87%BD%E6%95%B0%E5%BA%94%E8%AF%A5%E6%94%BE%E5%9C%A8%E4%B8%80%E8%B5%B7"><span class="toc-number">1.2.</span> <span class="toc-text">2.一起使用的函数应该放在一起</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E4%B8%80%E8%B5%B7%E4%BD%BF%E7%94%A8%E7%9A%84%E5%8F%98%E9%87%8F%E5%BA%94%E8%AF%A5%E6%94%BE%E5%9C%A8%E4%B8%80%E8%B5%B7"><span class="toc-number">1.3.</span> <span class="toc-text">3.一起使用的变量应该放在一起</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E6%95%B0%E6%8D%AE%E5%AF%B9%E9%BD%90"><span class="toc-number">1.4.</span> <span class="toc-text">4.数据对齐</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E5%8A%A8%E6%80%81%E5%88%86%E9%85%8D%E5%86%85%E5%AD%98"><span class="toc-number">1.5.</span> <span class="toc-text">5.动态分配内存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E5%AE%B9%E5%99%A8%E7%B1%BB"><span class="toc-number">1.6.</span> <span class="toc-text">6.容器类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="toc-number">1.7.</span> <span class="toc-text">7.字符串</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-%E6%8C%89%E9%A1%BA%E5%BA%8F%E8%AE%BF%E9%97%AE%E6%95%B0%E6%8D%AE"><span class="toc-number">1.8.</span> <span class="toc-text">8.按顺序访问数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-%E5%9C%A8%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%AD%E7%9A%84%E7%BC%93%E5%AD%98%E5%86%B2%E7%AA%81"><span class="toc-number">1.9.</span> <span class="toc-text">9.在大数据结构中的缓存冲突</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2023/11/02/effective%20modern%20c++/" title="effective modern c++"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20231101213331.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="effective modern c++"/></a><div class="content"><a class="title" href="/2023/11/02/effective%20modern%20c++/" title="effective modern c++">effective modern c++</a><time datetime="2023-11-02T13:01:37.000Z" title="Created 2023-11-02 21:01:37">2023-11-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/11/01/CXL/" title="CXL"><img src="https://i.ytimg.com/vi/6TRbkes15Ok/maxresdefault.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CXL"/></a><div class="content"><a class="title" href="/2023/11/01/CXL/" title="CXL">CXL</a><time datetime="2023-11-01T12:31:37.000Z" title="Created 2023-11-01 20:31:37">2023-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/10/25/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/" title="性能优化技巧总结"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202208092121258.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="性能优化技巧总结"/></a><div class="content"><a class="title" href="/2023/10/25/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/" title="性能优化技巧总结">性能优化技巧总结</a><time datetime="2023-10-25T13:01:37.000Z" title="Created 2023-10-25 21:01:37">2023-10-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/05/28/cmake/" title="Cmake"><img src="data:image/jpeg;base64,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" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Cmake"/></a><div class="content"><a class="title" href="/2023/05/28/cmake/" title="Cmake">Cmake</a><time datetime="2023-05-28T13:39:37.000Z" title="Created 2023-05-28 21:39:37">2023-05-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/05/28/open%20mlsys/" title="open mlsys"><img src="https://openmlsys.github.io/_images/logo.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="open mlsys"/></a><div class="content"><a class="title" href="/2023/05/28/open%20mlsys/" title="open mlsys">open mlsys</a><time datetime="2023-05-28T13:39:37.000Z" title="Created 2023-05-28 21:39:37">2023-05-28</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By might</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">hope you can find something useful here ᐕ)⁾⁾ .</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="Scroll To Comments"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const initValine = () => {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'VBvzA6UUhphh1Tc1BtzWXzye-gzGzoHsz',
+      appKey: 'J0UlGcCok0khsrORkwxD1HwF',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  const loadValine = async () => {
+    if (typeof Valine === 'function') initValine()
+    else {
+      await getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js')
+      initValine()
+    }
+  }
+
+  if ('Valine' === 'Valine' || !false) {
+    if (false) btf.loadComment(document.getElementById('vcomment'),loadValine)
+    else setTimeout(loadValine, 0)
+  } else {
+    window.loadOtherComment = loadValine
+  }
+})()</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
