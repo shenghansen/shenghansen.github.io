@@ -1,11 +1,11 @@
-https://mightcoder.com/about/index.html
-https://mightcoder.com/artitalk/index.html
 https://mightcoder.com/link/index.html
 https://mightcoder.com/categories/index.html
+https://mightcoder.com/about/index.html
+https://mightcoder.com/2023/11/29/2023-11-29/
+https://mightcoder.com/artitalk/index.html
 https://mightcoder.com/tags/index.html
 https://mightcoder.com/2021/11/29/hello-world/
 https://mightcoder.com/2023/11/02/effective%20modern%20c++/
-https://mightcoder.com/2023/11/01/CXL/
 https://mightcoder.com/2023/10/25/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/
 https://mightcoder.com/2023/05/28/open%20mlsys/
 https://mightcoder.com/2023/05/28/cmake/

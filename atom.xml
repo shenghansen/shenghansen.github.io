@@ -6,7 +6,7 @@
   <link href="https://mightcoder.com/atom.xml" rel="self"/>
   
   <link href="https://mightcoder.com/"/>
-  <updated>2023-11-01T13:33:47.439Z</updated>
+  <updated>2023-11-30T06:48:53.000Z</updated>
   <id>https://mightcoder.com/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>博客系统升级</title>
+    <link href="https://mightcoder.com/2023/11/29/2023-11-29/"/>
+    <id>https://mightcoder.com/2023/11/29/2023-11-29/</id>
+    <published>2023-11-29T09:15:21.000Z</published>
+    <updated>2023-11-30T06:48:53.000Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="博客系统升级"><a href="#博客系统升级" class="headerlink" title="博客系统升级"></a>博客系统升级</h1><p>挑战与问题：<br>当前博客拓展性太差，许多功能没有实现<br>审美疲劳，有些单调</p><p>目标：<br>寻找一套拓展性解决方案，支持未来的功能拓展：新框架or hexo主题再探索<br>解决当前想实现的功能</p><ul><li>用户访问记录追踪</li><li>完善about、归档等界面</li><li>实现RSS</li><li>更换主题，提高文章中代码可读性等</li><li>博文自动发布（配合obsidian）</li></ul><p>实现</p><ul><li>修改主题为butterfly，默认支持特性多，可拓展</li><li>通过cloudfare进行用户访问记录分析</li><li>添加了about，tag、categories、link、about等页面，内容有待完善</li><li>RSS实现</li><li>代码可读性且复制性提高</li></ul><p>自动发布流程：<br>    创建文章自动创建front matter<br>    publish属性为true就复制文件到博客目录下<br>    运行脚本部署推送</p><p>使用obsidian的linter插件来创建front matter<br>front matter格式</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title:</span><br><span class="line">date:</span><br><span class="line">updated:</span><br><span class="line">tags:</span><br><span class="line">categories:</span><br><span class="line">cover</span><br><span class="line">published</span><br><span class="line">---</span><br></pre></td></tr></table></figure><p>关于监听published属性<br>要么外部脚本监听，要么obsidian内监听</p><p>写了个python脚本监听文件修改<br>    希望的是修改完就同步，但是如果修改完就推送的话也太频繁了吧<br>    还是如果已经发布了就不重新复制推送，如果想要复制推送就重新取消发布，重新发布。</p><p>这篇文章就是通过这套流程自动发布的</p>]]></content>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;博客系统升级&quot;&gt;&lt;a href=&quot;#博客系统升级&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+  </entry>
   
   <entry>
     <title>effective modern c++</title>
@@ -40,33 +63,6 @@
     <category term="hpc" scheme="https://mightcoder.com/tags/hpc/"/>
     
     <category term="c++" scheme="https://mightcoder.com/tags/c/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>CXL</title>
-    <link href="https://mightcoder.com/2023/11/01/CXL/"/>
-    <id>https://mightcoder.com/2023/11/01/CXL/</id>
-    <published>2023-11-01T12:31:37.000Z</published>
-    <updated>2023-11-01T12:31:33.373Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="CXL简介："><a href="#CXL简介：" class="headerlink" title="CXL简介："></a>CXL简介：</h1><p><a href="../%E6%96%B9%E5%90%91%E5%AD%A6%E4%B9%A0/cxl/CXL%E8%AE%BA%E6%96%87.md#%5Ea4c00f">CXL论文</a></p><p>Panmnesia<br><a href="../%E6%97%A5%E8%AE%B0/2023-09-18.md#%5E3471f6">2023-09-18</a></p><p>CXL-SSD<br><a href="https://dl.acm.org/doi/abs/10.1145/3538643.3539745">Hello bytes, bye blocks | Proceedings of the 14th ACM Workshop on Hot Topics in Storage and File Systems</a></p><h1 id="An-Introduction-to-the-Compute-Express-LinkTM-CXLTM-Interconnect"><a href="#An-Introduction-to-the-Compute-Express-LinkTM-CXLTM-Interconnect" class="headerlink" title="An Introduction to the Compute Express LinkTM (CXLTM) Interconnect"></a>An Introduction to the Compute Express LinkTM (CXLTM) Interconnect</h1><h2 id="INTRODUCTION"><a href="#INTRODUCTION" class="headerlink" title="INTRODUCTION"></a>INTRODUCTION</h2><p>没有CXL的PCIe连接存在的挑战：</p><ol><li>无法实现对系统和设备内存的一致性访问，设备内存无法映射到可缓存的系统地址空间<br>（有没有人做基于CXL的CPUGPU统一地址空间？）</li><li>内存可拓展性差：PCIe带宽不错，但是不支持一致性的内存空间，所以无法直接做内存拓展</li><li>由于资源闲置导致的内存和计算资源的浪费</li><li>分布式系统经常细粒度同步，通信延迟高导致需要数据共享</li></ol><p>CXL能做的<br>缓存一致性、可拓容、内存池、共享内存</p><h2 id="CXL1-1"><a href="#CXL1-1" class="headerlink" title="CXL1.1"></a>CXL1.1</h2><h3 id="CXL-68-byte-Flit"><a href="#CXL-68-byte-Flit" class="headerlink" title="CXL 68 byte Flit"></a>CXL 68 byte Flit</h3><p>CXL协议的传输单元：Flit (FlowControl Unit).1.0 1.1 2.0是68字节，3.0引入了256字节<br>2字节协议ID，64字节负载，2字节的CRC<br>协议 ID 描述了不同类型的数据包，并具有内置冗余来检测和纠正这 2 个字节内的多个位翻转。<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20230920164915.png" alt="image.png"></p><h3 id="CXL-IO-protocol"><a href="#CXL-IO-protocol" class="headerlink" title="CXL IO protocol"></a>CXL IO protocol</h3><p>描述了IO协议定义的事务顺序</p><h3 id="CXL-cache-protocol"><a href="#CXL-cache-protocol" class="headerlink" title="CXL cache protocol"></a>CXL cache protocol</h3><p>host管理一致性，由H2D请求来改变设备的状态，这种请求叫snooping(snp)</p><p>CXL cache使设备能缓存主机内存，cache line是64字节,MESI协议。host管理所有peer cache的一致性而设备不交互。<br>两个方向三个通道 H2D D2H 请求、响应、数据通道。流通道可以独立地在每个方向上进行数据传输，但有一个例外情况：当主机在H2D请求通道中发送一个Snoop消息时，必须在H2D响应通道中推送一个先前的全局观察（GO）消息，用于同一个缓存行地址。GO消息向设备指示一致性协议和一致性承诺点<br>设备使用的是主机的物理地址，设备需要实现设备快表DTLB来缓存页表，使用PCIe(CXL io)的之地转换服务(ATS)来获取虚拟到物理的转换以及访问控制。DTLB是非一致的，所以需要主机跟踪DTLB中挂起的条码，并发起无效操作</p><blockquote><p>PCIe的ATS代表Address Translation Services（地址转换服务）。ATS是PCIe规范中引入的一项功能，用于提高虚拟化环境中设备的性能和可扩展性。<br>在传统的PCIe架构中，设备通过物理地址进行内存访问。然而，在虚拟化环境中，多个虚拟机共享同一个物理设备时，每个虚拟机可能拥有自己的虚拟地址空间。这就需要一种机制来进行物理地址到虚拟地址的转换，以确保每个虚拟机都可以正确地访问其分配的内存。<br>ATS提供了这种地址转换的服务。当设备支持ATS时，它可以向系统报告其支持的地址转换功能。主机通过ATS命令将虚拟地址发送给设备，并由设备执行地址转换，将虚拟地址映射到物理地址。这样，每个虚拟机都可以独立地进行内存访问，而不会干扰其他虚拟机或主机系统。<br>通过使用ATS，虚拟化环境中的设备可以更高效地进行内存访问，减少了主机系统的干预，提高了设备性能和整体系统的可扩展性。它为虚拟化环境中的设备提供了更好的隔离性和灵活性。</p></blockquote><h4 id="D2H-请求"><a href="#D2H-请求" class="headerlink" title="D2H 请求"></a>D2H 请求</h4><p>15个命令分为四类：Read,Read0,Read0-Write,Write</p><ul><li>Read:设备请求一致性状态和数据。 得到的响应是H2D 的response中的一致性状态和H2D数据</li><li>Read0:仅请求0数据(地址无效或者未分配)，意味着不需要数据。作用是升级缓存中的现有数据(S-&gt;E)或在预计写入整个缓存行时进入 E 状态。得到的响应是一致性状态</li><li>Read0-Write:直接将数据写入主机，无需在发出前有任何一致性状态。当主机准备好接受 D2H 数据时，H2D 响应将指示“WritePull”，并且主机将在指示系统“全局观察”(GO) 数据之前解决一致性问题。</li><li>Write：用于设备从设备缓存中逐出数据。这些请求可以针对脏数据（M 状态）或干净数据（E 或 S 状态）。当设备需要提供数据时，主机会指示“WritePull”，并指示 GO</li></ul><h4 id="H2D请求"><a href="#H2D请求" class="headerlink" title="H2D请求"></a>H2D请求</h4><p>H2D请求用于主机改变设备中的一致性状态，这种请求被称为Snooping（snp）。设备根据snp的要求更新缓存，并在缓存状态为M时将数据写回主机</p><p>一致性协议的一个关键组成部分是它如何处理同一地址的冲突访问。有两种情况需要重点强调：(1) 请求到窥探，以及 (2) 驱逐到窥探。对于设备的 Req-to-Snoop 确定如何响应，H2D 响应通道上的 GO 消息必须排在任何未来到相同缓存行地址的 Snoop 之前。其原因如图 8A 所示，其中必须在稍后的侦听之前观察从主机发送的 GO 消息，以便设备知道它具有该地址的独占所有权并可以正确处理侦听。图 8B 是相反顺序的情况，其中主机首先处理探听，并将停止未来的请求，直到探听完成，因此设备在 GO 之前观察探听会导致在缓存处于无效状态时处理探听。对于 Evict-to-Snoop，图 8C 显示了当 DirtyEvict 未完成时监听到达的情况，并且设备必须使用当前 M 状态数据回复监听。稍后的 GO_WritePull 仍必须返回数据，但包括数据是伪造的（意味着可能已过时）的指示，因此主机必须删除数据，因为其他代理中可能存在更新的数据。</p><h3 id="CXL-mem-Protocol"><a href="#CXL-mem-Protocol" class="headerlink" title="CXL mem Protocol"></a>CXL mem Protocol</h3><p>mem协议允许设备暴露Host-managed Device Memory(HDM)。允许主机像访问DDR一样访问HDM。mem协议独立于所使用的介质，使用一组简单的读取和写入主机物理地址，要求设备在内部转换为设备的介质地址空间。对于还希望缓存该内存的加速器设备，提供了高级语义以使设备能够直接缓存该内存，依赖于该设备来跟踪该内存的主机缓存。</p><p>两个方向，两个通道：Master-to-Subordinate (M2S) and Subordinate-toMaster (S2M).<br>M2S提供Request channel,Request-with-Data(RwD) channel.S2M 提供Non-Data-Response (NDR) channel and Data-ReSponse (DRS) channel.为了实现简单&#x2F;低延迟的实现，通道之间没有顺序。</p><p>mem的两个用途：主机内存拓展、暴露给主机的加速器内存。为了区分，使用不同的修饰符表示，HDM-H表示host-only coherent，不包含一致性协议，用于type3设备，HDM-D表示Device-managed coherent， 包含缓存状态和缓存监听属性，用于type2设备。HDM-D 还需要一种将存储器的所需缓存状态从设备传输到主机的方法，称为“偏置翻转”流</p><p>HDM-H 可选择为每个缓存行提供 2 位meta value以供主机使用。没看出在这有啥用，应该是后面版本一致性问题用到的</p><p>HDM-D 一致性模型允许设备使用 CXL.cache 请求更改主机的状态来实现此目的。 CXL.cache 是执行此操作的自然方法，因为 HDM-D 仅针对 Type-2 设备定义，以便可以使用 CXL.cache 协议。<br>具体来说就是H2S的snp指明主机一致性状态，rsp更新主机的一致性状态</p><p>Device Coherence (Dcoh) agent：描述设备中的代理管理&#x2F;跟踪设备和主机的一致性</p><h3 id="协议层次"><a href="#协议层次" class="headerlink" title="协议层次"></a>协议层次</h3><p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20231024172417.png" alt="image.png"></p><p>cache协议是device如图cpu的core一样，都连接在LLC上，mem协议在home agent之后，CPU通过mem协议访问HDM如图访问DRAM一样。</p><p>home agent解决主机间的缓存一致性问题（被BI替代）</p><h2 id="CXL2-0"><a href="#CXL2-0" class="headerlink" title="CXL2.0"></a>CXL2.0</h2><p>特点：支持池化，在运行时重新分配资源、单层switch、QoS、热插拔、全局持久刷新(GPF)</p><p>为了支持switch，每个主机将 CXL 拓扑表示为虚拟层次结构 (VH)，包括主机端口的交换机和虚拟网桥以及具有设备资源的每个端口，每个主机都会看到一个单独的 VCS（虚拟 CXL 交换机）其中包括分配给该主机的设备的网桥，这将 CXL 2.0 限制为有向树拓扑，每个主机和设备之间最多有一条路径。此外，跟踪交换机中每个 VH 地址映射的需要限制了单交换机级别的可扩展性，CXL 3.0 克服了这一限制（第 5.3 节）。</p><p>SLD:一个设备分配给一个主机<br>MLD:一个设备分配给多个主机<br>MLD中的逻辑设备LD由标识符 (LD-ID) 标识。此扩展仅在交换机和设备之间的链路上可见，对主机不可见。主机将 LD-ID 字段留空。 CXL 交换机根据主机的端口将 LD-ID 标签应用于主机的 CXL.io 和 CXL.mem 事务。</p><p>switch的存在会带来服务质量问题，比如一台设备的低性能可能会导致使用该交换机的所有代理发生拥塞。为了缓解此问题，CXL 2.0 在 CXL.mem 响应消息中引入了 DevLoad 字段，以通知主机在其正在访问的设备中观察到的负载。主机应使用此负载信息来降低向该设备发送 CXL 请求的速率。 CXL 规范定义了一个参考模型，以便在高负载或临界负载时降低注入速率，直到达到标称负载，而在轻负载时，主机可以增加注入速率，直到达到标称负载。</p><h3 id="池管理"><a href="#池管理" class="headerlink" title="池管理"></a>池管理</h3><p>CXL Fabric Manager (FM) 来进行管理，FM是逻辑概念，可以是在主机上运行的软件、嵌入底板管理控制器 (BMC) 或 CXL 交换机内的固件，或者是专用设备。</p><p>主机的设备分配由 FM 通过 bind 命令完成，该命令采用四个参数：CXL 交换机 ID、虚拟网桥 ID、物理端口 ID 和逻辑设备 ID（对于 SLD 为空）。FM 将此命令发送到指定的交换机，该交换机检查该物理端口当前是否未绑定。如果未绑定，交换机会更新其内部状态以执行绑定。然后向主机发送热添加指示，最后通知 FM 绑定成功。虚拟网桥和关联设备现在出现在主机的虚拟层次结构中。</p><p>对于 MLD，FM 可能需要首先通过 Set-LD 命令配置逻辑设备。。创建LD后，FM可以使用bind命令和相应的LD-ID将它们分配给主机。要撤消设备分配，FM 使用 unbind 命令，该命令采用三个参数：CXL 交换机 ID、虚拟网桥 ID 和取消绑定选项。 </p><p>除了此处描述的三个命令之外，FM 还支持其他 19 个命令。它们包括 QoS 控制，例如 MLD 内逻辑设备之间的带宽分配。这些命令还包括识别交换机端口和设备以及查询和配置其状态的方法</p><h3 id="主机软件支持"><a href="#主机软件支持" class="headerlink" title="主机软件支持"></a>主机软件支持</h3><p>尽管 CXL 的大部分是在主机外部的硬件和软件（例如 FM）中实现的，但主机软件在支持 CXL 方面发挥着重要作用。在较高级别上，系统固件枚举并配置启动时存在的 CXL 资源。操作系统 (OS) 枚举并配置在运行时附加和分离的 CXL 资源，例如热添加和热删除的内存地址范围。因此，操作系统在支持 CXL 2.0 方面发挥着重要作用。<br>CXL 2.0 引入了一致设备属性表 (CDAT)，它描述了内部 NUMA 域、内存范围、带宽、延迟和内存使用建议 [47, 48]。当在运行时热添加内存（逻辑）设备时，主机读取关联的 CDAT 寄存器，操作系统分配空闲的 HPA 范围并对 HDM 解码器进行编程。</p><h2 id="CXL-3-0"><a href="#CXL-3-0" class="headerlink" title="CXL 3.0"></a>CXL 3.0</h2><p>特点</p><ul><li>拓展了内存池化，更多的设备，更大的flit，低延迟大带宽</li><li>多级switch，支持网状拓扑，这可实现更低的延迟、更高的二等分带宽和故障转移功能</li><li>支持点对点访问HDM，不涉及host</li><li>跨主机共享一致性内存和消息传递</li><li>近内存处理允许在内存附近执行计算，以获得更好的性能和能耗。</li></ul><h3 id="支持64GT-s的Flit"><a href="#支持64GT-s的Flit" class="headerlink" title="支持64GT&#x2F;s的Flit"></a>支持64GT&#x2F;s的Flit</h3><p>3.0拓展了Flit的格式，使其变为256B，支持PCIe6.0的64GT&#x2F;s速率<br>任何设备都支持32GT&#x2F;s的速率，如果 CXL 设备支持 64.0 GT&#x2F;s 数据速率，则它还必须通告 256B Flit 模式</p><h3 id="点对点通信和映射大块本地内存"><a href="#点对点通信和映射大块本地内存" class="headerlink" title="点对点通信和映射大块本地内存"></a>点对点通信和映射大块本地内存</h3><p>实现原理：Unordered I&#x2F;O(UIO)和Back-Invalidation(BI)</p><p>由于PCIe Ordering规则的限制，只允许存在非树形拓扑结构，也就是说在任意两个节点（主机或设备）之间只存在一条路径。<br>CXL 3.0（以及PCIe）通过在一个或多个独立的虚拟通道（VCs）上引入”unordered”读&#x2F;写&#x2F;完成事务，并将顺序强制转移到源节点来解决了这个挑战</p><p>CXL 3.0 在 CXL.mem 中引入了带有两个新通道：S2M方向的Back-Invalidate (BI)，M2S方向的BI-Rsp。实现了三种用途：</p><ol><li>通过 CXL.io UIO 访问 HDM-DB 内存的 CXL&#x2F;PCIe 设备之间的直接对等通信（如图 17 所示）</li><li>Type-2 设备实现监听的能力-过滤大块本地内存并将其映射到HDM-DB区域（如图18a所示）</li><li>以及跨多个独立主机的硬件强制一致共享内存（图18b）。</li></ol><p>在 CXL.mem 中包含 BI 的理由是确保不存在避免死锁所需的其他依赖项</p><h4 id="点对点通信"><a href="#点对点通信" class="headerlink" title="点对点通信"></a>点对点通信</h4><p>如果是CXL2.0，当与switch连接的device需要访问HDM-D的内存，休要经过host，这包括主机从内存中获取数据并在完成访问之前解决一致性流程。</p><p>在CXL 3.0流程中（图17c），设备可以直接使用UIO VC中的CXl.io发送相同的内存读写事务。开关不会将这些UIO事务路由到主机。在某些缓存行状态下，UIO事务可以直接从内存中服务。</p><p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20231024154103.png" alt="image.png"></p><ul><li>如果UIO读取的缓存行状态为I（无效）或S（共享），或者UIO写入的状态为I，那么UIO事务将直接从内存服务。</li><li>如有需要，内存控制器会使用BI流程进行反向监控主机处理器。这比传统方法更具带宽效率，传统方法是将所有请求发送到主机，导致更多的流量和额外的延迟。</li></ul><h4 id="设备监听能力"><a href="#设备监听能力" class="headerlink" title="设备监听能力"></a>设备监听能力</h4><h4 id="跨host缓存一致性"><a href="#跨host缓存一致性" class="headerlink" title="跨host缓存一致性"></a>跨host缓存一致性</h4><p>BI机制还能够实现跨多个主机的共享和硬件强制的一致性内存，如图18b所示。在这里，内存设备（GFD&#x2F;MLD）维护一个目录（或Snoop Filter），以跟踪一致性共享内存中缓存行的所有权。因此，当Host 1以共享副本的形式获取缓存行X的所有权时，它将目录从“I”状态更新为“S”状态，并将Host 1标记为共享者。当Host 3以相同的共享状态请求相同的缓存行X时，它提供数据并更新X的目录以指示Host 1和Host 3都已共享。当Host 4请求独占副本时，它向Host 1和Host 3发出Back Invalidate，等待两者的响应以确保Host 1和Host 3已失效其对X的副本，并在发送数据和所有权给Host 4之前，将其目录更新为Host 4标记的“E”状态。这个内存设备可以是多逻辑设备（MLD）或GFD设<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20231024154852.png" alt="image.png"></p><h3 id="Port-Base-Routing-PBR-基于端口的路由"><a href="#Port-Base-Routing-PBR-基于端口的路由" class="headerlink" title="Port Base Routing (PBR) 基于端口的路由"></a>Port Base Routing (PBR) 基于端口的路由</h3><p>目的：能够拓展到4096的端点和非树网络拓扑</p><p>分层路由要求交换机了解每个主机的虚拟分层结构和地址映射。CXL 3.0 继续对大多数端点和第一台交换机之间的链路使用标准 CXL 2.0 消息，连接到设备或主机的第一个交换机端口称为“边缘端口”，因为它在标准消息 (HBR) 和 PBR 消息之间转换方面具有特殊作用。 </p><p>然后详细介绍了这个算法的具体内容</p><h1 id="CXL-缓存一致性"><a href="#CXL-缓存一致性" class="headerlink" title="CXL 缓存一致性"></a>CXL 缓存一致性</h1><p>ex1<br>多个host共享访问内存，其中一个host独占请求<br>其他host正常请求响应，独占请求的host需要DOCH发BIreq，然后其他host无效化，再返回BIres，这个开销是额外的开销</p><p>ex2<br>多个host共享访问内存，当一个host独占请求，且该内容已经被修改，需要修改的host flush回cxlmem 再返回独占host</p><p>ex3<br>无cache访问，类似stream_load</p>]]></content>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h1 id=&quot;CXL简介：&quot;&gt;&lt;a href=&quot;#CXL简介：&quot; class=&quot;headerlink&quot; title=&quot;CXL简介：&quot;&gt;&lt;/a&gt;CXL简介：&lt;/h1&gt;&lt;p&gt;&lt;a</summary>
-        
-      
-    
-    
-    
-    
-    <category term="cxl" scheme="https://mightcoder.com/tags/cxl/"/>
-    
-    <category term="存储" scheme="https://mightcoder.com/tags/%E5%AD%98%E5%82%A8/"/>
     
   </entry>
   
