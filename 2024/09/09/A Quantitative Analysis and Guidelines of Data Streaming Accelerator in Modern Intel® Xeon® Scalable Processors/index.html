@@ -1,0 +1,265 @@
+<!DOCTYPE html><html lang="zh-cn" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>A Quantitative Analysis and Guidelines of Data Streaming Accelerator in Modern Intel® Xeon® Scalable Processors | might's room</title><meta name="author" content="might"><meta name="copyright" content="might"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="START Basic  TL;DR:量化分析DSA的性能 ## 1. Introduction 为了从 CPU 卸载此类内存操作，英特尔于 2006 年向服务器级 Xeon® 5100 系列处理器引入了 I&#x2F;O 加速技术 (I&#x2F;OAT) [10]。 I&#x2F;OAT 由芯片组中的 DMA 引擎组成，其识别、编程和操作方式与 PCIe 连接设备中的 DMA 引擎相同。 I&#x2F;OAT 的几代改进演变成 C">
+<meta property="og:type" content="article">
+<meta property="og:title" content="A Quantitative Analysis and Guidelines of Data Streaming Accelerator in Modern Intel® Xeon® Scalable Processors">
+<meta property="og:url" content="https://mightcoder.com/2024/09/09/A%20Quantitative%20Analysis%20and%20Guidelines%20of%20Data%20Streaming%20Accelerator%20in%20Modern%20Intel%C2%AE%20Xeon%C2%AE%20Scalable%20Processors/index.html">
+<meta property="og:site_name" content="might&#39;s room">
+<meta property="og:description" content="START Basic  TL;DR:量化分析DSA的性能 ## 1. Introduction 为了从 CPU 卸载此类内存操作，英特尔于 2006 年向服务器级 Xeon® 5100 系列处理器引入了 I&#x2F;O 加速技术 (I&#x2F;OAT) [10]。 I&#x2F;OAT 由芯片组中的 DMA 引擎组成，其识别、编程和操作方式与 PCIe 连接设备中的 DMA 引擎相同。 I&#x2F;OAT 的几代改进演变成 C">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg">
+<meta property="article:published_time" content="2024-09-09T01:35:29.000Z">
+<meta property="article:modified_time" content="2025-02-20T07:17:07.838Z">
+<meta property="article:author" content="might">
+<meta property="article:tag" content="论文">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg"><link rel="shortcut icon" href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg"><link rel="canonical" href="https://mightcoder.com/2024/09/09/A%20Quantitative%20Analysis%20and%20Guidelines%20of%20Data%20Streaming%20Accelerator%20in%20Modern%20Intel%C2%AE%20Xeon%C2%AE%20Scalable%20Processors/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//static.cloudflareinsights.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script defer="defer" data-pjax="data-pjax" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="{&quot;token&quot;: &quot;60e2c80ac4524b11b7168fad4fb0548b&quot;}"></script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: 'days',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'A Quantitative Analysis and Guidelines of Data Streaming Accelerator in Modern Intel® Xeon® Scalable Processors',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-02-20 15:17:07'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 8 || hour >= 22
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="might's room" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">69</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">32</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/banner.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="might's room"><span class="site-name">might's room</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">A Quantitative Analysis and Guidelines of Data Streaming Accelerator in Modern Intel® Xeon® Scalable Processors</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2024-09-09T01:35:29.000Z" title="Created 2024-09-09 09:35:29">2024-09-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-02-20T07:17:07.838Z" title="Updated 2025-02-20 15:17:07">2025-02-20</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">Word Count:</span><span class="word-count">3.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">Reading Time:</span><span>9mins</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="A Quantitative Analysis and Guidelines of Data Streaming Accelerator in Modern Intel® Xeon® Scalable Processors"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p hidden>
+START
+Basic
+</p>
+TL;DR:量化分析DSA的性能
+## 1. Introduction
+为了从 CPU 卸载此类内存操作，英特尔于 2006 年向服务器级 Xeon® 5100 系列处理器引入了 I/O 加速技术 (I/OAT) [10]。 I/OAT 由芯片组中的 DMA 引擎组成，其识别、编程和操作方式与 PCIe 连接设备中的 DMA 引擎相同。 I/OAT 的几代改进演变成 Crystal Beach DMA (CBDMA) 引擎，具有更高的吞吐量和数据协调性。尽管得到了一些软件堆栈的支持，但由于编程接口有限和卸载成本较高，事实证明应用程序堆栈的更广泛采用更加困难。
+
+<p>为了满足卸载更加多样化、简单但重复的内存密集型操作的日益增长的需求，英特尔最近在基于 Sapphire Rapids 架构的英特尔® 第四代至强® 可扩展处理器中引入了数据流加速器 (DSA) [19]。与前几代 DMA 引擎相比，DSA 在各个方面都得到了显着改进，包括显着降低的卸载开销、在吞吐量和能耗方面更高的效率、支持操作的多样性以及一系列使其更受欢迎的独特功能。加速内存相关操作和转换的有吸引力的解决方案。</p>
+<p>在本文中，我们首先使用一组微基准从各个方面研究和量化 DSA 的好处。我们还展示了通过采用 DSA 获得性能改进的实际应用程序。</p>
+<h2 id="2-Background-and-Motivation"><a href="#2-Background-and-Motivation" class="headerlink" title="2. Background and Motivation"></a>2. Background and Motivation</h2><p>内存敏感性例程</p>
+<ul>
+<li>memcpy</li>
+<li>memset</li>
+<li>memcmp</li>
+<li>CRC</li>
+</ul>
+<h2 id="3-Intel-Data-Streaming-Accelerator"><a href="#3-Intel-Data-Streaming-Accelerator" class="headerlink" title="3. Intel Data Streaming Accelerator"></a>3. Intel Data Streaming Accelerator</h2><p>DSA 是集成在英特尔最新 Sapphire Rapids Xeon CPU 中的高性能数据复制和转换加速器，作为 CBDMA 的后继者 [19]。<br>DSA 配备了硬件组件，可以有效地处理一个或多个用户提交的工作描述符（第 3.2 节）。通过共享虚拟内存 (SVM) 的支持，用户应用程序可以通过内存映射 I&#x2F;O (MMIO) 寄存器将这些工作描述符直接提交给 DSA。用户还可以根据自己的需要直接配置底层计算资源，这是通过一组专用驱动程序提供的用户界面实现的（第 3.3 节）。此外，DSA 通过新支持的操作提供了更好的功能，因此预计更多的用户&#x2F;内核进程可以利用 DSA 提供的功能。 DSA 中还引入了一些优化功能，旨在充分利用加速器的可用资源（第 3.4 节）。</p>
+<p>文章的3.2. Hardware Architecture描述了硬件细节</p>
+<h3 id="3-3-Software-Architecture-and-Interface"><a href="#3-3-Software-Architecture-and-Interface" class="headerlink" title="3.3. Software Architecture and Interface"></a>3.3. Software Architecture and Interface</h3><p>Intel Data Accelerator Driver (IDXD)<br>应用可以利用用户空间的libaccel-configAPI来控制</p>
+<h3 id="airness-control-The-basic-operational-unit-of-DSA-is-a-group"><a href="#airness-control-The-basic-operational-unit-of-DSA-is-a-group" class="headerlink" title="airness control. The basic operational unit of DSA is a group"></a>airness control. The basic operational unit of DSA is a group</h3><ul>
+<li>virtualization and multi-application support</li>
+<li>Batch descriptor processing</li>
+<li>QoS control.</li>
+</ul>
+<h2 id="4-DSA-Performance-Analysis"><a href="#4-DSA-Performance-Analysis" class="headerlink" title="4. DSA Performance Analysis"></a>4. DSA Performance Analysis</h2><p>对于基准测试，我们使用一组用户空间微基准测试 dsa-perf-micros [50]，来测量 DSA 在不同组配置、作业描述和同步模式下的性能。异步使用时，除非另有说明，否则 DSA 的队列深度为 32。<br>对于运行在CPU核心上的软件基线，我们选择高度优化的软件库（例如glibc的memcpy和用于CRC32计算的ISA-L<br>我们利用 Linux Perf 工具 [31] 收集有关周期的信息和英特尔的 pqos 库 API [15] 来观察各个内核的 LLC 占用情况，并将评估的内核隔离到特定的 LLC 方式，以尽量减少对其他后台任务的干扰系统。</p>
+<p>通过实验，我们发现在不同的传输大小下，DSA 的吞吐量平均比英特尔第三代至强可扩展处理器 (ICX) 中的 CBDMA 高 2.1 倍。</p>
+<p>跟软件基线相比，数据大小对吞吐的影响<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240909100056.png" alt="image.png"><br>异步比同步性能好，传输size越大，性能越好<br>比cpu能达到五倍多的开销，带宽很高呀</p>
+<p>可以看出对于同步卸载当BS（batch size）越大时，性能越好<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240909101033.png" alt="image.png"><br>对于异步来说，工作队列大小越大，性能越好<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240909101159.png" alt="image.png"><br>研究延迟分解<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240909101326.png" alt="image.png"></p>
+<p>跨socket影响<br>由于内存请求是通过英特尔的超级路径互连 (UPI) 由其他套接字发送和接收的，因此相应的开销会增加远程内存延迟。通过流水线执行和足够的缓冲，DSA 通常能够有效隐藏访问远程套接字内存的额外延迟。因此，DSA 能够实现与本地访问类似的远程内存访问的全部性能<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240909102231.png" alt="image.png"><br>CXL影响<br>我们使用配备 16 GB DDR4 DRAM 的 Intel® Agilex-I 开发套件 [23] 作为 CXL 存储设备。 CXL 内存作为没有 CPU 核心的 NUMA 节点暴露给 CPU&#x2F;OS，其使用方式与常规 NUMA 内存管理相同。<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240909102329.png" alt="image.png"><br>大页的影响：大页可以提高缓存数据的能力，因为 TLB 可以为每个页表条目缓存更大的内存区域。这种改进是以更长的内存分配为代价的，并且当数据没有空间定位时，当发生页面错误时，就会变成很大的开销。图 8 的结果显示吞吐量几乎不受所用页面大小的影响。<br><strong>多个DSA实例的影响</strong>】<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240909102557.png" alt="image.png"></p>
+<p>可以看到超过 64 KB，最大吞吐量开始下降至 70 GB&#x2F;s，这是因为在这种情况下，数据写入占用空间超过了 LLC 的 DDIO 部分（即泄漏 DMA 问题 [57, 64]），因此，这种情况下的吞吐量受到系统内存带宽的限制。在需要更高吞吐量和大传输大小的用例中，应该为 DDIO [64] 分配更多 LLC 路（另请参见第 6.2 节）。</p>
+<h3 id="缓存污染"><a href="#缓存污染" class="headerlink" title="缓存污染"></a>缓存污染</h3><p>将任务卸载到 DSA 的主要好处之一是防止 LLC 空间被低局部性的流数据污染。这使得其他位于同一位置、对延迟敏感的应用程序能够满足其所需的时序。<br>使用 DSA，读取不会分配到缓存中，并且写入仅限于 LLC [64] 的 DDIO 部分，从而显着最小化缓存污染影响。</p>
+<h2 id="5-DSA-Software-Enablement-and-Ecosystem"><a href="#5-DSA-Software-Enablement-and-Ecosystem" class="headerlink" title="5. DSA Software Enablement and Ecosystem"></a>5. DSA Software Enablement and Ecosystem</h2><p>三个示例<br>SPDK NVMe&#x2F;TCP Target、基于 CacheLib 的云数据缓存服务以及 HPC&#x2F;ML 中的 libfabric</p>
+<p>网络加速：通过 DSA 更大的吞吐量和更多支持的操作来协助网络，I&#x2F;OAT 为网络加速带来的好处得到了放大。虚拟化网络堆栈（例如 virtIO）中卸载数据包复制就是一个示例（详细案例研究请参见第 6.4 节）。</p>
+<p>存储加速：DSA 的特性也非常适合需要移动和检查大量数据的存储堆栈。与用于 DSA 支持的 SPDK 软件堆栈（附录）一起，io_uring [61] 和分布式异步对象存储 (DAOS) [30] 等技术通过使用新的存储接口&#x2F;语义消除常见的基于块的 I&#x2F;O 瓶颈，从而提供高性能。使用 DAOS 的 HPC 工作负载有可能利用 DSA 的内存移动器功能来提高内存吞吐量，减少简单数据任务的核心压力，并在后台合并小型 I&#x2F;O 请求 [21]。</p>
+<p>数据中心减税：正如谷歌和其他云巨头所指出的[42]，云数据中心中的大量CPU周期并没有花费在它所承载的应用程序上，相反，云基础设施本身占用了这些周期。此类数据中心税包括但不限于设备和内存管理、虚拟化、RPC 堆栈等。DSA 丰富的功能能够通过卸载内存压缩、VM&#x2F;容器启动和迁移等更关键的例程来减少数据中心税场景。</p>
+<p>数据中心的 HPC&#x2F;ML 加速：除了系统基础设施用例之外，DSA 还可以应用于广泛的应用。机器学习 (ML) 处理框架就是一个例子。一方面，作为一个迭代过程，机器学习处理需要清除某些内存区域（例如梯度向量）才能进行下一次迭代；另一方面，在分布式机器学习场景中，需要通过 MPI 和 libfabric [36]（附录）等通信库在集群中的节点之间复制和传输大量张量和向量。随着机器学习模型大小逐年快速增加，此类操作可能会给 CPU 带来巨大负担。在 DSA 的帮助下，此类内存归零和内存复制例程已被卸载，并且可以节省 CPU 周期来执行更关键的任务。请注意，在某些可以利用 DSA 的 HPC 工作负载中也会出现类似的问题</p>
+<p>具有分层 CXL 的分解内存系统的数据移动卸载：基于 CXL 的内存扩展已成为业界事实上的内存扩展和分解解决方案。与常规的基于 DRAM 的主存储器相比，基于 CXL 的存储器具有更高的灵活性和更高的存储器容量，因此可能具有更长的访问延迟。这使得 LD&#x2F;ST 语义对于核心在不同存储介质之间移动数据块的效率低下，这在分层存储系统中很常见。通过将此类内存移动和操作操作卸载到 DSA，我们可以享受 CXL 内存的优势，同时不会因加载-存储队列饱和而损害内核的性能</p>
+<p>为了提高 DSA 的易用性，我们针对不同级别的 DSA 使用开发了英特尔数据移动器库 (DML) [24] 和 DSA 透明卸载库 (DTO)</p>
+<p>DML 提供了一组用于数据移动和转换的高级 C&#x2F;C++ API，在可用时调用底层 DSA 单元。 DML 支持高级功能（所有 DSA 硬件操作、异步卸载、负载平衡等），应用程序可以显式调用 DML API 以充分利用 DSA 卸载操作。 DTO 是一个侵入性较小的库，允许应用程序透明地利用 DSA，而无需修改源代码。对于希望使用 DTO 库的应用程序，用户可以使用链接器选项 -ldto 和 -laccel-config 动态链接库，或者通过 LD_PRELOAD 预加载库，而无需重新编译其应用程序。当使用常见的系统 API 调用（如 memmove()、memcpy()、memset() 或 memcmp()）时，DTO 会拦截它们并将其替换为相应的同步 DSA 操作。</p>
+<p>同时，PCM 库还提供了 DSA 性能遥测功能[27]。通过读取硬件性能计数器，PCM 能够观察每个 DSA 实例上的入站&#x2F;出站流量和请求计数</p>
+<h2 id="6-Make-the-Most-out-of-DSA"><a href="#6-Make-the-Most-out-of-DSA" class="headerlink" title="6. Make the Most out of DSA"></a>6. Make the Most out of DSA</h2><ul>
+<li>Keep a balanced batch size and transfer size</li>
+<li>Use DSA asynchronously when possible</li>
+<li>Control the data destination wisely<ul>
+<li>与始终定向到 LLC 的完成记录不同，写入描述符目标地址的数据可以定向到 LLC 或主存储器。 DSA 通过允许用户提供注明首选目的地的提示（即设置工作描述符的缓存控制标志）来促进此缓存控制功能。如果该标志设置为 0，则数据将写入内存，同时使 LLC 中相应的高速缓存行（如果有）无效。如果该标志设置为1，则通过分配相应的缓存线将数据直接写入LLC。</li>
+</ul>
+</li>
+<li>DSA as a good candidate of moving data across a heterogeneous memory system.</li>
+<li>Leverage PE-level parallelism</li>
+<li>Optimize WQ configuration</li>
+</ul>
+<h2 id="8-Conclusion"><a href="#8-Conclusion" class="headerlink" title="8.Conclusion"></a>8.Conclusion</h2><p>新的 DSA 通过改进的性能和灵活性为更大的卸载潜力开辟了新的机会。与之前的工作相比，额外的用户端可配置选项以及批量卸载任务的能力显着提高了吞吐量，并为用户提供了在流数据上使用加速器的新方法。在本文中，我们还注意到 DSA 支持的其他功能以及加速器的固有优势，例如减轻主机处理器上共同运行的应用程序造成的缓存污染。通过快速发展的软件生态系统和广泛的适用工作负载，我们希望本文能够推动 DSA 在基础设施库和应用程序中的采用。</p>
+<p hidden>
+Back: you have read it !
+Tags: 
+END
+</p></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://mightcoder.com">might</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://mightcoder.com/2024/09/09/A%20Quantitative%20Analysis%20and%20Guidelines%20of%20Data%20Streaming%20Accelerator%20in%20Modern%20Intel%C2%AE%20Xeon%C2%AE%20Scalable%20Processors/">https://mightcoder.com/2024/09/09/A%20Quantitative%20Analysis%20and%20Guidelines%20of%20Data%20Streaming%20Accelerator%20in%20Modern%20Intel%C2%AE%20Xeon%C2%AE%20Scalable%20Processors/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%AE%BA%E6%96%87/">论文</a></div><div class="post_share"><div class="social-share" data-image="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>请作者喝杯咖啡</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/09/21/DFabric%EF%BC%9A%20Scaling%20Out%20Data%20Parallel%20Applications%20with%20%20CXL-Ethernet%20Hybrid%20Interconnects/" title="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects</div></div></a></div><div class="next-post pull-right"><a href="/2024/09/08/DmRPC%EF%BC%9ADisaggregated%20Memory-aware%20Datacenter%20RPC%20for%20Data-intensive%20Applications/" title="DmRPC：Disaggregated Memory-aware Datacenter RPC for Data-intensive Applications"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next</div><div class="next_info">DmRPC：Disaggregated Memory-aware Datacenter RPC for Data-intensive Applications</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2024/07/17/DRust%EF%BC%9ALanguage-Guided%20Distributed%20Shared%20Memory%20with%20Fine%20Granularity,%20Full%20Transparency,%20and%20Ultra%20Efficiency/" title="DRust：Language-Guided Distributed Shared Memory with Fine Granularity, Full Transparency, and Ultra Efficiency"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-17</div><div class="title">DRust：Language-Guided Distributed Shared Memory with Fine Granularity, Full Transparency, and Ultra Efficiency</div></div></a></div><div><a href="/2024/03/02/FIFO%20Queues%20are%20All%20You%20Need%20for%20Cache%20Eviction/" title="FIFO Queues are All You Need for Cache Eviction"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-02</div><div class="title">FIFO Queues are All You Need for Cache Eviction</div></div></a></div><div><a href="/2024/07/16/Harvesting%20Memory-bound%20CPU%20Stall%20Cycles%20in%20Software%20with%20MSH/" title="Harvesting Memory-bound CPU Stall Cycles in Software with MSH"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-16</div><div class="title">Harvesting Memory-bound CPU Stall Cycles in Software with MSH</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> Comment</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">might</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">69</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">32</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/shenghansen"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/shenghansen" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:shenghs@mail2.sysu.edu.cn" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="/./atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #f36d6d;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">Hope you can find something useful here ᐕ)⁾⁾ .</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Background-and-Motivation"><span class="toc-number">1.</span> <span class="toc-text">2. Background and Motivation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Intel-Data-Streaming-Accelerator"><span class="toc-number">2.</span> <span class="toc-text">3. Intel Data Streaming Accelerator</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-Software-Architecture-and-Interface"><span class="toc-number">2.1.</span> <span class="toc-text">3.3. Software Architecture and Interface</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#airness-control-The-basic-operational-unit-of-DSA-is-a-group"><span class="toc-number">2.2.</span> <span class="toc-text">airness control. The basic operational unit of DSA is a group</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-DSA-Performance-Analysis"><span class="toc-number">3.</span> <span class="toc-text">4. DSA Performance Analysis</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E6%B1%A1%E6%9F%93"><span class="toc-number">3.1.</span> <span class="toc-text">缓存污染</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-DSA-Software-Enablement-and-Ecosystem"><span class="toc-number">4.</span> <span class="toc-text">5. DSA Software Enablement and Ecosystem</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-Make-the-Most-out-of-DSA"><span class="toc-number">5.</span> <span class="toc-text">6. Make the Most out of DSA</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-Conclusion"><span class="toc-number">6.</span> <span class="toc-text">8.Conclusion</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/11/25/cpp%E5%8D%8F%E7%A8%8B/" title="1.协程简介">1.协程简介</a><time datetime="2024-11-25T08:23:29.000Z" title="Created 2024-11-25 16:23:29">2024-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/11/13/SHMEMGraph%EF%BC%9A%20Efficient%20and%20Balanced%20Graph%20%20Processing%20Using%20One-sided%20Communication/" title="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151617.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication"/></a><div class="content"><a class="title" href="/2024/11/13/SHMEMGraph%EF%BC%9A%20Efficient%20and%20Balanced%20Graph%20%20Processing%20Using%20One-sided%20Communication/" title="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication">SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication</a><time datetime="2024-11-13T07:34:44.000Z" title="Created 2024-11-13 15:34:44">2024-11-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/11/11/RGraph%EF%BC%9AAsynchronous%20graph%20processing%20based%20on%20%20asymmetry%20of%20remote%20direct%20memory%20access/" title="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151617.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access"/></a><div class="content"><a class="title" href="/2024/11/11/RGraph%EF%BC%9AAsynchronous%20graph%20processing%20based%20on%20%20asymmetry%20of%20remote%20direct%20memory%20access/" title="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access">RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access</a><time datetime="2024-11-11T08:17:26.000Z" title="Created 2024-11-11 16:17:26">2024-11-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/10/01/cloudlab%E5%A4%9A%E8%8A%82%E7%82%B9%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" title="cloudlab多节点环境配置"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220150722.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="cloudlab多节点环境配置"/></a><div class="content"><a class="title" href="/2024/10/01/cloudlab%E5%A4%9A%E8%8A%82%E7%82%B9%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" title="cloudlab多节点环境配置">cloudlab多节点环境配置</a><time datetime="2024-10-01T03:23:12.000Z" title="Created 2024-10-01 11:23:12">2024-10-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/09/21/DFabric%EF%BC%9A%20Scaling%20Out%20Data%20Parallel%20Applications%20with%20%20CXL-Ethernet%20Hybrid%20Interconnects/" title="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects"/></a><div class="content"><a class="title" href="/2024/09/21/DFabric%EF%BC%9A%20Scaling%20Out%20Data%20Parallel%20Applications%20with%20%20CXL-Ethernet%20Hybrid%20Interconnects/" title="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects">DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects</a><time datetime="2024-09-21T06:44:05.000Z" title="Created 2024-09-21 14:44:05">2024-09-21</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/banner.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By might</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">hope you can find something useful here ᐕ)⁾⁾ .</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="Scroll To Comments"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const initValine = () => {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'VBvzA6UUhphh1Tc1BtzWXzye-gzGzoHsz',
+      appKey: 'J0UlGcCok0khsrORkwxD1HwF',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  const loadValine = async () => {
+    if (typeof Valine === 'function') initValine()
+    else {
+      await getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js')
+      initValine()
+    }
+  }
+
+  if ('Valine' === 'Valine' || !false) {
+    if (false) btf.loadComment(document.getElementById('vcomment'),loadValine)
+    else setTimeout(loadValine, 0)
+  } else {
+    window.loadOtherComment = loadValine
+  }
+})()</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

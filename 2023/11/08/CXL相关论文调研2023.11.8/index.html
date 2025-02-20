@@ -1,0 +1,282 @@
+<!DOCTYPE html><html lang="zh-cn" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>论文研究方向 | might's room</title><meta name="author" content="might"><meta name="copyright" content="might"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="论文研究方向基准测试：搭了一套真实系统进行性能测试 DirectCXLGouk D, Lee S, Kwon M, et al. Direct access,{High-Performance} memory disaggregation with {DirectCXL}[C]&#x2F;&#x2F;2022 USENIX Annual Technical Conference (USENIX A">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文研究方向">
+<meta property="og:url" content="https://mightcoder.com/2023/11/08/CXL%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87%E8%B0%83%E7%A0%942023.11.8/index.html">
+<meta property="og:site_name" content="might&#39;s room">
+<meta property="og:description" content="论文研究方向基准测试：搭了一套真实系统进行性能测试 DirectCXLGouk D, Lee S, Kwon M, et al. Direct access,{High-Performance} memory disaggregation with {DirectCXL}[C]&#x2F;&#x2F;2022 USENIX Annual Technical Conference (USENIX A">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png">
+<meta property="article:published_time" content="2023-11-08T08:40:17.000Z">
+<meta property="article:modified_time" content="2023-11-30T06:32:30.000Z">
+<meta property="article:author" content="might">
+<meta property="article:tag" content="cxl">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png"><link rel="shortcut icon" href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg"><link rel="canonical" href="https://mightcoder.com/2023/11/08/CXL%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87%E8%B0%83%E7%A0%942023.11.8/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//static.cloudflareinsights.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script defer="defer" data-pjax="data-pjax" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="{&quot;token&quot;: &quot;60e2c80ac4524b11b7168fad4fb0548b&quot;}"></script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: 'days',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '论文研究方向',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-11-30 14:32:30'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 8 || hour >= 22
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="might's room" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">69</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">32</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png')"><nav id="nav"><span id="blog-info"><a href="/" title="might's room"><span class="site-name">might's room</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">论文研究方向</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2023-11-08T08:40:17.000Z" title="Created 2023-11-08 16:40:17">2023-11-08</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2023-11-30T06:32:30.000Z" title="Updated 2023-11-30 14:32:30">2023-11-30</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">Word Count:</span><span class="word-count">1.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">Reading Time:</span><span>8mins</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="论文研究方向"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="论文研究方向"><a href="#论文研究方向" class="headerlink" title="论文研究方向"></a>论文研究方向</h1><h2 id="基准测试：搭了一套真实系统进行性能测试"><a href="#基准测试：搭了一套真实系统进行性能测试" class="headerlink" title="基准测试：搭了一套真实系统进行性能测试"></a>基准测试：搭了一套真实系统进行性能测试</h2><ol>
+<li>DirectCXL<br>Gouk D, Lee S, Kwon M, et al. Direct access,{High-Performance} memory disaggregation with {DirectCXL}[C]&#x2F;&#x2F;2022 USENIX Annual Technical Conference (USENIX ATC 22). 2022: 287-294.</li>
+<li>在最先进的实验平台探索CXL的性能表征，并为程序员提供了一些指南<br>Sun Y, Yuan Y, Yu Z, et al. Demystifying CXL Memory with Genuine CXL-Ready Systems and Devices[J]. arXiv preprint arXiv:2303.15375, 2023.</li>
+<li>异构计算<br>Cabrera, A.M., A.R. Young, and J.S. Vetter. “Design and Analysis of CXL Performance Models for Tightly-Coupled Heterogeneous Computing,” 2022. <a target="_blank" rel="noopener" href="https://doi.org/10.1145/3529336.3530817">https://doi.org/10.1145/3529336.3530817</a>.</li>
+</ol>
+<h2 id="CXL软件栈"><a href="#CXL软件栈" class="headerlink" title="CXL软件栈"></a>CXL软件栈</h2><ol>
+<li>海力士HMSDK<br>S. Ryu <em>et al.</em>, “System Optimization of Data Analytics Platforms using Compute Express Link (CXL) Memory,” presented at the Proceedings - 2023 IEEE International Conference on Big Data and Smart Computing, BigComp 2023, 2023, pp. 9–12. doi: <a target="_blank" rel="noopener" href="https://doi.org/10.1109/BigComp57234.2023.00011">10.1109&#x2F;BigComp57234.2023.00011</a>.</li>
+<li>三星MSDK<br>K. Kim <em>et al.</em>, “SMT: Software-Defined Memory Tiering for Heterogeneous Computing Systems With CXL Memory Expander,” <em>IEEE Micro</em>, vol. 43, no. 2, pp. 20–29, 2023, doi: <a target="_blank" rel="noopener" href="https://doi.org/10.1109/MM.2023.3240774">10.1109&#x2F;MM.2023.3240774</a>.</li>
+</ol>
+<h2 id="内存池"><a href="#内存池" class="headerlink" title="内存池"></a>内存池</h2><ol>
+<li>DIRECTCXL<br>Gouk, D., S. Lee, M. Kwon, and M. Jung. “Direct Access, High-Performance Memory Disaggregation with DIRECTCXL,” 287–94, 2022. <a target="_blank" rel="noopener" href="https://www.scopus.com/inward/record.uri?eid=2-s2.0-85138473074&partnerID=40&md5=4605596d72e2054c690576e6e0e93e86">https://www.scopus.com/inward/record.uri?eid=2-s2.0-85138473074&partnerID=40&md5=4605596d72e2054c690576e6e0e93e86</a>.</li>
+<li>云服务内存池<br>Li, H., D.S. Berger, L. Hsu, D. Ernst, P. Zardoshti, S. Novakovic, M. Shah, et al. “Pond: CXL-Based Memory Pooling Systems for Cloud Platforms,” 2:574–87, 2023. <a target="_blank" rel="noopener" href="https://doi.org/10.1145/3575693.3578835">https://doi.org/10.1145/3575693.3578835</a>.</li>
+<li>带NDP的内存池<br>Wahlgren, Jacob, Maya Gokhale, and Ivy B. Peng. “Evaluating Emerging CXL-Enabled Memory Pooling for HPC Systems.” In <em>2022 IEEE&#x2F;ACM Workshop on Memory Centric High Performance Computing (MCHPC)</em>, 11–20, 2022. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/MCHPC56545.2022.00007">https://doi.org/10.1109/MCHPC56545.2022.00007</a>.</li>
+<li>可组合和横向扩展架构内存池 intel的人写的<br>Sharma, D.D. “Novel Composable and Scaleout Architectures Using Compute Express Link.” <em>IEEE Micro</em> 43, no. 2 (2023): 9–19. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/MM.2023.3235972">https://doi.org/10.1109/MM.2023.3235972</a>.</li>
+<li>基于CXL的动态容量拓展<br>Ha, M., J. Ryu, J. Choi, K. Ko, S. Kim, S. Hyun, D. Moon, et al. “Dynamic Capacity Service for Improving CXL Pooled Memory Efficiency.” <em>IEEE Micro</em> 43, no. 2 (2023): 39–47. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/MM.2023.3237756">https://doi.org/10.1109/MM.2023.3237756</a>.</li>
+<li>探讨了云服务提供商该如何设计CXL内存池<br>Berger, D.S., D. Ernst, H. Li, P. Zardoshti, M. Shah, S. Rajadnya, S. Lee, et al. “Design Tradeoffs in CXL-Based Memory Pools for Public Cloud Platforms.” <em>IEEE Micro</em> 43, no. 2 (2023): 30–38. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/MM.2023.3241586">https://doi.org/10.1109/MM.2023.3241586</a>.</li>
+</ol>
+<h2 id="分离式内存"><a href="#分离式内存" class="headerlink" title="分离式内存"></a>分离式内存</h2><p>CXL局限于机架级，提出基于以太网的CXL，实现了通过load&#x2F;store内存语义访问以太网连接的远程分离式内存。<br>Wang C, He K, Fan R, et al. CXL over Ethernet: A Novel FPGA-based Memory Disaggregation Design in Data Centers[C]&#x2F;&#x2F;2023 IEEE 31st Annual International Symposium on Field-Programmable Custom Computing Machines (FCCM). IEEE, 2023: 75-82.</p>
+<h2 id="安全性"><a href="#安全性" class="headerlink" title="安全性"></a>安全性</h2><ol>
+<li><p>一篇关于CXL的安全问题的综述<br>Stark, S.W., A.T. Markettos, and S.W. Moore. “How Flexible Is CXL’s Memory Protection?” <em>Queue</em> 21, no. 3 (2023): 54–64. <a target="_blank" rel="noopener" href="https://doi.org/10.1145/3606014">https://doi.org/10.1145/3606014</a>.</p>
+</li>
+<li><p>FAM架构下数据一致性<br>Alwadi, M., R. Wang, D. Mohaisen, C. Hughes, S.D. Hammond, and A. Awad. “Minerva: Rethinking Secure Architectures for the Era of Fabric-Attached Memory Architectures,” 258–68, 2022. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/IPDPS53621.2022.00033">https://doi.org/10.1109/IPDPS53621.2022.00033</a>.</p>
+</li>
+<li><p>多个host共享device内存的安全问题</p>
+</li>
+<li><p>GFAM，多设备共享内存安全问题</p>
+</li>
+<li><p>UIO提供的点对点通信的安全问题</p>
+</li>
+</ol>
+<p>好像没啥专门做CXL相关的，都是提了一嘴<br>Fabric Attached Memory (FAM) 架构：也叫memory-centric architectures，允许多个PE(processing elements)连接到共享内存池</p>
+<h2 id="Tiered-Memory-层次存储"><a href="#Tiered-Memory-层次存储" class="headerlink" title="Tiered Memory 层次存储"></a>Tiered Memory 层次存储</h2><ol>
+<li>本文提出了一种新的操作系统级应用透明页面放置机制(TPP)，采用轻量级机制来识别热&#x2F;冷页并将其放置到适当的内存层。它支持主动将页面从本地内存降级到 CXL 内存<br>H. A. Maruf <em>et al.</em>, “TPP: Transparent Page Placement for CXL-Enabled Tiered-Memory,” presented at the International Conference on Architectural Support for Programming Languages and Operating Systems - ASPLOS, 2023, pp. 742–755. doi: <a target="_blank" rel="noopener" href="https://doi.org/10.1145/3582016.3582063">10.1145&#x2F;3582016.3582063</a>.</li>
+<li>通过调整缓存大小来解决层次存储延迟不等问题<br>H. Lee, S. Lee, Y. Jung, and D. Kim, “T-CAT: Dynamic Cache Allocation for Tiered Memory Systems With Memory Interleaving,” <em>IEEE Computer Architecture Letters</em>, vol. 22, no. 2, pp. 73–76, 2023, doi: <a target="_blank" rel="noopener" href="https://doi.org/10.1109/LCA.2023.3290197">10.1109&#x2F;LCA.2023.3290197</a>.</li>
+</ol>
+<h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2><h3 id="软硬件协同"><a href="#软硬件协同" class="headerlink" title="软硬件协同"></a>软硬件协同</h3><ol>
+<li>Jang, Junhyeok, Hanjin Choi, Hanyeoreum Bae, and Seungjun Lee. “CXL-ANNS: Software-Hardware Collaborative Memory Disaggregation and Computation for Billion-Scale Approximate Nearest Neighbor Search,” n.d.</li>
+<li>Huangfu, W., K.T. Malladi, A. Chang, and Y. Xie. “BEACON: Scalable Near-Data-Processing Accelerators for Genome Analysis near Memory Pool with the CXL Support,” 2022-October:727–43, 2022. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/MICRO56248.2022.00057">https://doi.org/10.1109/MICRO56248.2022.00057</a>.</li>
+<li>“Partial Failure Resilient Memory Management System for (CXL-Based) Distributed Shared Memory,” n.d.</li>
+</ol>
+<h3 id="图计算系统"><a href="#图计算系统" class="headerlink" title="图计算系统"></a>图计算系统</h3><p>Zhang, X., Y. Chang, T. Lu, K. Zhang, and M. Chen. “Rethinking Design Paradigm of Graph Processing System with a CXL-like Memory Semantic Fabric,” 25–35, 2023. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/CCGrid57682.2023.00013">https://doi.org/10.1109/CCGrid57682.2023.00013</a>.</p>
+<h3 id="分布式深度学习"><a href="#分布式深度学习" class="headerlink" title="分布式深度学习"></a>分布式深度学习</h3><p>Arif, M., K. Assogba, M.M. Rafique, and S. Vazhkudai. “Exploiting CXL-Based Memory for Distributed Deep Learning,” 2022. <a target="_blank" rel="noopener" href="https://doi.org/10.1145/3545008.3545054">https://doi.org/10.1145/3545008.3545054</a>.</p>
+<h3 id="FAAS"><a href="#FAAS" class="headerlink" title="FAAS"></a>FAAS</h3><p>基于CXL的对象粒度内存接口，用于维护Faas对象，关键创新是容错一致性协议<br>A. Patil, V. Nagarajan, N. Nikoleris, and N. Oswald, “Āpta: Fault-tolerant object-granular CXL disaggregated memory for accelerating FaaS,” presented at the Proceedings - 2023 53rd Annual IEEE&#x2F;IFIP International Conference on Dependable Systems and Networks, DSN 2023, 2023, pp. 201–215. doi: <a target="_blank" rel="noopener" href="https://doi.org/10.1109/DSN58367.2023.00030">10.1109&#x2F;DSN58367.2023.00030</a>.</p>
+<h3 id="云计算"><a href="#云计算" class="headerlink" title="云计算"></a>云计算</h3><p>虚拟机快照主要用来数据恢复，传输粒度为4Kib（页面大小），利用CXL以64B粒度修改内存。<br>D. Waddington, M. Hershcovitch, S. Sundararaman, and C. Dickey, “A case for using cache line deltas for high frequency VM snapshotting,” presented at the SoCC 2022 - Proceedings of the 13th Symposium on Cloud Computing, 2022, pp. 526–539. doi: <a target="_blank" rel="noopener" href="https://doi.org/10.1145/3542929.3563481">10.1145&#x2F;3542929.3563481</a>.</p>
+<h2 id="CXL-SSD"><a href="#CXL-SSD" class="headerlink" title="CXL-SSD"></a>CXL-SSD</h2><ol>
+<li>Jung, M. “Hello Bytes, Bye Blocks: Pcie Storage Meets Compute Express Link for Memory Expansion (Cxl-Ssd),” 45–51, 2022. <a target="_blank" rel="noopener" href="https://doi.org/10.1145/3538643.3539745">https://doi.org/10.1145/3538643.3539745</a>.</li>
+<li>Kwon, M., S. Lee, and M. Jung. “Cache in Hand: Expander-Driven CXL Prefetcher for Next Generation CXL-SSD,” 24–30, 2023. <a target="_blank" rel="noopener" href="https://doi.org/10.1145/3599691.3603406">https://doi.org/10.1145/3599691.3603406</a>.</li>
+<li>Yang, Shao-Peng, Minjae Kim, Sanghyun Nam, Juhyung Park, Jin-yong Choi, Eyee Hyun Nam, Eunji Lee, Sungjin Lee, and Bryan S Kim. “Overcoming the Memory Wall with CXL-Enabled SSDs,” n.d.</li>
+</ol>
+<h2 id="利用CXL的特性解决问题"><a href="#利用CXL的特性解决问题" class="headerlink" title="利用CXL的特性解决问题"></a>利用CXL的特性解决问题</h2><p>分离式内存数据中心的DRAM能耗较高，虽然可以通过低功耗模式节省能源，但是由于DRAM交错提高带宽，需要对操作系统、内存控制器、甚至DRAM进行侵入式修改。<br>本文提出了DRAM Translation Layer (DTL), 基于 CXL 的存储设备内进行灵活地址映射和数据迁移的机制，DTL 在从主机物理地址 (HPA) 到 DRAM 设备物理地址 (DPA) 的地址转换中引入了一定程度的间接寻址。<br>W. Jin, J. Lee, W. Jang, S. Kim, H. Park, and J. W. Lee, “DRAM Translation Layer: Software-Transparent DRAM Power Savings for Disaggregated Memory,” presented at the Proceedings - International Symposium on Computer Architecture, 2023, pp. 217–229. doi: <a target="_blank" rel="noopener" href="https://doi.org/10.1145/3579371.3589051">10.1145&#x2F;3579371.3589051</a>.</p>
+<h1 id="评估方法"><a href="#评估方法" class="headerlink" title="评估方法"></a>评估方法</h1><ol>
+<li>真实硬件：<ol>
+<li>自己实现的支持CXL的CPU和FPGA（IP软核    CXL3.0）</li>
+<li>intel AMD 推出的CPU和FPGA （IP硬核  CXL1.1）</li>
+</ol>
+</li>
+<li>NUMA模拟：模拟内存池的延迟还可以，复杂一些的软硬件协同无法模拟</li>
+<li>模拟器：GEM5模拟</li>
+<li>其他的模拟方法<ol>
+<li>python脚本：语焉不详Accelerating Performance of GPU-based Workloads Using CXL</li>
+<li>以太网+片上互联</li>
+</ol>
+</li>
+</ol>
+<h1 id="当前挑战"><a href="#当前挑战" class="headerlink" title="当前挑战"></a>当前挑战</h1><p>实验如何开展：没有硬件、如何模拟</p>
+<p>选择合适场景：</p>
+<ol>
+<li>type2：异构计算会从缓存一致性中获益什么？如何模拟？</li>
+<li>type3：<ol>
+<li>基于CXL的分离式内存池+具体应用优化</li>
+<li>软硬件协同：带DSA（NDP）的内存池，近存计算</li>
+</ol>
+</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://mightcoder.com">might</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://mightcoder.com/2023/11/08/CXL%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87%E8%B0%83%E7%A0%942023.11.8/">https://mightcoder.com/2023/11/08/CXL%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87%E8%B0%83%E7%A0%942023.11.8/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/cxl/">cxl</a></div><div class="post_share"><div class="social-share" data-image="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>请作者喝杯咖啡</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/11/29/2023-11-29/" title="博客系统升级"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">博客系统升级</div></div></a></div><div class="next-post pull-right"><a href="/2023/11/02/effective%20modern%20c++/" title="effective modern c++"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20231101213331.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next</div><div class="next_info">effective modern c++</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2024/03/20/DDC%EF%BC%9AA%20Vision%20for%20a%20Disaggregated%20Datacenter/" title="DDC：A Vision for a Disaggregated Datacenter"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-20</div><div class="title">DDC：A Vision for a Disaggregated Datacenter</div></div></a></div><div><a href="/2023/09/18/An%20Introduction%20to%20the%20Compute%20Express%20LinkTM%20(CXLTM)%20Interconnect/" title="An Introduction to the Compute Express LinkTM (CXLTM) Interconnect"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-09-18</div><div class="title">An Introduction to the Compute Express LinkTM (CXLTM) Interconnect</div></div></a></div><div><a href="/2024/03/22/EMS-i%EF%BC%9A%20An%20Efficient%20Memory%20System%20Design%20with%20Specialized%20Caching%20Mechanism%20for%20Recommendation%20Inference/" title="EMS-i： An Efficient Memory System Design with Specialized Caching Mechanism for Recommendation Inference"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-22</div><div class="title">EMS-i： An Efficient Memory System Design with Specialized Caching Mechanism for Recommendation Inference</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> Comment</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">might</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">69</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">32</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/shenghansen"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/shenghansen" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:shenghs@mail2.sysu.edu.cn" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="/./atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #f36d6d;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">Hope you can find something useful here ᐕ)⁾⁾ .</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E7%A0%94%E7%A9%B6%E6%96%B9%E5%90%91"><span class="toc-number">1.</span> <span class="toc-text">论文研究方向</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95%EF%BC%9A%E6%90%AD%E4%BA%86%E4%B8%80%E5%A5%97%E7%9C%9F%E5%AE%9E%E7%B3%BB%E7%BB%9F%E8%BF%9B%E8%A1%8C%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95"><span class="toc-number">1.1.</span> <span class="toc-text">基准测试：搭了一套真实系统进行性能测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CXL%E8%BD%AF%E4%BB%B6%E6%A0%88"><span class="toc-number">1.2.</span> <span class="toc-text">CXL软件栈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E6%B1%A0"><span class="toc-number">1.3.</span> <span class="toc-text">内存池</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E7%A6%BB%E5%BC%8F%E5%86%85%E5%AD%98"><span class="toc-number">1.4.</span> <span class="toc-text">分离式内存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E5%85%A8%E6%80%A7"><span class="toc-number">1.5.</span> <span class="toc-text">安全性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Tiered-Memory-%E5%B1%82%E6%AC%A1%E5%AD%98%E5%82%A8"><span class="toc-number">1.6.</span> <span class="toc-text">Tiered Memory 层次存储</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%94%E7%94%A8"><span class="toc-number">1.7.</span> <span class="toc-text">应用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BD%AF%E7%A1%AC%E4%BB%B6%E5%8D%8F%E5%90%8C"><span class="toc-number">1.7.1.</span> <span class="toc-text">软硬件协同</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%BE%E8%AE%A1%E7%AE%97%E7%B3%BB%E7%BB%9F"><span class="toc-number">1.7.2.</span> <span class="toc-text">图计算系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0"><span class="toc-number">1.7.3.</span> <span class="toc-text">分布式深度学习</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FAAS"><span class="toc-number">1.7.4.</span> <span class="toc-text">FAAS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%91%E8%AE%A1%E7%AE%97"><span class="toc-number">1.7.5.</span> <span class="toc-text">云计算</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CXL-SSD"><span class="toc-number">1.8.</span> <span class="toc-text">CXL-SSD</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A9%E7%94%A8CXL%E7%9A%84%E7%89%B9%E6%80%A7%E8%A7%A3%E5%86%B3%E9%97%AE%E9%A2%98"><span class="toc-number">1.9.</span> <span class="toc-text">利用CXL的特性解决问题</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AF%84%E4%BC%B0%E6%96%B9%E6%B3%95"><span class="toc-number">2.</span> <span class="toc-text">评估方法</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BD%93%E5%89%8D%E6%8C%91%E6%88%98"><span class="toc-number">3.</span> <span class="toc-text">当前挑战</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/11/25/cpp%E5%8D%8F%E7%A8%8B/" title="1.协程简介">1.协程简介</a><time datetime="2024-11-25T08:23:29.000Z" title="Created 2024-11-25 16:23:29">2024-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/11/13/SHMEMGraph%EF%BC%9A%20Efficient%20and%20Balanced%20Graph%20%20Processing%20Using%20One-sided%20Communication/" title="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151617.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication"/></a><div class="content"><a class="title" href="/2024/11/13/SHMEMGraph%EF%BC%9A%20Efficient%20and%20Balanced%20Graph%20%20Processing%20Using%20One-sided%20Communication/" title="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication">SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication</a><time datetime="2024-11-13T07:34:44.000Z" title="Created 2024-11-13 15:34:44">2024-11-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/11/11/RGraph%EF%BC%9AAsynchronous%20graph%20processing%20based%20on%20%20asymmetry%20of%20remote%20direct%20memory%20access/" title="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151617.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access"/></a><div class="content"><a class="title" href="/2024/11/11/RGraph%EF%BC%9AAsynchronous%20graph%20processing%20based%20on%20%20asymmetry%20of%20remote%20direct%20memory%20access/" title="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access">RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access</a><time datetime="2024-11-11T08:17:26.000Z" title="Created 2024-11-11 16:17:26">2024-11-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/10/01/cloudlab%E5%A4%9A%E8%8A%82%E7%82%B9%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" title="cloudlab多节点环境配置"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220150722.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="cloudlab多节点环境配置"/></a><div class="content"><a class="title" href="/2024/10/01/cloudlab%E5%A4%9A%E8%8A%82%E7%82%B9%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" title="cloudlab多节点环境配置">cloudlab多节点环境配置</a><time datetime="2024-10-01T03:23:12.000Z" title="Created 2024-10-01 11:23:12">2024-10-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/09/21/DFabric%EF%BC%9A%20Scaling%20Out%20Data%20Parallel%20Applications%20with%20%20CXL-Ethernet%20Hybrid%20Interconnects/" title="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects"/></a><div class="content"><a class="title" href="/2024/09/21/DFabric%EF%BC%9A%20Scaling%20Out%20Data%20Parallel%20Applications%20with%20%20CXL-Ethernet%20Hybrid%20Interconnects/" title="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects">DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects</a><time datetime="2024-09-21T06:44:05.000Z" title="Created 2024-09-21 14:44:05">2024-09-21</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By might</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">hope you can find something useful here ᐕ)⁾⁾ .</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="Scroll To Comments"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const initValine = () => {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'VBvzA6UUhphh1Tc1BtzWXzye-gzGzoHsz',
+      appKey: 'J0UlGcCok0khsrORkwxD1HwF',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  const loadValine = async () => {
+    if (typeof Valine === 'function') initValine()
+    else {
+      await getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js')
+      initValine()
+    }
+  }
+
+  if ('Valine' === 'Valine' || !false) {
+    if (false) btf.loadComment(document.getElementById('vcomment'),loadValine)
+    else setTimeout(loadValine, 0)
+  } else {
+    window.loadOtherComment = loadValine
+  }
+})()</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

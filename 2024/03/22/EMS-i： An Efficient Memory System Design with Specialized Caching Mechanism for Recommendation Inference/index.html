@@ -1,0 +1,237 @@
+<!DOCTYPE html><html lang="zh-cn" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>EMS-i： An Efficient Memory System Design with Specialized Caching Mechanism for Recommendation Inference | might's room</title><meta name="author" content="might"><meta name="copyright" content="might"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="START Basic  # EMS-i： An Efficient Memory System Design with Specialized Caching Mechanism for Recommendation Inference TL;DR: ## 1 INTRODUCTION DLRM 对于大规模嵌入表不规则和稀疏的数据访问模式导致内存带宽利用率低和缓存中的数据局部性差。 一些先前的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="EMS-i： An Efficient Memory System Design with Specialized Caching Mechanism for Recommendation Inference">
+<meta property="og:url" content="https://mightcoder.com/2024/03/22/EMS-i%EF%BC%9A%20An%20Efficient%20Memory%20System%20Design%20with%20Specialized%20Caching%20Mechanism%20for%20Recommendation%20Inference/index.html">
+<meta property="og:site_name" content="might&#39;s room">
+<meta property="og:description" content="START Basic  # EMS-i： An Efficient Memory System Design with Specialized Caching Mechanism for Recommendation Inference TL;DR: ## 1 INTRODUCTION DLRM 对于大规模嵌入表不规则和稀疏的数据访问模式导致内存带宽利用率低和缓存中的数据局部性差。 一些先前的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png">
+<meta property="article:published_time" content="2024-03-22T09:03:13.000Z">
+<meta property="article:modified_time" content="2025-02-20T07:12:58.953Z">
+<meta property="article:author" content="might">
+<meta property="article:tag" content="cxl">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png"><link rel="shortcut icon" href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg"><link rel="canonical" href="https://mightcoder.com/2024/03/22/EMS-i%EF%BC%9A%20An%20Efficient%20Memory%20System%20Design%20with%20Specialized%20Caching%20Mechanism%20for%20Recommendation%20Inference/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//static.cloudflareinsights.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script defer="defer" data-pjax="data-pjax" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="{&quot;token&quot;: &quot;60e2c80ac4524b11b7168fad4fb0548b&quot;}"></script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: 'days',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'EMS-i： An Efficient Memory System Design with Specialized Caching Mechanism for Recommendation Inference',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-02-20 15:12:58'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 8 || hour >= 22
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="might's room" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">69</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">32</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png')"><nav id="nav"><span id="blog-info"><a href="/" title="might's room"><span class="site-name">might's room</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">EMS-i： An Efficient Memory System Design with Specialized Caching Mechanism for Recommendation Inference</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2024-03-22T09:03:13.000Z" title="Created 2024-03-22 17:03:13">2024-03-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-02-20T07:12:58.953Z" title="Updated 2025-02-20 15:12:58">2025-02-20</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">Word Count:</span><span class="word-count">1.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">Reading Time:</span><span>3mins</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="EMS-i： An Efficient Memory System Design with Specialized Caching Mechanism for Recommendation Inference"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p hidden>
+START
+Basic
+</p>
+# EMS-i： An Efficient Memory System Design with Specialized Caching Mechanism for Recommendation Inference
+TL;DR:
+## 1 INTRODUCTION
+DLRM 对于大规模嵌入表不规则和稀疏的数据访问模式导致内存带宽利用率低和缓存中的数据局部性差。
+一些先前的工作[15,33,37]通过直接使用近数据处理（NDP）解决方案来增加内存带宽来加速DLRM的推理。其他工作[2]尝试通过使用定制的软件管理缓存技术来提高数据局部性，例如，在缓存中保留频繁访问的嵌入向量。
+然而，所有这些工作都有一些突出的弱点：例如，在 NDP 解决方案中，DRAM 或 SSD 内部架构的重大变化导致研发 (R&D) 成本高昂，并可能潜在增加制造成本。此外，仅使用 DRAM 来存储数百/数千 GB 的嵌入向量会导致较高的内存成本，因为 DRAM 芯片比 SSD 贵得多。虽然基于SSD的NDP平台内存成本较低，但有限的I/O带宽和较低的计算能力导致推理延迟较高。此外，当前NDP加速器的存储器层次结构仅具有驻留在DRAM或NAND闪存芯片上方的小型一级缓存。较差的内存层次结构无法充分利用 DLRM 工作负载的数据局部性。
+在软件管理缓存的解决方案中，当发生缓存未命中时，通常需要主机CPU运行相应的算法来维持自定义的缓存策略。因此，除了 DRAM 或 SSD 访问的延迟之外，缓存未命中损失还包括算法的执行时间（~10 ms）以及主机 CPU 和加速器之间的通信延迟（~100ns）。通过将批量大小增加到一个大值（例如 2048 或更大）来训练 DLRM 期间，缓存未命中的总延迟可能会重叠，以仅提高吞吐量 [5,20,25]。然而，训练中采用的方法对于 DLRM 的推理是不可接受的，其中批量大小不能很大 [15, 37]（通常不大于 64），因为要同时考虑推理延迟和推理吞吐量
+为了解决先前工作中的问题，我们提出了 EMS-i，这是一种高效的内存系统设计，具有专门的缓存机制和用于推荐系统推理的推理内核。 EMS-i的内存系统基于FPGA上的内存组件（URAM/BRAM/HBM）和SSD的组合，实现了内存成本和DLRM推理性能之间的最佳点。
+为了将SSD集成到我们的内存系统中，我们采用Compute Express Link（CXL）[7]来扩展内存空间，并在FPGA上构建一个由主机内存、SSD和HBM组成的统一内存空间。
+
+<p>主要贡献</p>
+<ul>
+<li>我们提出了EMS-i，这是一种基于两个CXL 器件、一个支持HBM 的FPGA 和一个SSD 的推荐系统的高效内存系统设计。</li>
+<li>我们专注于缓存机制，包括精密的硬件缓存控制器以减少流行嵌入向量的驱逐以及缓存替换粒度的灵活调整。</li>
+<li>我们根据嵌入向量的相关性开发了一种新颖的预取机制。</li>
+<li>考虑到SLS 操作中的多级并行性，我们开发了高效的推理内核和定制的映射方案来处理DLRM 推理。</li>
+</ul>
+<p>实验结果表明，EMS-i 比最先进的基于 SSD 的 NDP 解决方案 RecSSD 实现了高达 10.9 倍的加速。 EMS-i 还实现了与 DRAMonly 加速器 RecNMP 相当的性能，并且节能 72%。在内存成本方面，EMS-i 的成本效益分别比 RecSSD 和 RecNMP 高 8.7 倍和 6.6 倍。</p>
+<h2 id="4-DESIGNOFEMS-I"><a href="#4-DESIGNOFEMS-I" class="headerlink" title="4 DESIGNOFEMS-I"></a>4 DESIGNOFEMS-I</h2><p>通过CXL将FPGA和SSD集成起来，用于推荐模型的推理<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240322173644.png" alt="image.png"><br>URAM作为L1 HBM作为L2  SSD的DRAM作为L3<br> L1和L2缓存的替换粒度都是“Vector”，而L3缓存的替换粒度可以根据不同的数据集调整为“Vector”或“Block”。<br>图b描述了缓存结果和数据流，FPGA和SSD通过UIO通信<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240322174029.png" alt="image.png"></p>
+<h2 id="7-CONCLUSION"><a href="#7-CONCLUSION" class="headerlink" title="7 CONCLUSION"></a>7 CONCLUSION</h2><p>我们提出了 EMS-i，这是一种高效的内存系统，包括各种内存资源和多级缓存。 EMS-i专为DLRM推理而定制，具有精心设计的推理内核和专门的缓存和预取机制。总体而言，EMS-i 在执行延迟、节能和内存成本方面优于 SOTA NDP 解决方案。</p>
+<p hidden>
+Back: you have read it !
+Tags: cxl
+<!--ID: 1711352568615-->
+END
+</p></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://mightcoder.com">might</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://mightcoder.com/2024/03/22/EMS-i%EF%BC%9A%20An%20Efficient%20Memory%20System%20Design%20with%20Specialized%20Caching%20Mechanism%20for%20Recommendation%20Inference/">https://mightcoder.com/2024/03/22/EMS-i%EF%BC%9A%20An%20Efficient%20Memory%20System%20Design%20with%20Specialized%20Caching%20Mechanism%20for%20Recommendation%20Inference/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/cxl/">cxl</a></div><div class="post_share"><div class="social-share" data-image="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>请作者喝杯咖啡</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/03/25/Sidekick%EF%BC%9ANear%20Data%20Processing%20for%20Clustering%20Enhanced%20by%20Automatic%20Memory%20Disaggregation/" title="Sidekick: Near Data Processing for Clustering Enhanced by Automatic Memory Disaggregation"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">Sidekick: Near Data Processing for Clustering Enhanced by Automatic Memory Disaggregation</div></div></a></div><div class="next-post pull-right"><a href="/2024/03/21/Improving%20key-value%20cache%20performance%20with%20heterogeneous%20memory%20tiering%EF%BC%9AA%20case%20study%20of%20CXL-based%20memory%20expansion/" title="Improving key-value cache performance with heterogeneous memory tiering：A case study of CXL-based memory expansion"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next</div><div class="next_info">Improving key-value cache performance with heterogeneous memory tiering：A case study of CXL-based memory expansion</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2023/11/08/CXL%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87%E8%B0%83%E7%A0%942023.11.8/" title="论文研究方向"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-11-08</div><div class="title">论文研究方向</div></div></a></div><div><a href="/2024/03/20/DDC%EF%BC%9AA%20Vision%20for%20a%20Disaggregated%20Datacenter/" title="DDC：A Vision for a Disaggregated Datacenter"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-20</div><div class="title">DDC：A Vision for a Disaggregated Datacenter</div></div></a></div><div><a href="/2023/09/18/An%20Introduction%20to%20the%20Compute%20Express%20LinkTM%20(CXLTM)%20Interconnect/" title="An Introduction to the Compute Express LinkTM (CXLTM) Interconnect"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-09-18</div><div class="title">An Introduction to the Compute Express LinkTM (CXLTM) Interconnect</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> Comment</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">might</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">69</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">32</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/shenghansen"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/shenghansen" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:shenghs@mail2.sysu.edu.cn" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="/./atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #f36d6d;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">Hope you can find something useful here ᐕ)⁾⁾ .</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-DESIGNOFEMS-I"><span class="toc-number">1.</span> <span class="toc-text">4 DESIGNOFEMS-I</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-CONCLUSION"><span class="toc-number">2.</span> <span class="toc-text">7 CONCLUSION</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/11/25/cpp%E5%8D%8F%E7%A8%8B/" title="1.协程简介">1.协程简介</a><time datetime="2024-11-25T08:23:29.000Z" title="Created 2024-11-25 16:23:29">2024-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/11/13/SHMEMGraph%EF%BC%9A%20Efficient%20and%20Balanced%20Graph%20%20Processing%20Using%20One-sided%20Communication/" title="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151617.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication"/></a><div class="content"><a class="title" href="/2024/11/13/SHMEMGraph%EF%BC%9A%20Efficient%20and%20Balanced%20Graph%20%20Processing%20Using%20One-sided%20Communication/" title="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication">SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication</a><time datetime="2024-11-13T07:34:44.000Z" title="Created 2024-11-13 15:34:44">2024-11-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/11/11/RGraph%EF%BC%9AAsynchronous%20graph%20processing%20based%20on%20%20asymmetry%20of%20remote%20direct%20memory%20access/" title="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151617.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access"/></a><div class="content"><a class="title" href="/2024/11/11/RGraph%EF%BC%9AAsynchronous%20graph%20processing%20based%20on%20%20asymmetry%20of%20remote%20direct%20memory%20access/" title="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access">RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access</a><time datetime="2024-11-11T08:17:26.000Z" title="Created 2024-11-11 16:17:26">2024-11-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/10/01/cloudlab%E5%A4%9A%E8%8A%82%E7%82%B9%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" title="cloudlab多节点环境配置"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220150722.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="cloudlab多节点环境配置"/></a><div class="content"><a class="title" href="/2024/10/01/cloudlab%E5%A4%9A%E8%8A%82%E7%82%B9%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" title="cloudlab多节点环境配置">cloudlab多节点环境配置</a><time datetime="2024-10-01T03:23:12.000Z" title="Created 2024-10-01 11:23:12">2024-10-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/09/21/DFabric%EF%BC%9A%20Scaling%20Out%20Data%20Parallel%20Applications%20with%20%20CXL-Ethernet%20Hybrid%20Interconnects/" title="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects"/></a><div class="content"><a class="title" href="/2024/09/21/DFabric%EF%BC%9A%20Scaling%20Out%20Data%20Parallel%20Applications%20with%20%20CXL-Ethernet%20Hybrid%20Interconnects/" title="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects">DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects</a><time datetime="2024-09-21T06:44:05.000Z" title="Created 2024-09-21 14:44:05">2024-09-21</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By might</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">hope you can find something useful here ᐕ)⁾⁾ .</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="Scroll To Comments"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const initValine = () => {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'VBvzA6UUhphh1Tc1BtzWXzye-gzGzoHsz',
+      appKey: 'J0UlGcCok0khsrORkwxD1HwF',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  const loadValine = async () => {
+    if (typeof Valine === 'function') initValine()
+    else {
+      await getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js')
+      initValine()
+    }
+  }
+
+  if ('Valine' === 'Valine' || !false) {
+    if (false) btf.loadComment(document.getElementById('vcomment'),loadValine)
+    else setTimeout(loadValine, 0)
+  } else {
+    window.loadOtherComment = loadValine
+  }
+})()</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

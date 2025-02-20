@@ -1,0 +1,250 @@
+<!DOCTYPE html><html lang="zh-cn" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Partial Failure Resilient Memory Management System for (CXL-based) Distributed Shared Memory | might's room</title><meta name="author" content="might"><meta name="copyright" content="might"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="START Basic  # Partial Failure Resilient Memory Management System for (CXL-based) Distributed Shared Memory TL;DR:基于CXL的共享内存部分容错设计 &gt; 我对疑问是，这篇文章是否描述了共享内存多进程之间如何对同一块物理内存建立映射 &gt;  &gt; 答案：在使用前先mmap共享内存到自己的虚拟">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Partial Failure Resilient Memory Management System for (CXL-based) Distributed Shared Memory">
+<meta property="og:url" content="https://mightcoder.com/2024/05/14/Partial%20Failure%20Resilient%20Memory%20Management%20System%20for%20(CXL-based)%20Distributed%20Shared%20Memory/index.html">
+<meta property="og:site_name" content="might&#39;s room">
+<meta property="og:description" content="START Basic  # Partial Failure Resilient Memory Management System for (CXL-based) Distributed Shared Memory TL;DR:基于CXL的共享内存部分容错设计 &gt; 我对疑问是，这篇文章是否描述了共享内存多进程之间如何对同一块物理内存建立映射 &gt;  &gt; 答案：在使用前先mmap共享内存到自己的虚拟">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png">
+<meta property="article:published_time" content="2024-05-14T08:27:04.000Z">
+<meta property="article:modified_time" content="2025-02-20T07:13:20.873Z">
+<meta property="article:author" content="might">
+<meta property="article:tag" content="cxl">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png"><link rel="shortcut icon" href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg"><link rel="canonical" href="https://mightcoder.com/2024/05/14/Partial%20Failure%20Resilient%20Memory%20Management%20System%20for%20(CXL-based)%20Distributed%20Shared%20Memory/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//static.cloudflareinsights.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script defer="defer" data-pjax="data-pjax" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="{&quot;token&quot;: &quot;60e2c80ac4524b11b7168fad4fb0548b&quot;}"></script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: 'days',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Partial Failure Resilient Memory Management System for (CXL-based) Distributed Shared Memory',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-02-20 15:13:20'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 8 || hour >= 22
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="might's room" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">69</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">32</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png')"><nav id="nav"><span id="blog-info"><a href="/" title="might's room"><span class="site-name">might's room</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Partial Failure Resilient Memory Management System for (CXL-based) Distributed Shared Memory</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2024-05-14T08:27:04.000Z" title="Created 2024-05-14 16:27:04">2024-05-14</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-02-20T07:13:20.873Z" title="Updated 2025-02-20 15:13:20">2025-02-20</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">Word Count:</span><span class="word-count">2.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">Reading Time:</span><span>7mins</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Partial Failure Resilient Memory Management System for (CXL-based) Distributed Shared Memory"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p hidden>
+START
+Basic
+</p>
+# Partial Failure Resilient Memory Management System for (CXL-based) Distributed Shared Memory
+TL;DR:基于CXL的共享内存部分容错设计
+> 我对疑问是，这篇文章是否描述了共享内存多进程之间如何对同一块物理内存建立映射
+> 
+> 答案：在使用前先mmap共享内存到自己的虚拟地址上去
+> 正常来说，单机内多进程使用共享内存就是通过shm或mmap，cxl3.0的共享内存就类似这个，但是GIM呢，难道也要提前mmap吗？恐怕是需要的，一个进程就算能访问所有的物理内存也得先malloc才能访问，对于共享内存也得先shm或mmap才能访问
+## 1 Introduction
+DSM的相关论文
+Efficient distributed memory management with RDMA and caching.
+{Latency-Tolerant} Software Distributed Shared Memory.
+Distributed Shared Persistent Memory
+CoRM: Compactable Remote Memory over RDMA.
+The Case for Distributed Shared-Memory Databases with RDMA-Enabled Memory Disaggregation
+
+<p>相比于传值的RPC，CXL提供了字节寻址直接访问并且有缓存一致性的DSM。<br>不同的进程&#x2F;机器可以通过共享并发内存队列交换零拷贝数据引用来进行通信，它避免了输入参数和返回值的（反）序列化和 I&#x2F;O 堆栈处理的成本。</p>
+<p>文章主要提出了一个能够容忍可能的网络、进程和机器故障的自动分布式内存管理系统。</p>
+<h2 id="2-The-Potentials-and-Challenges-of-RDSM"><a href="#2-The-Potentials-and-Challenges-of-RDSM" class="headerlink" title="2 The Potentials and Challenges of RDSM"></a>2 The Potentials and Challenges of RDSM</h2><p>RDSM的应用场景</p>
+<h3 id="2-2-1-Pass-by-reference-RPC"><a href="#2-2-1-Pass-by-reference-RPC" class="headerlink" title="2.2.1 Pass-by-reference RPC"></a>2.2.1 Pass-by-reference RPC</h3><p>Unlike the traditional passby-value RPC, pass-by-reference can avoid the expensive data copying in many cases and is therefore widely used in modern distributed processing systems [57, 58, 71, 80]（可以研究下这些）<br>这些系统中，大输入参数和返回值首先存储在分布式对象存储中 [9, 10]，然后仅通过 RPC 传递引用</p>
+<p>用 RDSM 而不是分布式对象存储来实现引用传递 RPC 的优点有两个。首先，正如 Lightning [90] 所证明的，传统的对象存储架构要求客户端通过 RPC&#x2F;IPC 与服务器交互。该接口给低延迟工作负载带来了显着的性能瓶颈，并且可以通过基于共享内存的设计来很大程度上缓解。尽管Lightning只是一个基于POSIX SHM的单机多进程内存对象存储，但可以通过RDSM将其架构扩展到分布式环境。</p>
+<p>其次，与原始对象接口不同，RDSM 提供内存分配器接口，允许使用链接指针和就地更新构建动态数据结构。这些功能进一步消除了复杂数据结构的序列化和反序列化成本。甚至可以通过使用并发内存队列作为通信通道来避免 I&#x2F;O 堆栈处理成本，其中内存队列也是共享对象</p>
+<h3 id="2-2-2-Shared-Everything-Distributed-Processing"><a href="#2-2-2-Shared-Everything-Distributed-Processing" class="headerlink" title="2.2.2 Shared-Everything Distributed Processing."></a>2.2.2 Shared-Everything Distributed Processing.</h3><p>一切皆可共享，因为共享内存可以被所有的进程、服务器访问，所以可以实现更好的负载均衡。然而，上述的共享一切架构也带来了许多复杂性，这些复杂性应该被 RDSM 的内存管理系统隐藏。<br>3 Overview of CXL-SHM</p>
+<h2 id="3-Overview-of-CXL-SHM"><a href="#3-Overview-of-CXL-SHM" class="headerlink" title="3 Overview of CXL-SHM"></a>3 Overview of CXL-SHM</h2><p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240515112523.png" alt="image.png"></p>
+<h3 id="3-1-Interface"><a href="#3-1-Interface" class="headerlink" title="3.1 Interface"></a>3.1 Interface</h3><p><code>cxl_malloc</code>从内存池中申请内存，会返回一个CXLRef，类似一个shared pointer，但是不同点在于1)支持部分失败容错2)不是线程安全的，所以需要显示的复制，复制过程如上图所示<code>cxl_send_to</code> <code>cxl_receive_from</code>来传递引用</p>
+<h3 id="3-2-Recovery"><a href="#3-2-Recovery" class="headerlink" title="3.2 Recovery"></a>3.2 Recovery</h3><p>与 Lightning [90] 类似，CXL-SHM 使用独立监视器来检测客户端故障（由于进程或机器故障）并异步启动恢复过程。检测故障客户端的机制与我们的主要贡献没有关系，并且需要硬件可靠性、可用性和可服务性（RAS）功能[2]来确保故障客户端在恢复开始后无法修改共享内存池（意思这部分不是我们要做的）<br>特别强调在CXL-SHM中，恢复不会阻塞其他线程的执行，恢复服务本身是异步的、无状态的和故障安全的。因此，如果恢复服务崩溃（例如，由于机器故障），可以简单地在另一台机器上重新启动，而不会出现任何问题</p>
+<h3 id="3-3-Memory-Management"><a href="#3-3-Memory-Management" class="headerlink" title="3.3 Memory Management"></a>3.3 Memory Management</h3><p>基于mimalloc<br>在mimalloc中，首先通过全局同步从整个内存区域分配线程独占段。每个段的标头之后的区域进一步划分为专用于分配特定大小类别的对象的页面。例如，16 字节大小类别的页被划分为固定大小的 16 字节数据块。页面中的空闲块可以组织为侵入式链表[7]。该列表的头部作为空闲指针存储在页元（段头中的字段）中。它指向该页中的第一个空闲块。每个空闲块都包含一个指向下一个空闲块的指针，如果它是该页中的最后一个空闲块，则为 NULL。通过这种设计，来自段的任何进一步的细粒度分配都在本地执行，因此不需要跨线程同步，即快速路径</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240515152428.png" alt="image.png"><br>CXL-SHM的组织结构如图所示，<br>整个共享内存池组织为arena,每个线程首先会从arena中分配一个独占段<br>前面提到的 SegmentAllocationVec 是用于与其他线程协调并发段分配的元向量，其中的每一个元素表示一个段的占用者，线程可以通过CAS来更新，大于单个段的对象通过占用连续段的简单重试和回滚方法来支持<br>ClientLocalState 中的大多数字段与 mmalloc 相同，例如指向仍具有可用空间以供进一步分配的页面的大小类别列表。主要区别是：</p>
+<ul>
+<li>我们的大小类别从 16 字节而不是 8 字节开始，因为每个 CXLObj 都会附加一个标头。</li>
+<li>除了正常大小类别外，还有一个专门用于仅分配RootRef 的页面的大小类别。这是一个关键的设计，因为在发生故障后，我们只能使用这些页面中的内容来销毁该失败线程所拥有的 RootRef 引用。</li>
+<li>线程本地状态中有一个事务元字段和一个固定大小的重做日志区域。它们用于从失败的事务中恢复，这将在后面描述</li>
+</ul>
+<h2 id="4-Partial-Failure-Resilient-Automatic-Memory-Management"><a href="#4-Partial-Failure-Resilient-Automatic-Memory-Management" class="headerlink" title="4 Partial Failure Resilient Automatic Memory Management"></a>4 Partial Failure Resilient Automatic Memory Management</h2><h3 id="4-1-Failure-Recovery-in-Persistent-Memory"><a href="#4-1-Failure-Recovery-in-Persistent-Memory" class="headerlink" title="4.1 Failure Recovery in Persistent Memory"></a>4.1 Failure Recovery in Persistent Memory</h3><p>由于进程失败后操作系统可以安全地回收进程的所有内存，因此易失性内存管理系统不需要从故障中恢复。相反，持久内存（pme​​m）分配器[19,25,39,61,75,83,84]必须考虑“崩溃一致性”问题。但是持久内存分配器必须考虑“崩溃一致性问题”，内存分配和引用链接（将分配空间的指针的值存储到引用中）是两个单独的操作，无法使用单个原子指令来实现。如果只分配内存没有引用链接，就会造成内存泄漏，如果只链接内存，不分配内存会造成野指针问题。<br>为了解决这个问题，持久内存分配器通常为用户提供 setRoot() 函数来指示某个对象是根对象。根对象记录在发生故障后仍然可以找到的特殊位置，因此 pmem 分配器可以执行垃圾收集以回收未与任何根对象链接的空间。然而，pmem 分配器通常假设一个完整的故障模型，因此使用“stop-the-world”垃圾收集 [25] 从单个进程的故障中恢复。正如我们将在第 6.2.1 节中展示的，当存在大量对象时，这种恢复可能会导致全局暂停几秒甚至几十秒。这个假设简化了它们的实现，并且在持久内存的单机场景下是合理的，因为垃圾收集仅在应用程序重启的初始化过程中执行<br>而，如§2.1 中所述，远程 CXL 内存可以由单独的 PSU 供电，并通过独立的 PCIe&#x2F;MCIO 连接连接到处理机器。部分故障不会影响其他活动计算节点的可访问性。因此，需要一种非阻塞恢复方法。<br>与复杂的大多数并发垃圾收集器不同，如果不考虑失败的可能性，基于引用计数的自动内存管理系统的实现要简单得多。<br>。。。。。。。</p>
+<h2 id="5-Implementation-of-CXL-SHM"><a href="#5-Implementation-of-CXL-SHM" class="headerlink" title="5 Implementation of CXL-SHM"></a>5 Implementation of CXL-SHM</h2><p>基本上就是讲错误恢复</p>
+<p>直接看代码吧，重点看RPC和share everything</p>
+<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><p hidden>
+Back: you have read it !
+Tags: cxl
+END
+</p></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://mightcoder.com">might</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://mightcoder.com/2024/05/14/Partial%20Failure%20Resilient%20Memory%20Management%20System%20for%20(CXL-based)%20Distributed%20Shared%20Memory/">https://mightcoder.com/2024/05/14/Partial%20Failure%20Resilient%20Memory%20Management%20System%20for%20(CXL-based)%20Distributed%20Shared%20Memory/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/cxl/">cxl</a></div><div class="post_share"><div class="social-share" data-image="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>请作者喝杯咖啡</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/05/22/Low-overhead%20General-purpose%20Near-Data%20Processing%20in%20CXL%20Memory%20Expanders/" title="Low-overhead General-purpose Near-Data Processing in CXL Memory Expanders"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">Low-overhead General-purpose Near-Data Processing in CXL Memory Expanders</div></div></a></div><div class="next-post pull-right"><a href="/2024/05/10/Memory%20Sharing%20with%20CXL%EF%BC%9A%20Hardware%20and%20Software%20Design%20Approaches/" title="Memory Sharing with CXL: Hardware and Software Design Approaches"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next</div><div class="next_info">Memory Sharing with CXL: Hardware and Software Design Approaches</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2023/11/08/CXL%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87%E8%B0%83%E7%A0%942023.11.8/" title="论文研究方向"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-11-08</div><div class="title">论文研究方向</div></div></a></div><div><a href="/2024/03/20/DDC%EF%BC%9AA%20Vision%20for%20a%20Disaggregated%20Datacenter/" title="DDC：A Vision for a Disaggregated Datacenter"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-20</div><div class="title">DDC：A Vision for a Disaggregated Datacenter</div></div></a></div><div><a href="/2023/09/18/An%20Introduction%20to%20the%20Compute%20Express%20LinkTM%20(CXLTM)%20Interconnect/" title="An Introduction to the Compute Express LinkTM (CXLTM) Interconnect"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-09-18</div><div class="title">An Introduction to the Compute Express LinkTM (CXLTM) Interconnect</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> Comment</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">might</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">69</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">32</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/shenghansen"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/shenghansen" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:shenghs@mail2.sysu.edu.cn" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="/./atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #f36d6d;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">Hope you can find something useful here ᐕ)⁾⁾ .</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-The-Potentials-and-Challenges-of-RDSM"><span class="toc-number">1.</span> <span class="toc-text">2 The Potentials and Challenges of RDSM</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-1-Pass-by-reference-RPC"><span class="toc-number">1.1.</span> <span class="toc-text">2.2.1 Pass-by-reference RPC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-2-Shared-Everything-Distributed-Processing"><span class="toc-number">1.2.</span> <span class="toc-text">2.2.2 Shared-Everything Distributed Processing.</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Overview-of-CXL-SHM"><span class="toc-number">2.</span> <span class="toc-text">3 Overview of CXL-SHM</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-Interface"><span class="toc-number">2.1.</span> <span class="toc-text">3.1 Interface</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-Recovery"><span class="toc-number">2.2.</span> <span class="toc-text">3.2 Recovery</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-Memory-Management"><span class="toc-number">2.3.</span> <span class="toc-text">3.3 Memory Management</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Partial-Failure-Resilient-Automatic-Memory-Management"><span class="toc-number">3.</span> <span class="toc-text">4 Partial Failure Resilient Automatic Memory Management</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-Failure-Recovery-in-Persistent-Memory"><span class="toc-number">3.1.</span> <span class="toc-text">4.1 Failure Recovery in Persistent Memory</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-Implementation-of-CXL-SHM"><span class="toc-number">4.</span> <span class="toc-text">5 Implementation of CXL-SHM</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81"><span class="toc-number"></span> <span class="toc-text">代码</span></a></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/11/25/cpp%E5%8D%8F%E7%A8%8B/" title="1.协程简介">1.协程简介</a><time datetime="2024-11-25T08:23:29.000Z" title="Created 2024-11-25 16:23:29">2024-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/11/13/SHMEMGraph%EF%BC%9A%20Efficient%20and%20Balanced%20Graph%20%20Processing%20Using%20One-sided%20Communication/" title="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151617.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication"/></a><div class="content"><a class="title" href="/2024/11/13/SHMEMGraph%EF%BC%9A%20Efficient%20and%20Balanced%20Graph%20%20Processing%20Using%20One-sided%20Communication/" title="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication">SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication</a><time datetime="2024-11-13T07:34:44.000Z" title="Created 2024-11-13 15:34:44">2024-11-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/11/11/RGraph%EF%BC%9AAsynchronous%20graph%20processing%20based%20on%20%20asymmetry%20of%20remote%20direct%20memory%20access/" title="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151617.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access"/></a><div class="content"><a class="title" href="/2024/11/11/RGraph%EF%BC%9AAsynchronous%20graph%20processing%20based%20on%20%20asymmetry%20of%20remote%20direct%20memory%20access/" title="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access">RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access</a><time datetime="2024-11-11T08:17:26.000Z" title="Created 2024-11-11 16:17:26">2024-11-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/10/01/cloudlab%E5%A4%9A%E8%8A%82%E7%82%B9%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" title="cloudlab多节点环境配置"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220150722.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="cloudlab多节点环境配置"/></a><div class="content"><a class="title" href="/2024/10/01/cloudlab%E5%A4%9A%E8%8A%82%E7%82%B9%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" title="cloudlab多节点环境配置">cloudlab多节点环境配置</a><time datetime="2024-10-01T03:23:12.000Z" title="Created 2024-10-01 11:23:12">2024-10-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/09/21/DFabric%EF%BC%9A%20Scaling%20Out%20Data%20Parallel%20Applications%20with%20%20CXL-Ethernet%20Hybrid%20Interconnects/" title="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects"/></a><div class="content"><a class="title" href="/2024/09/21/DFabric%EF%BC%9A%20Scaling%20Out%20Data%20Parallel%20Applications%20with%20%20CXL-Ethernet%20Hybrid%20Interconnects/" title="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects">DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects</a><time datetime="2024-09-21T06:44:05.000Z" title="Created 2024-09-21 14:44:05">2024-09-21</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By might</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">hope you can find something useful here ᐕ)⁾⁾ .</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="Scroll To Comments"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const initValine = () => {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'VBvzA6UUhphh1Tc1BtzWXzye-gzGzoHsz',
+      appKey: 'J0UlGcCok0khsrORkwxD1HwF',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  const loadValine = async () => {
+    if (typeof Valine === 'function') initValine()
+    else {
+      await getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js')
+      initValine()
+    }
+  }
+
+  if ('Valine' === 'Valine' || !false) {
+    if (false) btf.loadComment(document.getElementById('vcomment'),loadValine)
+    else setTimeout(loadValine, 0)
+  } else {
+    window.loadOtherComment = loadValine
+  }
+})()</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

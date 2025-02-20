@@ -1,0 +1,243 @@
+<!DOCTYPE html><html lang="zh-cn" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>optimizing_cpp(12) | might's room</title><meta name="author" content="might"><meta name="copyright" content="might"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="十二、元编程元编程：普通编程操纵数据，元编程操纵其他编程语言，元编程指生成其他程序的程序。 在讲元编程前，必须补充模板编程的知识，在讲模板编程前，我想先补充一下宏编程的基础知识，因为两者有许多相似之处（我太菜了，不会的太多了） 1.宏编程与预处理宏编程继承自c语言，在预处理时被替换。 预处理过程的第一步是进行一些翻译处理，包括讲源码中出现的字符映射到源字符集，会同时处理多字节序列和三字符序列（三字">
+<meta property="og:type" content="article">
+<meta property="og:title" content="optimizing_cpp(12)">
+<meta property="og:url" content="https://mightcoder.com/2022/04/05/optimizing-cpp-12/index.html">
+<meta property="og:site_name" content="might&#39;s room">
+<meta property="og:description" content="十二、元编程元编程：普通编程操纵数据，元编程操纵其他编程语言，元编程指生成其他程序的程序。 在讲元编程前，必须补充模板编程的知识，在讲模板编程前，我想先补充一下宏编程的基础知识，因为两者有许多相似之处（我太菜了，不会的太多了） 1.宏编程与预处理宏编程继承自c语言，在预处理时被替换。 预处理过程的第一步是进行一些翻译处理，包括讲源码中出现的字符映射到源字符集，会同时处理多字节序列和三字符序列（三字">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg">
+<meta property="article:published_time" content="2022-04-05T13:11:37.000Z">
+<meta property="article:modified_time" content="2022-07-15T08:13:03.059Z">
+<meta property="article:author" content="might">
+<meta property="article:tag" content="hpc">
+<meta property="article:tag" content="cpp">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg"><link rel="shortcut icon" href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg"><link rel="canonical" href="https://mightcoder.com/2022/04/05/optimizing-cpp-12/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//static.cloudflareinsights.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script defer="defer" data-pjax="data-pjax" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="{&quot;token&quot;: &quot;60e2c80ac4524b11b7168fad4fb0548b&quot;}"></script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: 'days',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'optimizing_cpp(12)',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-07-15 16:13:03'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 8 || hour >= 22
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="might's room" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">69</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">32</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="might's room"><span class="site-name">might's room</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">optimizing_cpp(12)</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2022-04-05T13:11:37.000Z" title="Created 2022-04-05 21:11:37">2022-04-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2022-07-15T08:13:03.059Z" title="Updated 2022-07-15 16:13:03">2022-07-15</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">Word Count:</span><span class="word-count">723</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">Reading Time:</span><span>2mins</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="optimizing_cpp(12)"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="十二、元编程"><a href="#十二、元编程" class="headerlink" title="十二、元编程"></a>十二、元编程</h2><p>元编程：普通编程操纵数据，元编程操纵其他编程语言，元编程指生成其他程序的程序。</p>
+<p>在讲元编程前，必须补充模板编程的知识，在讲模板编程前，我想先补充一下宏编程的基础知识，因为两者有许多相似之处（我太菜了，不会的太多了）</p>
+<h3 id="1-宏编程与预处理"><a href="#1-宏编程与预处理" class="headerlink" title="1.宏编程与预处理"></a>1.宏编程与预处理</h3><p>宏编程继承自c语言，在预处理时被替换。</p>
+<p>预处理过程的第一步是进行一些翻译处理，包括讲源码中出现的字符映射到源字符集，会同时处理多字节序列和三字符序列（三字符序列的介绍<a target="_blank" rel="noopener" href="https://www.cnblogs.com/dzhanjie/archive/2011/05/09/2040882.html">三字符序列 - 逛博 - 博客园 (cnblogs.com)</a>）</p>
+<p>接着把物理行转换为逻辑行，示例如下：</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202204051849713.png" alt="image-20220405184937602"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202204051849880.png" alt="image-20220405184947815"></p>
+<p>然后，编译器讲文本划分为预处理记号序列、空白序列和注释序列，使用一个空格替换注释序列，使用一个空格替换所有的空白字符序列。</p>
+<p>最后进入预处理阶段，预处理器查找一行中以#开头的预处理指令。</p>
+<h4 id="1-1-define"><a href="#1-1-define" class="headerlink" title="1.1#define"></a>1.1#define</h4><p>define作用是定义常量，在预处理阶段将代码中的宏替换为替换体。</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202204051900127.png" alt="image-20220405190044058"></p>
+<p>需要注意的是如果宏中还包含宏，会再次替换，字符串内的不会被替换。</p>
+<p>宏分两种，类对象宏：宏代表值，类函数宏：宏代表函数</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202204051908193.png" alt="image-20220405190818123"></p>
+<p>如果要在宏函数的字符串中包含宏参数怎么办？</p>
+<p>在字符串内使用#运算符：</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202204051914842.png" alt="image-20220405191449772"></p>
+<p>如果要在宏函数中实现记号组合怎么办？</p>
+<p>使用##运算符粘合两个记号</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202204051916898.png" alt="image-20220405191603835"></p>
+<h4 id="1-2-undef"><a href="#1-2-undef" class="headerlink" title="1.2#undef"></a>1.2#undef</h4><p>取消已定义的#define指令</p>
+<h4 id="1-3-ifdef-else-endif"><a href="#1-3-ifdef-else-endif" class="headerlink" title="1.3#ifdef #else #endif"></a>1.3#ifdef #else #endif</h4><p>这几个主要用于条件编译</p>
+<p>#ifdef指如果已经用define定义过了就执行下面的指令，如果没有就执行#else里的指令，直到#endif</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202204051928547.png" alt="image-20220405192830479"></p>
+<h4 id="1-4-ifndef"><a href="#1-4-ifndef" class="headerlink" title="1.4#ifndef"></a>1.4#ifndef</h4><p>ifndef与ifdef有些类似，只不过是如果未定义就执行下面的指令，主要用于防止相同的宏被重复定义</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202204051930063.png" alt="image-20220405193031000"></p>
+<h4 id="1-5-if-elif-else"><a href="#1-5-if-elif-else" class="headerlink" title="1.5#if #elif #else"></a>1.5#if #elif #else</h4><p>与逻辑语句中的if else类似</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202204051933736.png" alt="image-20220405193308657"></p>
+<p>另外，还可以用<code>#if defined(VAX)</code> 代替 <code>#ifdef VAX</code></p>
+<h4 id="1-6预定义宏"><a href="#1-6预定义宏" class="headerlink" title="1.6预定义宏"></a>1.6预定义宏</h4><p>c语言中还规定了一些预定义宏：</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202204051934867.png" alt="image-20220405193445791"></p>
+<h4 id="1-7-line-error"><a href="#1-7-line-error" class="headerlink" title="1.7#line #error"></a>1.7#line #error</h4><p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/202204051938802.png" alt="image-20220405193856682"></p>
+<h4 id="1-8-pragma"><a href="#1-8-pragma" class="headerlink" title="1.8#pragma"></a>1.8#pragma</h4><p>pragma将编译器指令放入源代码中</p>
+<h3 id="2-元编程"><a href="#2-元编程" class="headerlink" title="2.元编程"></a>2.元编程</h3><p>c++的元编程基于模板编程，对模板编程不熟悉的可以看下这个链接，里面不光详细的介绍了模板编程的语法，还系统的介绍了元编程</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/wuye9036/CppTemplateTutorial#11-template-class%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95">wuye9036&#x2F;CppTemplateTutorial: 中文的C++ Template的教学指南。与知名书籍C++ Templates不同，该系列教程将C++ Templates作为一门图灵完备的语言来讲授，以求帮助读者对Meta-Programming融会贯通。(正在施工中) (github.com)</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://mightcoder.com">might</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://mightcoder.com/2022/04/05/optimizing-cpp-12/">https://mightcoder.com/2022/04/05/optimizing-cpp-12/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/hpc/">hpc</a><a class="post-meta__tags" href="/tags/cpp/">cpp</a></div><div class="post_share"><div class="social-share" data-image="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>请作者喝杯咖啡</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/04/05/optimizing-cpp-11/" title="optimizing_cpp(11)"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">optimizing_cpp(11)</div></div></a></div><div class="next-post pull-right"><a href="/2022/04/05/optimizing-cpp-8/" title="optimizing_cpp(8)"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next</div><div class="next_info">optimizing_cpp(8)</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2022/04/05/optimizing-cpp-10/" title="optimizing_cpp(10)"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-05</div><div class="title">optimizing_cpp(10)</div></div></a></div><div><a href="/2022/03/15/optimizing-cpp-1-4/" title="optimizing_cpp(1-4)"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-03-15</div><div class="title">optimizing_cpp(1-4)</div></div></a></div><div><a href="/2022/04/05/optimizing-cpp-11/" title="optimizing_cpp(11)"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-05</div><div class="title">optimizing_cpp(11)</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> Comment</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">might</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">69</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">32</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/shenghansen"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/shenghansen" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:shenghs@mail2.sysu.edu.cn" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="/./atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #f36d6d;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">Hope you can find something useful here ᐕ)⁾⁾ .</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%BA%8C%E3%80%81%E5%85%83%E7%BC%96%E7%A8%8B"><span class="toc-number">1.</span> <span class="toc-text">十二、元编程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%AE%8F%E7%BC%96%E7%A8%8B%E4%B8%8E%E9%A2%84%E5%A4%84%E7%90%86"><span class="toc-number">1.1.</span> <span class="toc-text">1.宏编程与预处理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-1-define"><span class="toc-number">1.1.1.</span> <span class="toc-text">1.1#define</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-undef"><span class="toc-number">1.1.2.</span> <span class="toc-text">1.2#undef</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-3-ifdef-else-endif"><span class="toc-number">1.1.3.</span> <span class="toc-text">1.3#ifdef #else #endif</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-4-ifndef"><span class="toc-number">1.1.4.</span> <span class="toc-text">1.4#ifndef</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-5-if-elif-else"><span class="toc-number">1.1.5.</span> <span class="toc-text">1.5#if #elif #else</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-6%E9%A2%84%E5%AE%9A%E4%B9%89%E5%AE%8F"><span class="toc-number">1.1.6.</span> <span class="toc-text">1.6预定义宏</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-7-line-error"><span class="toc-number">1.1.7.</span> <span class="toc-text">1.7#line #error</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-8-pragma"><span class="toc-number">1.1.8.</span> <span class="toc-text">1.8#pragma</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%85%83%E7%BC%96%E7%A8%8B"><span class="toc-number">1.2.</span> <span class="toc-text">2.元编程</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/11/25/cpp%E5%8D%8F%E7%A8%8B/" title="1.协程简介">1.协程简介</a><time datetime="2024-11-25T08:23:29.000Z" title="Created 2024-11-25 16:23:29">2024-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/11/13/SHMEMGraph%EF%BC%9A%20Efficient%20and%20Balanced%20Graph%20%20Processing%20Using%20One-sided%20Communication/" title="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151617.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication"/></a><div class="content"><a class="title" href="/2024/11/13/SHMEMGraph%EF%BC%9A%20Efficient%20and%20Balanced%20Graph%20%20Processing%20Using%20One-sided%20Communication/" title="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication">SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication</a><time datetime="2024-11-13T07:34:44.000Z" title="Created 2024-11-13 15:34:44">2024-11-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/11/11/RGraph%EF%BC%9AAsynchronous%20graph%20processing%20based%20on%20%20asymmetry%20of%20remote%20direct%20memory%20access/" title="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151617.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access"/></a><div class="content"><a class="title" href="/2024/11/11/RGraph%EF%BC%9AAsynchronous%20graph%20processing%20based%20on%20%20asymmetry%20of%20remote%20direct%20memory%20access/" title="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access">RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access</a><time datetime="2024-11-11T08:17:26.000Z" title="Created 2024-11-11 16:17:26">2024-11-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/10/01/cloudlab%E5%A4%9A%E8%8A%82%E7%82%B9%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" title="cloudlab多节点环境配置"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220150722.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="cloudlab多节点环境配置"/></a><div class="content"><a class="title" href="/2024/10/01/cloudlab%E5%A4%9A%E8%8A%82%E7%82%B9%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" title="cloudlab多节点环境配置">cloudlab多节点环境配置</a><time datetime="2024-10-01T03:23:12.000Z" title="Created 2024-10-01 11:23:12">2024-10-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/09/21/DFabric%EF%BC%9A%20Scaling%20Out%20Data%20Parallel%20Applications%20with%20%20CXL-Ethernet%20Hybrid%20Interconnects/" title="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects"/></a><div class="content"><a class="title" href="/2024/09/21/DFabric%EF%BC%9A%20Scaling%20Out%20Data%20Parallel%20Applications%20with%20%20CXL-Ethernet%20Hybrid%20Interconnects/" title="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects">DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects</a><time datetime="2024-09-21T06:44:05.000Z" title="Created 2024-09-21 14:44:05">2024-09-21</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1522635669452_11.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By might</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">hope you can find something useful here ᐕ)⁾⁾ .</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="Scroll To Comments"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const initValine = () => {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'VBvzA6UUhphh1Tc1BtzWXzye-gzGzoHsz',
+      appKey: 'J0UlGcCok0khsrORkwxD1HwF',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  const loadValine = async () => {
+    if (typeof Valine === 'function') initValine()
+    else {
+      await getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js')
+      initValine()
+    }
+  }
+
+  if ('Valine' === 'Valine' || !false) {
+    if (false) btf.loadComment(document.getElementById('vcomment'),loadValine)
+    else setTimeout(loadValine, 0)
+  } else {
+    window.loadOtherComment = loadValine
+  }
+})()</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

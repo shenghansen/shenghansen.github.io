@@ -1,0 +1,250 @@
+<!DOCTYPE html><html lang="zh-cn" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>HME: A Lightweight Emulator for Hybrid Memory | might's room</title><meta name="author" content="might"><meta name="copyright" content="might"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="START Basic  # HME: A Lightweight Emulator for Hybrid Memory TL;DR: ## Ⅰ. INTRODUCTION NVM硬件不可用，现有的模拟平台存在种种问题 - Gem5 - Zim - Intel Persistent Memory Emulation Platform (PMEP) - Quartz 本文提出HME，不专注于准确的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HME: A Lightweight Emulator for Hybrid Memory">
+<meta property="og:url" content="https://mightcoder.com/2024/03/25/HME%EF%BC%9AA%20Lightweight%20Emulator%20for%20Hybrid%20Memory/index.html">
+<meta property="og:site_name" content="might&#39;s room">
+<meta property="og:description" content="START Basic  # HME: A Lightweight Emulator for Hybrid Memory TL;DR: ## Ⅰ. INTRODUCTION NVM硬件不可用，现有的模拟平台存在种种问题 - Gem5 - Zim - Intel Persistent Memory Emulation Platform (PMEP) - Quartz 本文提出HME，不专注于准确的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png">
+<meta property="article:published_time" content="2024-03-25T08:11:49.000Z">
+<meta property="article:modified_time" content="2025-02-20T07:13:05.899Z">
+<meta property="article:author" content="might">
+<meta property="article:tag" content="cxl">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png"><link rel="shortcut icon" href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg"><link rel="canonical" href="https://mightcoder.com/2024/03/25/HME%EF%BC%9AA%20Lightweight%20Emulator%20for%20Hybrid%20Memory/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//static.cloudflareinsights.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script defer="defer" data-pjax="data-pjax" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="{&quot;token&quot;: &quot;60e2c80ac4524b11b7168fad4fb0548b&quot;}"></script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: 'days',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'HME: A Lightweight Emulator for Hybrid Memory',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-02-20 15:13:05'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 8 || hour >= 22
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="might's room" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">69</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">32</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png')"><nav id="nav"><span id="blog-info"><a href="/" title="might's room"><span class="site-name">might's room</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">HME: A Lightweight Emulator for Hybrid Memory</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2024-03-25T08:11:49.000Z" title="Created 2024-03-25 16:11:49">2024-03-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-02-20T07:13:05.899Z" title="Updated 2025-02-20 15:13:05">2025-02-20</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">Word Count:</span><span class="word-count">2.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">Reading Time:</span><span>7mins</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="HME: A Lightweight Emulator for Hybrid Memory"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p hidden>
+START
+Basic
+</p>
+# HME: A Lightweight Emulator for Hybrid Memory
+TL;DR:
+## Ⅰ. INTRODUCTION
+NVM硬件不可用，现有的模拟平台存在种种问题
+- Gem5
+- Zim
+- Intel Persistent Memory Emulation Platform (PMEP)
+- Quartz
+本文提出HME，不专注于准确的模拟内存访问的细节，而是专注于模拟带宽和延迟
+
+<p>带宽限制类似PMEP和Quartz，用DRAM thermal control interface控制（intel CPU支持）。定期注入额外的软件创建的延迟（NVM 和 DRAM 延迟之间的差异）来模拟 NVM 延迟。</p>
+<h2 id="II-NVM-EMULATION-MODELS"><a href="#II-NVM-EMULATION-MODELS" class="headerlink" title="II. NVM EMULATION MODELS"></a>II. NVM EMULATION MODELS</h2><p>令 RDi 表示在给定时间间隔 i 内应注入的总读取延迟，NVM r 和 DRAMr 分别表示平均 NVM 和 DRAM 读取延迟，M i 表示间隔 i 内的内存访问总数。等式1描述了计算附加延迟RDi的基本模型，其中M i 是我们需要在时间间隔i内计数的唯一关键参数。<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240325162304.png" alt="image.png"><br>当前的商用 CPU 提供硬件性能计数器来监控 LLC 未命中。在每个给定间隔结束时，HME 读取硬件性能计数器并计算额外延迟，然后停止应用程序的 CPU 以注入软件创建的延迟。<br>实际上，aLLC 未命中通常伴随着页表遍历，这会消耗更多时间来访问主存储器中的页表条目。因此，我们改进了公式 2 中的 NVM 延迟仿真模型<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240325163317.png" alt="image.png"><br>其中第一个系数是主要与应用程序的LLC未命中率相关的系数。可以通过对各种工作负载执行大量实验并使用线性回归等先进学习技术对其进行建模来估计其价值。<br>由于内存写操作不在应用程序执行的关键路径上，因此由于现代 CPU 上的回写式缓存和推测指令执行，应用程序无法感知它们。</p>
+<p>为了模拟 NVM 写入延迟，我们通过使用 Intel Xeno CPU 中的性能监控单元 (PMU) 和模型特定寄存器 (MSR) 来监控 NVM 直写和回写的次数，并计算由内存写入引起的 CPU 停顿时间。令 WDi 表示在给定时间间隔 i 内应注入的总写入延迟，Mi 和 Ni 表示间隔 i 内 NVM 上的内存写通和写回操作总数，Δwtl 和 Δwbl 表示分别注入直写和写回延迟（NVM 和 DRAM 写入延迟之间的差异）。 NVM写入的注入延迟可以计算如下：<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240325163949.png" alt="image.png"></p>
+<h2 id="III-HME-IMPLEMENTATION"><a href="#III-HME-IMPLEMENTATION" class="headerlink" title="III. HME IMPLEMENTATION"></a>III. HME IMPLEMENTATION</h2><p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240325164336.png" alt="image.png"><br>们采用 NUMA 架构来模拟双路服务器上的混合内存系统。 NUMA 架构支持本地 DRAM 的普遍使用，同时在远程套接字上提供更高的 DRAM 访问延迟。我们在远程 NUMA 节点上使用 DRAM 来模拟更高延迟和更低带宽的 NVM。<br>如图 1 所示，我们选择远程套接字（节点 1）处的一个core 来计算应注入到本地套接字（节点 0）上运行的应用程序的额外延迟。<br>不使用远程套接字上的其他核心，以避免对计算核心的性能干扰。 HME 使用 非计算核心的 Intel Xeon 处理器 [16] 的PMU（性能监控单元）中的 Home Agent（HA）来记录对节点 1 上 DRAM 的内存读取访问（LLC 未命中）和写入访问的次数，并且这些内存请求应该是从节点 O 上运行的应用程序发出。HME 通过处理器间中断 (IPls) 向节点 0 的核心注入额外的延迟。通过这种方式，HME 增加了远程内存访问延迟来模拟 NVM 延迟<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240325165225.png" alt="image.png"><br>读延迟注入的流程如图2所示。程序运行在Node 0的Core 0上，而Node 1的Core 3则模拟NVM。当程序访问远程 DRAM（即模拟 NVM）时，Core 3 会调用 apoll 函数。它定期读取节点1上的PMU寄存器，并获取轮询周期内Core 0访问远程内存的次数。之后，Core 3计算模拟延迟并通过IPls将延迟注入到Core 0，这会导致 CPU 空转，从而产生模拟 NVM 读取延迟的软件延迟。</p>
+<p>总结下：通过IPIs一个处理器向另一个处理器发送中断来增加延迟，通过PMU中的HA来记录内存读取数，并凭借此来决定增加多少延迟。</p>
+<p>Model Specific Registers (MSR) [18] and PMU模拟NVM写延迟<br>由于每个核心的 MSR 无法被其他核心访问，因此应用程序的核心会定期中断以读取其 MSR 计数器，然后将此信息发送到远程套接字以计算写入延迟。这些中断可能会减慢应用程序的执行速度。<br>此外，由于硬件计数器仅记录socket上的LLC逐出总数，因此我们无法确切知道回写的LLC逐出来自哪个核心。为此，我们将写入延迟平均分配到每个核心上。我们认为这也是这种方法的局限性。如果处理器供应商将来提供更丰富的性能计数器，这个问题就可以得到解决。</p>
+<p>我们使用集成内存控制器 (IMC) 非核心 PMU 和第 II-B 节中描述的模型来模拟 NVM 带宽。我们限制内存控制器在一个时隙中可以处理的内存访问指令的数量，以控制 NVM 带宽。我们还为用户提供了一套带宽控制API。</p>
+<h2 id="IV-NVM-PROGRAMMING-INTERFACE"><a href="#IV-NVM-PROGRAMMING-INTERFACE" class="headerlink" title="IV. NVM PROGRAMMING INTERFACE"></a>IV. NVM PROGRAMMING INTERFACE</h2><p>开发了AHME，一台API，提供了粗粒度的numactl和细粒度的malloc&#x2F;nvm_malloc<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240325175114.png" alt="image.png"><br>我们修改Linux内核，为nvm_mmap内存分配提供分支。该分支处理 nvm_malloc 函数中的过程分配。同时，NVM页面和DRAM页面在VMA(virtual address space)中不同。AHME 在 VMA 中标记 NVM 标志，并在页面错误时调用指定的 do_nvmpage_fault 函数来分配远程 NUMA 节点上的物理地址空间。</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240325175235.png" alt="image.png"><br>NVM内存分配分支如图4所示。当调用扩展Glibc的nvm_mmap()时，内核调用do_mmap()函数，并在do_mmapygoff()函数申请VMA时在VMA结构上设置NVM_VMA标​​志。当第一次访问NVM页面时，它会触发页面错误，内核调用handle_mmJault()函数来处理页面错误。如果 NVM_VMA 标志匹配，则调用 do_nvm_numa() 函数来分配物理 NVM 页，该页实际上是远程 NUMA 节点中的 DRAM 页。如果页面错误不是指NVM页面，则内核使用正常的doyage()在本地节点中分配DRAM页面。我们在 Glibc 库中实现了 nvm_malloc 函数，并添加了新的系统调用 nvm_mmap。 nvm_malloc() 调用 nvm_mmap() 将 mmap 参数传递给修改后的 Linux 内核。之后，上述NVM分配由内核执行。</p>
+<p>为什么要修改pagefault</p>
+<h2 id="V-EVALUATION"><a href="#V-EVALUATION" class="headerlink" title="V. EVALUATION"></a>V. EVALUATION</h2><p>总体而言，HME 中的写入延迟仿真误差小于 5%。</p>
+<h2 id="VI-RELATED-WORK"><a href="#VI-RELATED-WORK" class="headerlink" title="VI. RELATED WORK"></a>VI. RELATED WORK</h2><ul>
+<li>Pelley et al. [21] propose offline analysis with <strong>PIN</strong> to calculate the average number of cache misses referenced by aprogram.<blockquote>
+<p>  我们使用PIN离线分析来确定(1)缓存页的重用统计，以及(2)缓存页每次锁存的平均访问行数。这些离线统计数据使我们能够在考虑页缓存的影响时，计算Shore-MT中每个页闩锁事件的缓存行访问的平均数量。然后，在每个锁存器中引入一个延迟，该延迟是基于测量的平均漏读数和基于NVRAM技术的每次读取延迟增加的假设。<br>  意思就是先离线分析统计数据，再根据统计数据加延迟</p>
+</blockquote>
+</li>
+<li>LEFF [22] supports both NVM emulation and simulation in the same framework. The trace-driven model usually takes much time on profiling and analysis. Instead, HME emulates NVM read&#x2F;write latency in an online manner.</li>
+<li>Volos et al. [10], [23] achieve NVM write latency emulation by injecting software generated delays. This progress needs programmers to explicitly flush cache lines out of the last level cache.</li>
+<li>PMEP isan in-house NVM emulator, which emulates NVM read latency and bandwidth by using Intel’s special CPU microcode and custom platform firmware</li>
+<li>Lee et al. [24] design FPGA-based hybrid memory prototypes with DRAM and PCM.</li>
+<li>Quartz [15] perhaps is the most similar work to HME. Italso emulates NVM read latencies using adelay injection model on aNUMA-based architecture.First, Quartz does not support write delay emulation while HME provides areasonable approach to NVM write emulation with agood accuracy. Second, Quartz uses the local cores to sample the PMU counters and performs the delay injection</li>
+</ul>
+<h2 id="VII-CONCLUSION"><a href="#VII-CONCLUSION" class="headerlink" title="VII. CONCLUSION"></a>VII. CONCLUSION</h2><p>我们提出了一种混合内存模拟器，称为 HME。它可以有效地模拟各种 NVM 读&#x2F;写延迟和商用硬件上的带宽限制，对应用程序性能的影响微乎其微。此外，我们还开发了一个用户友好的API，以方便在我们的模拟器上进行编程。该API是Glibc的扩展，具有与Glibc相当的内存分配性能。实验结果表明，HME中NVM读&#x2F;写延迟的平均仿真误差低于5%。与最先进的 Quartz 相比，它还显示出更高的仿真精度和更低的应用程序性能开销。</p>
+<p hidden>
+Back: you have read it !
+Tags: cxl
+<!--ID: 1711595226570-->
+END
+</p></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://mightcoder.com">might</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://mightcoder.com/2024/03/25/HME%EF%BC%9AA%20Lightweight%20Emulator%20for%20Hybrid%20Memory/">https://mightcoder.com/2024/03/25/HME%EF%BC%9AA%20Lightweight%20Emulator%20for%20Hybrid%20Memory/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/cxl/">cxl</a></div><div class="post_share"><div class="social-share" data-image="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>请作者喝杯咖啡</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/04/01/Toward%20CXL-Native%20Memory%20Tiering%20via%20Device-Side%20Profiling/" title="Toward CXL-Native Memory Tiering via Device-Side Profiling"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">Toward CXL-Native Memory Tiering via Device-Side Profiling</div></div></a></div><div class="next-post pull-right"><a href="/2024/03/25/Sidekick%EF%BC%9ANear%20Data%20Processing%20for%20Clustering%20Enhanced%20by%20Automatic%20Memory%20Disaggregation/" title="Sidekick: Near Data Processing for Clustering Enhanced by Automatic Memory Disaggregation"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next</div><div class="next_info">Sidekick: Near Data Processing for Clustering Enhanced by Automatic Memory Disaggregation</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2023/11/08/CXL%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87%E8%B0%83%E7%A0%942023.11.8/" title="论文研究方向"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-11-08</div><div class="title">论文研究方向</div></div></a></div><div><a href="/2024/03/20/DDC%EF%BC%9AA%20Vision%20for%20a%20Disaggregated%20Datacenter/" title="DDC：A Vision for a Disaggregated Datacenter"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-20</div><div class="title">DDC：A Vision for a Disaggregated Datacenter</div></div></a></div><div><a href="/2023/09/18/An%20Introduction%20to%20the%20Compute%20Express%20LinkTM%20(CXLTM)%20Interconnect/" title="An Introduction to the Compute Express LinkTM (CXLTM) Interconnect"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-09-18</div><div class="title">An Introduction to the Compute Express LinkTM (CXLTM) Interconnect</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> Comment</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">might</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">69</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">32</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/shenghansen"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/shenghansen" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:shenghs@mail2.sysu.edu.cn" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="/./atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #f36d6d;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">Hope you can find something useful here ᐕ)⁾⁾ .</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#II-NVM-EMULATION-MODELS"><span class="toc-number">1.</span> <span class="toc-text">II. NVM EMULATION MODELS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#III-HME-IMPLEMENTATION"><span class="toc-number">2.</span> <span class="toc-text">III. HME IMPLEMENTATION</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#IV-NVM-PROGRAMMING-INTERFACE"><span class="toc-number">3.</span> <span class="toc-text">IV. NVM PROGRAMMING INTERFACE</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#V-EVALUATION"><span class="toc-number">4.</span> <span class="toc-text">V. EVALUATION</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#VI-RELATED-WORK"><span class="toc-number">5.</span> <span class="toc-text">VI. RELATED WORK</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#VII-CONCLUSION"><span class="toc-number">6.</span> <span class="toc-text">VII. CONCLUSION</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/11/25/cpp%E5%8D%8F%E7%A8%8B/" title="1.协程简介">1.协程简介</a><time datetime="2024-11-25T08:23:29.000Z" title="Created 2024-11-25 16:23:29">2024-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/11/13/SHMEMGraph%EF%BC%9A%20Efficient%20and%20Balanced%20Graph%20%20Processing%20Using%20One-sided%20Communication/" title="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151617.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication"/></a><div class="content"><a class="title" href="/2024/11/13/SHMEMGraph%EF%BC%9A%20Efficient%20and%20Balanced%20Graph%20%20Processing%20Using%20One-sided%20Communication/" title="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication">SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication</a><time datetime="2024-11-13T07:34:44.000Z" title="Created 2024-11-13 15:34:44">2024-11-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/11/11/RGraph%EF%BC%9AAsynchronous%20graph%20processing%20based%20on%20%20asymmetry%20of%20remote%20direct%20memory%20access/" title="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151617.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access"/></a><div class="content"><a class="title" href="/2024/11/11/RGraph%EF%BC%9AAsynchronous%20graph%20processing%20based%20on%20%20asymmetry%20of%20remote%20direct%20memory%20access/" title="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access">RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access</a><time datetime="2024-11-11T08:17:26.000Z" title="Created 2024-11-11 16:17:26">2024-11-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/10/01/cloudlab%E5%A4%9A%E8%8A%82%E7%82%B9%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" title="cloudlab多节点环境配置"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220150722.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="cloudlab多节点环境配置"/></a><div class="content"><a class="title" href="/2024/10/01/cloudlab%E5%A4%9A%E8%8A%82%E7%82%B9%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" title="cloudlab多节点环境配置">cloudlab多节点环境配置</a><time datetime="2024-10-01T03:23:12.000Z" title="Created 2024-10-01 11:23:12">2024-10-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/09/21/DFabric%EF%BC%9A%20Scaling%20Out%20Data%20Parallel%20Applications%20with%20%20CXL-Ethernet%20Hybrid%20Interconnects/" title="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects"/></a><div class="content"><a class="title" href="/2024/09/21/DFabric%EF%BC%9A%20Scaling%20Out%20Data%20Parallel%20Applications%20with%20%20CXL-Ethernet%20Hybrid%20Interconnects/" title="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects">DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects</a><time datetime="2024-09-21T06:44:05.000Z" title="Created 2024-09-21 14:44:05">2024-09-21</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By might</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">hope you can find something useful here ᐕ)⁾⁾ .</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="Scroll To Comments"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const initValine = () => {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'VBvzA6UUhphh1Tc1BtzWXzye-gzGzoHsz',
+      appKey: 'J0UlGcCok0khsrORkwxD1HwF',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  const loadValine = async () => {
+    if (typeof Valine === 'function') initValine()
+    else {
+      await getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js')
+      initValine()
+    }
+  }
+
+  if ('Valine' === 'Valine' || !false) {
+    if (false) btf.loadComment(document.getElementById('vcomment'),loadValine)
+    else setTimeout(loadValine, 0)
+  } else {
+    window.loadOtherComment = loadValine
+  }
+})()</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

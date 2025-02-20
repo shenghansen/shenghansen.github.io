@@ -1,0 +1,244 @@
+<!DOCTYPE html><html lang="zh-cn" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Sidekick: Near Data Processing for Clustering Enhanced by Automatic Memory Disaggregation | might's room</title><meta name="author" content="might"><meta name="copyright" content="might"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="START Basic  # Sidekick: Near Data Processing for Clustering Enhanced by Automatic Memory Disaggregation TL;DR:一套基于CXL的NDP聚类算法系统，使用函数调用堆栈区分函数类型，使用遗传算法来决定自动迁移策略 ## INTRODUCTION 面向聚类的NDP 聚类是常见的算法，其需要大内">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Sidekick: Near Data Processing for Clustering Enhanced by Automatic Memory Disaggregation">
+<meta property="og:url" content="https://mightcoder.com/2024/03/25/Sidekick%EF%BC%9ANear%20Data%20Processing%20for%20Clustering%20Enhanced%20by%20Automatic%20Memory%20Disaggregation/index.html">
+<meta property="og:site_name" content="might&#39;s room">
+<meta property="og:description" content="START Basic  # Sidekick: Near Data Processing for Clustering Enhanced by Automatic Memory Disaggregation TL;DR:一套基于CXL的NDP聚类算法系统，使用函数调用堆栈区分函数类型，使用遗传算法来决定自动迁移策略 ## INTRODUCTION 面向聚类的NDP 聚类是常见的算法，其需要大内">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png">
+<meta property="article:published_time" content="2024-03-25T02:37:18.000Z">
+<meta property="article:modified_time" content="2025-02-20T07:13:25.511Z">
+<meta property="article:author" content="might">
+<meta property="article:tag" content="cxl">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png"><link rel="shortcut icon" href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg"><link rel="canonical" href="https://mightcoder.com/2024/03/25/Sidekick%EF%BC%9ANear%20Data%20Processing%20for%20Clustering%20Enhanced%20by%20Automatic%20Memory%20Disaggregation/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//static.cloudflareinsights.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script defer="defer" data-pjax="data-pjax" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="{&quot;token&quot;: &quot;60e2c80ac4524b11b7168fad4fb0548b&quot;}"></script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: 'days',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Sidekick: Near Data Processing for Clustering Enhanced by Automatic Memory Disaggregation',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-02-20 15:13:25'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 8 || hour >= 22
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="might's room" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">69</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">32</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png')"><nav id="nav"><span id="blog-info"><a href="/" title="might's room"><span class="site-name">might's room</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Sidekick: Near Data Processing for Clustering Enhanced by Automatic Memory Disaggregation</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2024-03-25T02:37:18.000Z" title="Created 2024-03-25 10:37:18">2024-03-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-02-20T07:13:25.511Z" title="Updated 2025-02-20 15:13:25">2025-02-20</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">Word Count:</span><span class="word-count">2.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">Reading Time:</span><span>7mins</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Sidekick: Near Data Processing for Clustering Enhanced by Automatic Memory Disaggregation"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p hidden>
+START
+Basic
+</p>
+# Sidekick: Near Data Processing for Clustering Enhanced by Automatic Memory Disaggregation
+TL;DR:一套基于CXL的NDP聚类算法系统，使用函数调用堆栈区分函数类型，使用遗传算法来决定自动迁移策略
+## INTRODUCTION
+面向聚类的NDP
+聚类是常见的算法，其需要大内存来进行计算，且CPU会频繁的访问DRAM。CXL可以提供一种拓容方法，然而会增大延迟，且目前带宽弱于DRAM
+
+<p>NDP是此类应用的一种有前途的解决方案，我们可以实现一个 NDP 加速器，以卸载内存密集型任务以减少数据通信。同时，主机可以基于一致的设备间内存访问能力来执行其余的计算。</p>
+<p>然而，对于聚类算法有两个挑战</p>
+<ul>
+<li>需要支持多种聚类技术，而不是特定应用优化</li>
+<li>以自动化方式执行适合 NDP 的任务，不需要手动修改。<br>在本文中，我们提出了一种支持 NDP 的内存分解系统，称为 Sidekick，它基于 2 型 CXL 设备，并通过系统软件进行增强，该系统软件实现了聚类算法的自动分配技术。 Sidekick在CXL设备上利用轻量级通用处理器来满足各种聚类算法的需求。<br>Sidekick是第一个基于CXL的全面加速多种聚类算法的系统。</li>
+</ul>
+<h2 id="OVERVIEW-OF-SIDEKICK"><a href="#OVERVIEW-OF-SIDEKICK" class="headerlink" title="OVERVIEW OF SIDEKICK"></a>OVERVIEW OF SIDEKICK</h2><p>系统架构<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240325111359.png" alt="image.png"><br>核心软件：自动迁移技术 </p>
+<p>Sidekick 的核心是自动迁移技术，它识别应在 CXL 设备上执行的函数、线程​​和内存分配，以获得最佳加速性能。图 2 显示了 Sidekick 如何在没有每种聚类算法的源代码的情况下以系统的方式识别迁移策略。为了成功确定是否迁移程序的一部分，Sidekick 使用中等大小的合成数据集（例如 16 MB）离线表征目标聚类算法。我们将迁移的最小感兴趣区域定义为正常的函数调用，包括线程生成，并收集它们以在后续过程中考虑迁移候选者。 Sidekick 还跟踪内存分配，即 libc 库中典型的 malloc 函数。一旦我们执行聚类算法，我们就会收集实际运行期间可能发生的大部分潜在函数调用和内存分配<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240325112435.png" alt="image.png"></p>
+<p>然后我们根据遗传算法（GA）确定最佳迁移程序。<br>在初始化阶段，Sidekick 随机创建多个候选场景。然后，我们运行每个场景，同时监控系统级指标，例如指令数量、主机和 NDP 中发生的内存访问等。根据系统指标，我们评估每个场景并为下一代制定高级候选方案通过随机填充已执行场景的迁移决策。 GA 算法运行多次迭代，然后我们可以确定最佳场景。在运行时，Sidekick 应用最佳场景来最大限度地发挥基于 CXL 的分解内存系统的优势。</p>
+<h2 id="AUTOMATED-PROGRAM-CONTEXT-EXTRACTION"><a href="#AUTOMATED-PROGRAM-CONTEXT-EXTRACTION" class="headerlink" title="AUTOMATED PROGRAM CONTEXT EXTRACTION"></a>AUTOMATED PROGRAM CONTEXT EXTRACTION</h2><p>Program Context：which represents a snapshot of the function call chains, is useful for analyzing the internal program behavior<br>由于函数调用栈包含了从主函数开始的被调用函数的地址，因此我们可以比使用单个调用跟踪更准确地识别程序的上下文信息，即在程序执行过程中为什么使用该函数</p>
+<p>如何区分两个相同的函数？根据函数调用堆栈。<br>例如，到达第一个 calloc() 调用的调用链由多个由其被调用者地址标识的函数调用组成，即 A &#x3D; ⟨addr0, addr1, · · · , addrn⟩。为了生成唯一标识符号，我们使用生成 32 位值的哈希函数，即 H(A)。另一方面，第二次 calloc() 调用具有不同的结束地址，即 A′ &#x3D; ⟨addr0, addr1, ··· , addr′ n⟩。因此，我们可以用 H(A) 和 H(A′) 区分两个被调用者，期望具有相同调用堆栈的未来函数调用在计算&#x2F;内存使用方面表现相似。</p>
+<p>首先用模拟数据试运行一次聚类算法，记录大部分的编程上下文，包括线程分配(pthread_create函数)内存分配(malloc、calloc等)</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240325144546.png" alt="image.png"><br>上图描述Sidekick怎么区分计算上下文、内存分配上下文、新建线程上下文。<br>当普通函数f0执行，其上下文为c(f0)，这就是<strong>计算上下文</strong>。<br>当内存分配函数f1执行，其调用堆栈为f0 f1，上下文为c(f1)，这就是<strong>内存分配上下文</strong>。<br>当另外的普通函数f2f3执行，其调用堆栈为f0 f2,f0f2f3（即不包括内存分配上下文），其上下文为c(f2)c(f3)。<br>当新建一个线程执行f4时，f4的堆栈为f0f4，上下文为c(f4)，这就是<strong>新建线程上下文</strong>。</p>
+<p>注意虽然f5被调用了两次，其上下文是不同的，因为返回地址是不同的。<br>所有的上下文被存储进program context database, in short, PCDB</p>
+<p>这套系统的实现非常简单，比如可以用python的分析器和linux的backtrace</p>
+<h2 id="MIGRATION-POLICY-DECISION"><a href="#MIGRATION-POLICY-DECISION" class="headerlink" title="MIGRATION POLICY DECISION"></a>MIGRATION POLICY DECISION</h2><p>使用遗传算法来决定最佳的迁移策略<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240325151516.png" alt="image.png"><br>为了以不同的方式考虑 NDP 核心上的计算迁移和 CXL 内存上的内存分配，我们将 PCDB 中的程序上下文分为两组：(i) 从主线程或派生线程启动的函数和 (ii) 函数调用与内存分配。我们使用二进制向量 Ccomp 和 Cmem 对这两个组进行编码，其中向量的每个元素表示它是分配给主机 (0) 还是设备 (1)。遗传算法的初始阶段，Sidekick 创建具有随机性的二进制向量来探索各种迁移场景。全随机分配的一个问题是，由于不同程序上下文的数量导致搜索空间非常大，因此可能需要很长时间或无法收敛才能找到最佳分配场景。<br>bootstrapping method解决这个问题<br>如果我们决定迁移 NDP 上的 lloyd iter() 函数调用（称为父程序上下文），我们可以预期在函数上下文中分配的数组也更有可能在 CXL 设备上使用。即使事实并非如此，由于主机系统也可以访问分配的内存层，因此我们可以通过在 GA 的变异过程中给它一个机会更改分配的设备来找到最佳分配。</p>
+<p>Sidekick GA 过程的一个关键优点是它允许用户根据所需的优化目标自适应地设置不同的适应度指标。例如，可以使用每周期指令数 (IPC) 或执行时间来获得更好的性能；另一方面，我们可以引导GA减少远程CXL请求的数量，以避免两个系统之间的重负载。在我们的评估中，我们讨论了 Sidekick 如何使用两个不同的优化目标作为代表性示例（第 V-B 节）。为此，我们收集系统级指标，包括周期数、指令数和远程内存访问数，然后计算适应度指标。<br>使用适应度度量，我们通过遵循一般 GA 规则 [13] 执行交叉和变异来生成下一代染色体。生成和评估过程运行多个时期以找出最佳迁移策略，直到目标指标收敛。请注意，在 GA 迭代期间，由于空运行中看不到的函数调用流程，它可能会找到新的程序上下文。在这种情况下，我们根据具有最相似函数调用堆栈的上下文来卸载相应的计算或内存分配。然后，我们将新看到的上下文添加到 PCDB，将其视为下一次迭代的迁移候选者。</p>
+<h2 id="EXPERIMENTAL-RESULTS"><a href="#EXPERIMENTAL-RESULTS" class="headerlink" title="EXPERIMENTAL RESULTS"></a>EXPERIMENTAL RESULTS</h2><p>Intel Xeon Gold 5218 CPU, 两个NUMA，用NUMA模拟CXL，由于 CXL 设备上的通用处理器的计算性能可能会低于服务器级主机处理器，因此我们将模拟 NDP 内核的时钟频率降低了 80%；<br>为了准确评估，我们的仿真环境使用 OpenMP 执行实际的任务迁移，同时利用内核级模块，以与 [14] （Hme: A lightweight emulator for hybrid memory.）中所示的类似方式为每个内存请求注入内存延迟。性能的话参考directCXL</p>
+<p>我们将 Sidekick 与使用分解内存但没有 NDP 核心的系统进行比较。对于评估基准，我们选择了 Scikit-learn 库中最先进实现的九种聚类算法。然后，为了评估 Sidekick 的可扩展性，对于每种算法，我们使用其他三个测试数据集，其样本是根据高斯分布创建的，以形成多个集群。1 我们将它们分为三组：中型、大型和超大，其中平均值内存大小为中型 4 GB、大型 8 GB、超大型 20 GB<br>当优化目标是IPC时，性能比较<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240325153357.png" alt="image.png"><br>没太看懂后面三个什么意思<br>请注意，Sidekick 仅使用 16 MB 的相对较小的数据（在图中表示为 GA）通过自动探索​​过程确定了迁移策略，那其他三个呢？</p>
+<p>跟手动定义迁移策略比<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240325153851.png" alt="image.png"></p>
+<h2 id="CONCLUSION"><a href="#CONCLUSION" class="headerlink" title="CONCLUSION"></a>CONCLUSION</h2><p>提出了一种基于 CXL 的支持 NDP 的内存分解系统Sidekick，我们提出了基于遗传算法（GA）的自动迁移决策来减少远程CXL内存访问</p>
+<p hidden>
+Back: you have read it !
+Tags: cxl
+<!--ID: 1711352568624-->
+END
+</p></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://mightcoder.com">might</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://mightcoder.com/2024/03/25/Sidekick%EF%BC%9ANear%20Data%20Processing%20for%20Clustering%20Enhanced%20by%20Automatic%20Memory%20Disaggregation/">https://mightcoder.com/2024/03/25/Sidekick%EF%BC%9ANear%20Data%20Processing%20for%20Clustering%20Enhanced%20by%20Automatic%20Memory%20Disaggregation/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/cxl/">cxl</a></div><div class="post_share"><div class="social-share" data-image="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>请作者喝杯咖啡</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/03/25/HME%EF%BC%9AA%20Lightweight%20Emulator%20for%20Hybrid%20Memory/" title="HME: A Lightweight Emulator for Hybrid Memory"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">HME: A Lightweight Emulator for Hybrid Memory</div></div></a></div><div class="next-post pull-right"><a href="/2024/03/22/EMS-i%EF%BC%9A%20An%20Efficient%20Memory%20System%20Design%20with%20Specialized%20Caching%20Mechanism%20for%20Recommendation%20Inference/" title="EMS-i： An Efficient Memory System Design with Specialized Caching Mechanism for Recommendation Inference"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next</div><div class="next_info">EMS-i： An Efficient Memory System Design with Specialized Caching Mechanism for Recommendation Inference</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2023/11/08/CXL%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87%E8%B0%83%E7%A0%942023.11.8/" title="论文研究方向"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-11-08</div><div class="title">论文研究方向</div></div></a></div><div><a href="/2024/03/20/DDC%EF%BC%9AA%20Vision%20for%20a%20Disaggregated%20Datacenter/" title="DDC：A Vision for a Disaggregated Datacenter"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-20</div><div class="title">DDC：A Vision for a Disaggregated Datacenter</div></div></a></div><div><a href="/2023/09/18/An%20Introduction%20to%20the%20Compute%20Express%20LinkTM%20(CXLTM)%20Interconnect/" title="An Introduction to the Compute Express LinkTM (CXLTM) Interconnect"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-09-18</div><div class="title">An Introduction to the Compute Express LinkTM (CXLTM) Interconnect</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> Comment</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">might</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">69</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">32</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/shenghansen"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/shenghansen" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:shenghs@mail2.sysu.edu.cn" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="/./atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #f36d6d;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">Hope you can find something useful here ᐕ)⁾⁾ .</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#OVERVIEW-OF-SIDEKICK"><span class="toc-number">1.</span> <span class="toc-text">OVERVIEW OF SIDEKICK</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AUTOMATED-PROGRAM-CONTEXT-EXTRACTION"><span class="toc-number">2.</span> <span class="toc-text">AUTOMATED PROGRAM CONTEXT EXTRACTION</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MIGRATION-POLICY-DECISION"><span class="toc-number">3.</span> <span class="toc-text">MIGRATION POLICY DECISION</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EXPERIMENTAL-RESULTS"><span class="toc-number">4.</span> <span class="toc-text">EXPERIMENTAL RESULTS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CONCLUSION"><span class="toc-number">5.</span> <span class="toc-text">CONCLUSION</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/11/25/cpp%E5%8D%8F%E7%A8%8B/" title="1.协程简介">1.协程简介</a><time datetime="2024-11-25T08:23:29.000Z" title="Created 2024-11-25 16:23:29">2024-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/11/13/SHMEMGraph%EF%BC%9A%20Efficient%20and%20Balanced%20Graph%20%20Processing%20Using%20One-sided%20Communication/" title="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151617.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication"/></a><div class="content"><a class="title" href="/2024/11/13/SHMEMGraph%EF%BC%9A%20Efficient%20and%20Balanced%20Graph%20%20Processing%20Using%20One-sided%20Communication/" title="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication">SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication</a><time datetime="2024-11-13T07:34:44.000Z" title="Created 2024-11-13 15:34:44">2024-11-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/11/11/RGraph%EF%BC%9AAsynchronous%20graph%20processing%20based%20on%20%20asymmetry%20of%20remote%20direct%20memory%20access/" title="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151617.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access"/></a><div class="content"><a class="title" href="/2024/11/11/RGraph%EF%BC%9AAsynchronous%20graph%20processing%20based%20on%20%20asymmetry%20of%20remote%20direct%20memory%20access/" title="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access">RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access</a><time datetime="2024-11-11T08:17:26.000Z" title="Created 2024-11-11 16:17:26">2024-11-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/10/01/cloudlab%E5%A4%9A%E8%8A%82%E7%82%B9%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" title="cloudlab多节点环境配置"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220150722.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="cloudlab多节点环境配置"/></a><div class="content"><a class="title" href="/2024/10/01/cloudlab%E5%A4%9A%E8%8A%82%E7%82%B9%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" title="cloudlab多节点环境配置">cloudlab多节点环境配置</a><time datetime="2024-10-01T03:23:12.000Z" title="Created 2024-10-01 11:23:12">2024-10-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/09/21/DFabric%EF%BC%9A%20Scaling%20Out%20Data%20Parallel%20Applications%20with%20%20CXL-Ethernet%20Hybrid%20Interconnects/" title="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects"/></a><div class="content"><a class="title" href="/2024/09/21/DFabric%EF%BC%9A%20Scaling%20Out%20Data%20Parallel%20Applications%20with%20%20CXL-Ethernet%20Hybrid%20Interconnects/" title="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects">DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects</a><time datetime="2024-09-21T06:44:05.000Z" title="Created 2024-09-21 14:44:05">2024-09-21</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By might</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">hope you can find something useful here ᐕ)⁾⁾ .</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="Scroll To Comments"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const initValine = () => {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'VBvzA6UUhphh1Tc1BtzWXzye-gzGzoHsz',
+      appKey: 'J0UlGcCok0khsrORkwxD1HwF',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  const loadValine = async () => {
+    if (typeof Valine === 'function') initValine()
+    else {
+      await getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js')
+      initValine()
+    }
+  }
+
+  if ('Valine' === 'Valine' || !false) {
+    if (false) btf.loadComment(document.getElementById('vcomment'),loadValine)
+    else setTimeout(loadValine, 0)
+  } else {
+    window.loadOtherComment = loadValine
+  }
+})()</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html><html lang="zh-cn" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects | might's room</title><meta name="author" content="might"><meta name="copyright" content="might"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="START Basic  TL;DR：结合CXL和以太网，实现两层互联架构，解决数据密集型应用的通信困难 ## 1 Introduction cxl互联可以很好的解决分布式数据密集型应用中的通信问题 &gt; 在当今的生产云中运行的数据密集型应用程序，例如图形处理[47]、数据分析[17]和深度神经网络（DNN）训练[44]通常使用批量同步并行（BSP）[65]或MapReduce来运行范式，这需要两">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects">
+<meta property="og:url" content="https://mightcoder.com/2024/09/21/DFabric%EF%BC%9A%20Scaling%20Out%20Data%20Parallel%20Applications%20with%20%20CXL-Ethernet%20Hybrid%20Interconnects/index.html">
+<meta property="og:site_name" content="might&#39;s room">
+<meta property="og:description" content="START Basic  TL;DR：结合CXL和以太网，实现两层互联架构，解决数据密集型应用的通信困难 ## 1 Introduction cxl互联可以很好的解决分布式数据密集型应用中的通信问题 &gt; 在当今的生产云中运行的数据密集型应用程序，例如图形处理[47]、数据分析[17]和深度神经网络（DNN）训练[44]通常使用批量同步并行（BSP）[65]或MapReduce来运行范式，这需要两">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png">
+<meta property="article:published_time" content="2024-09-21T06:44:05.000Z">
+<meta property="article:modified_time" content="2025-02-20T07:12:55.207Z">
+<meta property="article:author" content="might">
+<meta property="article:tag" content="cxl">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png"><link rel="shortcut icon" href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg"><link rel="canonical" href="https://mightcoder.com/2024/09/21/DFabric%EF%BC%9A%20Scaling%20Out%20Data%20Parallel%20Applications%20with%20%20CXL-Ethernet%20Hybrid%20Interconnects/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//static.cloudflareinsights.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script defer="defer" data-pjax="data-pjax" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="{&quot;token&quot;: &quot;60e2c80ac4524b11b7168fad4fb0548b&quot;}"></script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: 'days',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-02-20 15:12:55'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 8 || hour >= 22
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="might's room" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">69</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">32</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png')"><nav id="nav"><span id="blog-info"><a href="/" title="might's room"><span class="site-name">might's room</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2024-09-21T06:44:05.000Z" title="Created 2024-09-21 14:44:05">2024-09-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-02-20T07:12:55.207Z" title="Updated 2025-02-20 15:12:55">2025-02-20</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">Word Count:</span><span class="word-count">6.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">Reading Time:</span><span>19mins</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p hidden>
+START
+Basic
+</p>
+TL;DR：结合CXL和以太网，实现两层互联架构，解决数据密集型应用的通信困难
+## 1 Introduction
+cxl互联可以很好的解决分布式数据密集型应用中的通信问题
+> 在当今的生产云中运行的数据密集型应用程序，例如图形处理[47]、数据分析[17]和深度神经网络（DNN）训练[44]通常使用批量同步并行（BSP）[65]或MapReduce来运行范式，这需要两个关键阶段的迭代执行：跨多个计算单元的数据计算（例如，DNN 训练中的前向和后向传播），以及这些单元之间的通信（例如，MapReduce 中的数据混洗）。此类应用程序是计算密集型的并且非常耗时。例如，在单个 TPU 上训练 BERT 模型需要超过 1.5 个月的时间
+
+<p>由于CXL互联的长度限制，通常在只在机架内部，机架之间通过以太网连接。<br>然而，跨越多个主机或机架超出互连的到达极限，其通信效率不可避免地受到主机之间缓慢的网络链接的阻碍。</p>
+<p>解决这一差距的直观方法是构建一个聚合容量大于互连容量的 NIC 池，旨在实现超出互连范围限制的高效通信。然而，由于带宽差异巨大，为每个节点的本地互连构建单独的池成本高昂。例如，为了匹配 CXL 3.0 链路的带宽，每个主机需要安装十个以上 200 Gbps NIC。相反，我们建议在更大规模（即机架级别）上使用快速互连来连接主机和计算节点，因此可以利用主机中足够数量的现有 NIC 来形成用于跨机架通信的 NIC 池。<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240921153505.png" alt="image.png"></p>
+<p>我们提出了 DFabric，一种两层互连架构。机架内CXL互联，机架间网络。<br>然而新问题是，内存带宽成为瓶颈，小于NIC带宽，当通过NIC进行DMA，内存带宽成为限制因素。解决办法是用CXL将所有的本地内存和附加内存分解为远程内存，并将他们映射到同一个地址空间中，构建一个可由任何设备连贯访问的共享内存池。因此，从 NIC 池接收的网络流量可以写入多个内存设备，聚合内存带宽大于 NIC 池的容量。同样，当通过池发送流量时，NIC 池使用 DMA 从多个内存设备读取数据。通过与共享内存池对网卡池进行补充，DFabric最大限度地缩短了跨机架通信周期，计算节点可以通过加载&#x2F;存储指令（CXL.mem）直接访问内存池，而无需将数据移动到本地，从而释放硬件计算吞吐量</p>
+<p>此外，无可否认，实现 DFabric 还存在其他几个关键挑战，例如，CXL.mem 加载&#x2F;存储是同步的，基于缓存行的指令与 DMA 相比，访问大内存区域的效率较低，如何高效的使用pass by reference；给定的应用使用socket编程等等。</p>
+<p>我们在设计中解决了这些挑战，并实现了一个全功能的 DFabric 原型，该原型具有四个定制的 MPSoC FPGA 和一个通过光纤连接的 X86 服务器，而不是在之前的工作中使用模拟器和 NUMA 节点 </p>
+<p>我们运行了微基准测试和真实的数据密集型应用程序，例如 DNN 训练、图形处理，结果表明，与使用传统的基于 ToR 的机架运行相比，DFabric 减少了 30.6% 的几何平均通信时间。 DFabric 运行 Redis 时的 p99 尾延迟也降低了 40.5%。</p>
+<h2 id="2-Background-and-Motivations"><a href="#2-Background-and-Motivations" class="headerlink" title="2 Background and Motivations"></a>2 Background and Motivations</h2><h3 id="challenges"><a href="#challenges" class="headerlink" title="challenges"></a>challenges</h3><ol>
+<li>内存带宽相比NIC带宽成为瓶颈：用CXL池化所有内存资源，聚合带宽</li>
+<li>远端内存访问延迟高：引入DRAM缓存，利用缓存来隐藏延迟</li>
+<li>兼容性问题：大多数数据密集型应用使用套接字编程模型开发，为了改成引用传递语义，引入一个内核模块，可以将套接字系统调用转为.mem系统调用</li>
+<li>网课池带宽共享：跨机架流量利用所有可用的 NIC 遍历多个路径。这增加了数据包无序到达的风险，可能会破坏 TCP 的有序语义。为了解决 C4 问题，DFabric 依靠内存池来缓冲无序到达，并让主机操作系统使用多路径 TCP (MPTCP) 对数据包进行排序</li>
+</ol>
+<h2 id="3-DFabric-Overview"><a href="#3-DFabric-Overview" class="headerlink" title="3 DFabric Overview"></a>3 DFabric Overview</h2><h3 id="architecture"><a href="#architecture" class="headerlink" title="architecture"></a>architecture</h3><p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240921150902.png" alt="image.png"><br>传统的host简化成CN，配备本地内存，部分本地内存被分解，与附加的远端内存一起构成逻辑共享内存，剩余的本地存储器被指定为CN的私有存储器。该内存池集成到统一的虚拟地址空间中。可通过 CXL.mem 和 CXL.io 协议实现一致的访问(只是type3)，</p>
+<p>网卡池可以容纳多种网卡类型，进一步增强了系统的灵活性，LPPU是一个特殊的CN，专用于一些簿记任务，例如枚举、注册和管理 NIC。<br>NIC 池作为单个“大”逻辑 NIC 集成到地址空间中来虚拟化 NIC 池，这将池暴露给所有 CN，并支持跨机架流量的基于数据包的调度，从而优化流量分布和带宽分配。所有资源节点，包括 CN、远程存储设备。<br>CN通过Fabric中的CXL交换访问远程资源设备，形成逻辑交换节点logical switch node（SN）。</p>
+<h3 id="workflow"><a href="#workflow" class="headerlink" title="workflow"></a>workflow</h3><p>尽管底层数据结构（无锁环形缓冲区）并不新鲜，并且在[21,62,75]之前就已经使用过，但我们的抽象使用相同的 Socket 编程模型统一了机架间和机架内通信。<br>对于机架内通信，CN 通过引用传递语义进行通信，该语义使用 CXL.mem 加载&#x2F;存储来传递引用而不移动数据（第 4.3 节）<br>对于机架间通信，NIC 池 DMA 事务分为两部分（第 4.4 节）。每个 CN 在其本地内存中分配多个虚拟 TX&#x2F;RX 队列对。在发送机架上，CN 将数据包描述符写入其本地内存中的虚拟 TX 队列。对于每个 CN，端口处都有一个特定的 ASIC 来轮询这些队列中的描述符。当读取到有效描述符时，ASIC将描述符写入NIC的工作队列。以上所有读取和写入均使用 CXL.mem 加载和存储指令。 NIC 和虚拟 TX&#x2F;RX 队列之间的映射由 LPPU 确定。 LPPU 还负责 NIC 调度（第 4.2 节）和内存池分配（第 4.1 节）。<br>在接收机架处，接收缓冲区从内存池中分配，总内存带宽大于网卡池容量。因此，数据包可以以 NIC 池的全速 DMA 到内存池。有一个专用的 ASIC 来轮询 NIC 池的所有完成队列。对于每个就绪描述符，ASIC根据描述符的目的IP将描述符写入CN对应的虚拟RX队列，然后中断CN。</p>
+<h2 id="4-Design-Details"><a href="#4-Design-Details" class="headerlink" title="4 Design Details"></a>4 Design Details</h2><h3 id="4-1-Memory-Pool"><a href="#4-1-Memory-Pool" class="headerlink" title="4.1 Memory Pool"></a>4.1 Memory Pool</h3><p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240921152701.png" alt="image.png"></p>
+<h4 id="organization"><a href="#organization" class="headerlink" title="organization"></a>organization</h4><p> LPPU 将共享内存池组织为一系列粗粒度的部分，每个部分的大小等于大页 (2 MB) 的大小。 LPPU还将N个连续的Section分组到一个区域中，其中N是可配置的，在我们的例子中N&#x3D;512。将Section分配给CN后，Section可以进一步被CN划分为Buffer，缓冲区大小根据运行应用程序的需求设置（API如表2所示），例如具有1 KB Buffer的Section。</p>
+<h4 id="Bootstrap"><a href="#Bootstrap" class="headerlink" title="Bootstrap"></a>Bootstrap</h4><p>LPPU 枚举 CXL Fabric 附加的远程内存设备和 CN 在内存池中的本地内存，并构建将 FAS 映射到内存物理地址的映射表。然后，每个 CN 枚举 FAS 和私有内存，以便它可以使用 CXL.mem 访问池。注意CN的私有内存有不同的地址空间，用于内核，缓存程序代码和热数据。我们进一步使用私有内存来实现 DRAM 缓存，用于向 CN 隐藏内存池的非均匀延迟</p>
+<h4 id="Memory-allocation"><a href="#Memory-allocation" class="headerlink" title="Memory allocation"></a>Memory allocation</h4><p>每个CN上运行的守护进程负责提前分配Sections并管理它们。 LPPU更新从相应FAS到CN映射表中Section物理地址的映射。与Linux伙伴子系统类似，守护进程应用多个Section，每个Section具有不同的缓冲区大小、最小内存管理单元，例如具有2KB缓冲区的Section。<br>在 CN 中运行的应用程序在调用 alloc_shared_buffer 时将咨询守护进程以获取用户级内存分配。具体来说，守护进程将执行以下步骤：1）它根据应用程序语义选择具有所需缓冲区大小的Sections，2）它根据Sections的物理位置选择Sections。这是因为，从 CN 的角度来看，内存池的访问延迟曲线根据内存的物理位置而不同。例如，我们更喜欢本地部分来存储虚拟队列以最小化访问延迟。</p>
+<h3 id="4-2-NIC-Pool"><a href="#4-2-NIC-Pool" class="headerlink" title="4.2 NIC Pool"></a>4.2 NIC Pool</h3><p>DFabric 将 NIC 与主机解耦，形成 NIC 池，并通过 CXL 结构将它们互连。 CXL 结构为 CN 提供单一 NIC 抽象。 LPPU负责NIC池的控制平面，包括配置NIC和NIC调度。为了高效、灵活地调度NIC池容量，LPPU以数据包为基础基于他们的工作状态进行NIC调度，例如 NIC 的工作队列深度。<br>NIC 池及其元数据如图 5 所示。元数据用于机架内和机架间通信。 LPPU 通过存储在内存池中的一组虚拟队列 (virt_queue) 将 NIC 池抽象为每个 CN 的单个 NIC。 virt_queue 包括 RX 队列（RxQ）和 TX 队列（TxQ）。 LPPU 在其私有内存中维护每个 NIC 的工作队列（physical_queue），并将它们用于 NIC 调度（参见第 4.3 节）。 CN 和 LPPU 分别负责在 bootstrap 启动 virt_queues 和 phy_queues<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240921152806.png" alt="image.png"></p>
+<h3 id="4-3-Intra-rack-Communication"><a href="#4-3-Intra-rack-Communication" class="headerlink" title="4.3 Intra-rack Communication"></a>4.3 Intra-rack Communication</h3><p>机架内使用传引用语义通信，无需移动数据，为了识别引用的目的地，每个 CN 都有一个唯一的 ID（例如 IP）。通信语义是将共享内存中数据的寻址引用从 CN I Dsrc 转移到 CN I Ddst ，以便 CN I Ddst 可以加载&#x2F;存储它。<br>DFabric 将事务描述符存储到 virt_queue 中，其中每个条目包含事务的 I Ddst 和 I Dsrc 、引用以及它引用的数据的长度。<br>机架内通信分为以下几个阶段</p>
+<ol>
+<li>数据准备：源地址直接读写数据①</li>
+<li>TxQ：源CN将缓冲区的描述符存储到TxQ的头条目，TxQ是环形缓冲区，srcCN轮询TxQ，通过检查TxQ的尾部来获取新的描述符②</li>
+<li>ASIC检查目的地是NIC还是另一个CN，前者通信实例化（见4.4），后者直接将缓存区的描述符存储到目的CN的RxQ头条目中，写入到中断寄存器。③</li>
+<li>RxQ：目的运行时加载 RxQ 的尾部条目，并通知应用程序数据引用➃</li>
+<li>释放缓冲区，一旦应用程序或运行时不再使用 Buffer，它就会将 Buffer 的地址释放给守护进程。如果有足够的Buffer，守护进程会进一步释放Buffer给LPPU。</li>
+</ol>
+<p>提出的按引用传递机制可实现零数据复制，并使用套接字编程模型与应用程序透明地协作（参见第 4.5 节）。我们还可以类似地将引用传递机制应用于 DPDK [20] 和 RDMA 动词。</p>
+<h3 id="4-4-Inter-rack-communication"><a href="#4-4-Inter-rack-communication" class="headerlink" title="4.4 Inter-rack communication"></a>4.4 Inter-rack communication</h3><p>尽管 NIC 池允许 CN 利用多个 NIC 来实现更高的吞吐量。我们面临两个挑战。 1）由于每个网卡的physical_queue的工作状态及其背后的路径条件随着时间的推移而变化，因此设计灵活高效的网卡调度策略非常重要，该策略可以在更细的粒度（例如基于数据包的基础）上运行，同时充分利用网卡池的容量。 2) 当使用多个网卡调度一个流时，由于路径延迟可能不同，因此很难确保数据包按顺序到达。如果底层传输强制按顺序到达，例如 TCP，则无序到达将触发拥塞控制，从而不必要地降低发送吞吐量。因此，对于 NIC 调度策略来说，尽量减少无序到达也很重要。</p>
+<p>DFabric 的 NIC 调度。 CN 将每个流均等地划分为子流，并将每个子流映射到 TxQ&#x2F;RxQ 对。 LPPU 根据 NIC 的利用率（例如 NIC 的物理队列深度）将 TxQ 多对一映射到 NIC（例如通过网络适配器管理工具 NEO-Host [52] 使用 NVIDIA RNIC 的硬件计数器）。请注意，我们假设核心网络中不存在下行链路，并且每个子流在穿过网络核心时都通过 ECMP 映射到固定路径。因此，只有当 CN 能够生成足够数量的子流，同时确保子流内按顺序到达目的地时，DFabric 才能充分利用 NIC 池。为此，我们在发送 CN 的操作系统中利用类似 MPTCP 的间接性，它可以打开足够数量的 TCP 子流，同时在接收 CN 处将 TCP 子流重新排序为有序数据流 [25]。<br>对于机架间通信，我们假设每个网卡都有三个physical_queues； TX_phq、RX_phq 和completion_phq，如图 5 所示。</p>
+<p><strong>数据包传输</strong>。 I Dsrc 的 ASIC 轮询内存池中的所有 TxQ。对于每个 TxQ，LPPU 已调度 NIC 来发送 TxQ 中的条目引用的缓冲区。 ASIC 将 DMA 描述符存储在该 NIC 的 TX_phq ➄ 中。然后通知 NIC 的 DMA 引擎从引用的缓冲区收集数据并执行网络打包。<br><strong>数据包接收</strong>。 LPPU预先在内存池中分配多个Buffer作为pool的接收缓冲区。 NIC 的接收缓冲区应具有比 NIC 池的吞吐量足够的内存带宽。 LPPU 还预先用引用接收缓冲区的 DMA 描述符填充每个 NIC 的 RX_phq。对于每个数据包的到达，NIC 的 DMA 引擎直接将有效负载写入有效队列中 DMA 描述符指定的缓冲区。一旦 DMA 引擎完成 DMA 操作➅，完成通知就会存储在 NIC 的completion_phq 中。专用 ASIC 负责轮询这些completion_phq并通知 CN 数据到达，方法是根据数据包的 IP 存储 CN 的中断寄存器，并使用 CXL 存储 ➂ 将缓冲区的引用存储在 RxQ 中。最终，CN 可以在计算期间加载&#x2F;存储缓冲区</p>
+<h3 id="4-5-Software-Runtime"><a href="#4-5-Software-Runtime" class="headerlink" title="4.5 Software Runtime"></a>4.5 Software Runtime</h3><p>为了使应用程序能够透明地享受按引用传递语义，DFabric 提供了一组用于 TCP&#x2F;IP 堆栈的 API，以及堆栈下方的驱动程序来协调机架内通信。<br>。。。。。。</p>
+<h3 id="4-6-CXL-attached-DRAM-Cache"><a href="#4-6-CXL-attached-DRAM-Cache" class="headerlink" title="4.6 CXL-attached DRAM Cache."></a>4.6 CXL-attached DRAM Cache.</h3><p>CXL 加载&#x2F;存储是同步且细粒度的内存访问，这限制了访问远程内存设备中分配的缓冲区的吞吐量，这在内存访问模式上表现出局部性。例如，将连续数据从内核复制到用户模式可能会表现出高空间局部性。由于 CXL 和 CPU 结构 (MSHR) 限制了加载&#x2F;存储指令的最大未完成数量，因此通过缓存或迁移减少内存延迟是提高带宽的唯一方法。</p>
+<p>最近的工作 [8,26,77] 验证了附加 CXL 的加速器可以在缓存行粒度上跟踪内存访问，并且我们可以在不修改整个机箱的情况下升级或替换它们。与缓存相比，页迁移[41,48,70]需要运行时识别热点页，将它们迁移到本地内存，并更新页表。我们设计在所有 CN 的一个 CXL 端口中安装 DRAM 缓存卡。</p>
+<p>通过分析TCP&#x2F;IP协议栈，我们总结了指导DRAM缓存设计的三个关键点。 1) 访问标头和有效负载之间的可变时间间隔。运行时分别在中断的下半部分和 recv 系统调用期间处理数据包标头和数据。因此，两者之间会有一个时间间隔，在此期间可以将数据逐出缓存。 2) 显式调用缓冲区释放函数。由于运行时显式调用缓冲区管理 API，因此一旦调用缓冲区释放函数（即 kfree_shared_skb），就会将缓冲区从缓存中刷新出来。 3) 可变数据包粒度。数据包大小可能是几个缓存行，例如 TCP SYN 和 ACK。粗粒度的缓存数据会导致缓存利用率低，延迟时间长，因此缓存前需要对数据包进行过滤。<br>图 6 所示，我们使用多路 DRAM 缓存来解决可变间隔期间冲突导致的潜在驱逐问题。元数据（Tags）单独存储在片内存储器中，这样一次读取即可获得整组元数据。 DRAM缓存的使用可以总结如下。 ➀ 驱动程序配置一个区域的FAS——连续数量的Section，其Buffer将被缓存在DRAM缓存中，以及缓存粒度，即Buffer大小。首次访问 Region➁ 中的 Buffer 时，会触发未命中，并通过 CXL.io ➂ 从内存池中获取 Buffer。然后，DRAM 缓存填充有效的元数据并逐出受害者缓冲区。以下对 Buffer➁ 的访问将命中本地 DRAM 缓存。当运行时决定释放缓冲区时，将显式调用 kfree_shared_skb 并刷新 DRAM 缓存。<br>目前，DFabric 使用 DRAM 缓存来提高加载&#x2F;存储大内存段的吞吐量。然而，缓存设计是通用的并且独立于运行时，因此应用程序可以通过配置其区域的FAS来透明地使用DRAM缓存。<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240921160212.png" alt="image.png"></p>
+<h3 id="4-7-ASIC-Architecture"><a href="#4-7-ASIC-Architecture" class="headerlink" title="4.7 ASIC Architecture"></a>4.7 ASIC Architecture</h3><p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240921160302.png" alt="image.png"></p>
+<h2 id="5-Implementation"><a href="#5-Implementation" class="headerlink" title="5 Implementation"></a>5 Implementation</h2><p>考虑到没有支持 CXL 3.0 的商业产品，我们实现了一个概念验证双机架系统原型，如图 8 所示。我们使用该原型来模拟双 DFabric 架构以及基于双 ToR 的机架架构作为基线。在一个机架中，有两个定制的 MPSoC FPGA [73] 作为 CN。每个FPGA都有一个四核ARM CPU、两个内存通道和四个光纤端口。 MPSoC 通过 HP&#x2F;HPC 端口将 CPU 内存总线导出到 FPGA 逻辑，可用于实现类似 CXL 的加载&#x2F;存储。我们将两个 FPGA 连接到安装在 x86 服务器上的双端口 Intel 82599 NIC [30]。我们使用该 x86 服务器来模拟 DFabric 的两个 SN，以及用于基准系统的两个 ToR 交换机。我们使用在 x86 服务器中运行的基于 DPDK 的网络模拟器 [20] 来模拟 NIC 池和机架间通信。</p>
+<p>在 CXL 3.0 中模拟 CXL 结构的关键是外部化加载和存储。这允许应用程序透明地访问内存池内的远程内存设备，从而实现遗留应用程序的无缝执行。为此，我们利用 DoCE [10]，一个硬件协议栈作为我们类似 CXL 的协议层的基础。 DoCE 直接将所有 ARM AMBA AXI 片上互连信号封装在以太网框架内，这些信号可以通过标准以太网基础设施传送。我们没有使用 DoCE 将 AXI 信号打包到以太网数据包中，而是使用类似 CXL 的协议层增强了 DoCE，并将它们实现为 MPSoC FPGA 中的硬件模块（即 CXL-DoCE），它将 AXI 信号转换为相关的 CXL 事务，例如如 MemRd、MemWr、Cmp 和 MemData。如图 8(a) 所示，任何从 CPU 访问远程内存的内存事务都将通过硬件，硬件将其转换为具有类似 CXL 事务的以太网数据包，并通过光纤端口发送。同样，从端口接收到的任何以太网数据包都将通过该模块，如果该数据包包含类似 CXL 的事务，该模块会将其转换为 AXI 信号以访问本地内存。请注意，以太网数据包可以封装不限于类似 CXL 的事务，只要模块可以识别它们即可，例如，如果以太网数据包携带中断事务，则模块可以中断 ARM CPU。<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240921160442.png" alt="image.png"><br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240921160617.png" alt="image.png"></p>
+<p>优点。与之前利用 NUMA 节点模拟类似 CXL 的加载&#x2F;存储的工作相比，即对远程套接字内存的加载&#x2F;存储模拟为 CXL，我们的平台可以调整加载和存储的延迟并转发 CXL-就像通过以太网跨多个设备进行事务来模拟 CXL 结构一样，而不是受到两节点（套接字）场景的限制 [41,48,56]。与在模拟器中实现 DFabric 相比，我们的原型可以在合理的时间内运行真实的应用程序。例如，全系统模式 Gem5 比真实系统慢数千倍[45]，这使得它无法模拟完整的应用程序执行。</p>
+<h2 id="6-Evaluations"><a href="#6-Evaluations" class="headerlink" title="6 Evaluations"></a>6 Evaluations</h2><p>我们将两个原型的 MTU 设置为 4 KB，4KB 缓冲区属于 DRAM 缓存可缓存的区域。表 3 总结了实验中使用的配置参数值。<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240921160646.png" alt="image.png"></p>
+<h3 id="6-2-Real-Application-Workloads"><a href="#6-2-Real-Application-Workloads" class="headerlink" title="6.2 Real Application Workloads"></a>6.2 Real Application Workloads</h3><ul>
+<li>MapReduce </li>
+<li>GeminiGraph </li>
+<li>PyTorch Distributed Data Parallel (DDP)</li>
+<li>Redis<br>**Graph Processing.**：pagerank和BFS，数据为 LiveJournal 在线社交网络<br>DFabric 在最坏情况下（B &#x3D; C 8 ）平均可以减少 59.5% 的通信时间，在所有情况下可以减少 32.1% 的通信时间。每个 CN 将异步完成其顶点的迭代，以便 CN 在同步阶段可以独占使用 NIC 池。由于将数据包保存到内存池可以缓解 incast 等问题，因此 M 点（具有 C 4 的 NIC 池）的 DFabric 性能优于 N 点（具有 C 4 的 2 个 NIC）的基线。我们在图 9(f) 中展示了一次 PageRank 运行期间采样的通信吞吐量。与超级步数相同，存在 12 个带宽峰值，DFabric 与 Baseline 相比大大减少了通信时间。<br><strong>Neural Networks</strong>：residual neural network ResNet18 [29] using the CIFAR-10 dataset<br>CXL 的高吞吐量和缓解 incast 问题的内存池导致通信时间平均减少 34.7%。<br>**WordCount.**：<br>我们通过配置一个 CN 来执行归约任务并配置其他三个 CN 来运行映射任务来运行 MapReduce WordCount<br>DFabric 将通信时间平均减少了 31.1%<br><strong>Redis Cluster</strong>:我们在一个 CN 上作为客户端运行 Memtier_benchmark [55]，并组织其他三个 CN 形成一个 Redis 集群。客户端根据键值对的分布向不同的服务器发送Get&#x2F;Set请求。我们监控请求的平均延迟和 p99 延迟，因为 incast 问题会导致丢包，从而延长尾部延迟。在 DFabric 中，机架内的数据包丢失为零，因为传递的是引用而不是值，并且内存池将及时存储机架间数据包。如图 9(e) 所示，与 Baseline 相比，DFabric 将 p99 和平均延迟分别平均降低了 40.5% 和 22.8%。然而，当不存在网络瓶颈（B &#x3D; C）时，由于内存池访问延迟较长，DFabric 会呈现较高的 p99 延迟。</li>
+</ul>
+<h2 id="7-Discussion"><a href="#7-Discussion" class="headerlink" title="7 Discussion"></a>7 Discussion</h2><p>在 SN 中分离数据和控制平面是将任务分配给适当的计算资源的常见优化[28]。 DFabric将控制平面分配给LPPU，该控制平面不常被调用，复杂，充满控制路径，难以加速。 DFabric 将数据平面留给专用 ASIC，从而提供高数据处理吞吐量。然而，对于轮询任务，多核CPU或smartNIC可能有足够的能力[12]。例如，我们可以绑定一个核心来轮询一个CN或NIC</p>
+<p>在 DFabric 中，子流根据其物理队列深度映射到一个 NIC。但还应考虑核心网的拥塞、跳数等因素。商业数据中心的拓扑需要模拟各种拥塞情况。我们假设本文中没有拥塞和一跳，并将其留待将来的工作</p>
+<h2 id="9-Conclusion"><a href="#9-Conclusion" class="headerlink" title="9 Conclusion"></a>9 Conclusion</h2><p>我们提出了一种新颖的互连架构 DFabric，它通过 NIC 池弥合互连和网络之间的带宽差距，并通过共享内存池和 DRAM 缓存等多种新颖设计优化其效率。我们构建了一个双机架原型并通过微基准测试和实际实验验证其性能</p>
+<p hidden>
+Back: you have read it !
+Tags: cxl
+END
+</p></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://mightcoder.com">might</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://mightcoder.com/2024/09/21/DFabric%EF%BC%9A%20Scaling%20Out%20Data%20Parallel%20Applications%20with%20%20CXL-Ethernet%20Hybrid%20Interconnects/">https://mightcoder.com/2024/09/21/DFabric%EF%BC%9A%20Scaling%20Out%20Data%20Parallel%20Applications%20with%20%20CXL-Ethernet%20Hybrid%20Interconnects/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/cxl/">cxl</a></div><div class="post_share"><div class="social-share" data-image="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>请作者喝杯咖啡</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/10/01/cloudlab%E5%A4%9A%E8%8A%82%E7%82%B9%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" title="cloudlab多节点环境配置"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220150722.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">cloudlab多节点环境配置</div></div></a></div><div class="next-post pull-right"><a href="/2024/09/09/A%20Quantitative%20Analysis%20and%20Guidelines%20of%20Data%20Streaming%20Accelerator%20in%20Modern%20Intel%C2%AE%20Xeon%C2%AE%20Scalable%20Processors/" title="A Quantitative Analysis and Guidelines of Data Streaming Accelerator in Modern Intel® Xeon® Scalable Processors"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">A Quantitative Analysis and Guidelines of Data Streaming Accelerator in Modern Intel® Xeon® Scalable Processors</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2023/11/08/CXL%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87%E8%B0%83%E7%A0%942023.11.8/" title="论文研究方向"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-11-08</div><div class="title">论文研究方向</div></div></a></div><div><a href="/2024/03/20/DDC%EF%BC%9AA%20Vision%20for%20a%20Disaggregated%20Datacenter/" title="DDC：A Vision for a Disaggregated Datacenter"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-20</div><div class="title">DDC：A Vision for a Disaggregated Datacenter</div></div></a></div><div><a href="/2023/09/18/An%20Introduction%20to%20the%20Compute%20Express%20LinkTM%20(CXLTM)%20Interconnect/" title="An Introduction to the Compute Express LinkTM (CXLTM) Interconnect"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-09-18</div><div class="title">An Introduction to the Compute Express LinkTM (CXLTM) Interconnect</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> Comment</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">might</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">69</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">32</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/shenghansen"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/shenghansen" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:shenghs@mail2.sysu.edu.cn" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="/./atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #f36d6d;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">Hope you can find something useful here ᐕ)⁾⁾ .</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Background-and-Motivations"><span class="toc-number">1.</span> <span class="toc-text">2 Background and Motivations</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#challenges"><span class="toc-number">1.1.</span> <span class="toc-text">challenges</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-DFabric-Overview"><span class="toc-number">2.</span> <span class="toc-text">3 DFabric Overview</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#architecture"><span class="toc-number">2.1.</span> <span class="toc-text">architecture</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#workflow"><span class="toc-number">2.2.</span> <span class="toc-text">workflow</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Design-Details"><span class="toc-number">3.</span> <span class="toc-text">4 Design Details</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-Memory-Pool"><span class="toc-number">3.1.</span> <span class="toc-text">4.1 Memory Pool</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#organization"><span class="toc-number">3.1.1.</span> <span class="toc-text">organization</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Bootstrap"><span class="toc-number">3.1.2.</span> <span class="toc-text">Bootstrap</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Memory-allocation"><span class="toc-number">3.1.3.</span> <span class="toc-text">Memory allocation</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-NIC-Pool"><span class="toc-number">3.2.</span> <span class="toc-text">4.2 NIC Pool</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-Intra-rack-Communication"><span class="toc-number">3.3.</span> <span class="toc-text">4.3 Intra-rack Communication</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-Inter-rack-communication"><span class="toc-number">3.4.</span> <span class="toc-text">4.4 Inter-rack communication</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-5-Software-Runtime"><span class="toc-number">3.5.</span> <span class="toc-text">4.5 Software Runtime</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-6-CXL-attached-DRAM-Cache"><span class="toc-number">3.6.</span> <span class="toc-text">4.6 CXL-attached DRAM Cache.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-7-ASIC-Architecture"><span class="toc-number">3.7.</span> <span class="toc-text">4.7 ASIC Architecture</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-Implementation"><span class="toc-number">4.</span> <span class="toc-text">5 Implementation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-Evaluations"><span class="toc-number">5.</span> <span class="toc-text">6 Evaluations</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-Real-Application-Workloads"><span class="toc-number">5.1.</span> <span class="toc-text">6.2 Real Application Workloads</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-Discussion"><span class="toc-number">6.</span> <span class="toc-text">7 Discussion</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-Conclusion"><span class="toc-number">7.</span> <span class="toc-text">9 Conclusion</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/11/25/cpp%E5%8D%8F%E7%A8%8B/" title="1.协程简介">1.协程简介</a><time datetime="2024-11-25T08:23:29.000Z" title="Created 2024-11-25 16:23:29">2024-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/11/13/SHMEMGraph%EF%BC%9A%20Efficient%20and%20Balanced%20Graph%20%20Processing%20Using%20One-sided%20Communication/" title="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151617.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication"/></a><div class="content"><a class="title" href="/2024/11/13/SHMEMGraph%EF%BC%9A%20Efficient%20and%20Balanced%20Graph%20%20Processing%20Using%20One-sided%20Communication/" title="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication">SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication</a><time datetime="2024-11-13T07:34:44.000Z" title="Created 2024-11-13 15:34:44">2024-11-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/11/11/RGraph%EF%BC%9AAsynchronous%20graph%20processing%20based%20on%20%20asymmetry%20of%20remote%20direct%20memory%20access/" title="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151617.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access"/></a><div class="content"><a class="title" href="/2024/11/11/RGraph%EF%BC%9AAsynchronous%20graph%20processing%20based%20on%20%20asymmetry%20of%20remote%20direct%20memory%20access/" title="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access">RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access</a><time datetime="2024-11-11T08:17:26.000Z" title="Created 2024-11-11 16:17:26">2024-11-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/10/01/cloudlab%E5%A4%9A%E8%8A%82%E7%82%B9%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" title="cloudlab多节点环境配置"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220150722.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="cloudlab多节点环境配置"/></a><div class="content"><a class="title" href="/2024/10/01/cloudlab%E5%A4%9A%E8%8A%82%E7%82%B9%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" title="cloudlab多节点环境配置">cloudlab多节点环境配置</a><time datetime="2024-10-01T03:23:12.000Z" title="Created 2024-10-01 11:23:12">2024-10-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/09/21/DFabric%EF%BC%9A%20Scaling%20Out%20Data%20Parallel%20Applications%20with%20%20CXL-Ethernet%20Hybrid%20Interconnects/" title="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects"/></a><div class="content"><a class="title" href="/2024/09/21/DFabric%EF%BC%9A%20Scaling%20Out%20Data%20Parallel%20Applications%20with%20%20CXL-Ethernet%20Hybrid%20Interconnects/" title="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects">DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects</a><time datetime="2024-09-21T06:44:05.000Z" title="Created 2024-09-21 14:44:05">2024-09-21</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By might</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">hope you can find something useful here ᐕ)⁾⁾ .</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="Scroll To Comments"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const initValine = () => {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'VBvzA6UUhphh1Tc1BtzWXzye-gzGzoHsz',
+      appKey: 'J0UlGcCok0khsrORkwxD1HwF',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  const loadValine = async () => {
+    if (typeof Valine === 'function') initValine()
+    else {
+      await getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js')
+      initValine()
+    }
+  }
+
+  if ('Valine' === 'Valine' || !false) {
+    if (false) btf.loadComment(document.getElementById('vcomment'),loadValine)
+    else setTimeout(loadValine, 0)
+  } else {
+    window.loadOtherComment = loadValine
+  }
+})()</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

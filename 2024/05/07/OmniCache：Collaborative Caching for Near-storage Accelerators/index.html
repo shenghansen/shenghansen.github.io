@@ -1,0 +1,287 @@
+<!DOCTYPE html><html lang="zh-cn" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>OmniCache: Collaborative Caching for Near-storage Accelerators | might's room</title><meta name="author" content="might"><meta name="copyright" content="might"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="START Basic  # OmniCache: Collaborative Caching for Near-storage Accelerators TL;利用neardata cache 和主机设备cache的协作来加速IO（文件系统）和数据处理 ## 1 introduction 数据量激增，高性能数据处理需求，传统CPU面临性能和能耗瓶颈，引入近存储数据处理设备，减少数据移动和相关开">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OmniCache: Collaborative Caching for Near-storage Accelerators">
+<meta property="og:url" content="https://mightcoder.com/2024/05/07/OmniCache%EF%BC%9ACollaborative%20Caching%20for%20Near-storage%20Accelerators/index.html">
+<meta property="og:site_name" content="might&#39;s room">
+<meta property="og:description" content="START Basic  # OmniCache: Collaborative Caching for Near-storage Accelerators TL;利用neardata cache 和主机设备cache的协作来加速IO（文件系统）和数据处理 ## 1 introduction 数据量激增，高性能数据处理需求，传统CPU面临性能和能耗瓶颈，引入近存储数据处理设备，减少数据移动和相关开">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png">
+<meta property="article:published_time" content="2024-05-07T02:18:57.000Z">
+<meta property="article:modified_time" content="2025-02-20T07:13:17.970Z">
+<meta property="article:author" content="might">
+<meta property="article:tag" content="cxl">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png"><link rel="shortcut icon" href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg"><link rel="canonical" href="https://mightcoder.com/2024/05/07/OmniCache%EF%BC%9ACollaborative%20Caching%20for%20Near-storage%20Accelerators/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//static.cloudflareinsights.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script defer="defer" data-pjax="data-pjax" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="{&quot;token&quot;: &quot;60e2c80ac4524b11b7168fad4fb0548b&quot;}"></script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: 'days',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'OmniCache: Collaborative Caching for Near-storage Accelerators',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-02-20 15:13:17'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 8 || hour >= 22
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="might's room" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">69</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">32</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png')"><nav id="nav"><span id="blog-info"><a href="/" title="might's room"><span class="site-name">might's room</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">OmniCache: Collaborative Caching for Near-storage Accelerators</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2024-05-07T02:18:57.000Z" title="Created 2024-05-07 10:18:57">2024-05-07</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-02-20T07:13:17.970Z" title="Updated 2025-02-20 15:13:17">2025-02-20</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">Word Count:</span><span class="word-count">7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">Reading Time:</span><span>23mins</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="OmniCache: Collaborative Caching for Near-storage Accelerators"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p hidden>
+START
+Basic
+</p>
+# OmniCache: Collaborative Caching for Near-storage Accelerators
+TL;利用neardata cache 和主机设备cache的协作来加速IO（文件系统）和数据处理
+## 1 introduction
+数据量激增，高性能数据处理需求，传统CPU面临性能和能耗瓶颈，引入近存储数据处理设备，减少数据移动和相关开销。
+之前sota的方法：using storage as a raw block device [33], developing near-storage key-value stores [13, 17, 24, 34], and creating near-storage file systems
+除此之外还有特定应用的设计。
+
+<p>在近存储加速器上利用内存缓冲区对于减轻较高存储延迟和有限带宽的影响至关重要,带宽高，局部性好，但是容量比DRAM小很多。<br>希望协同利用device和host memory，最大限度地减少存储层和主机层之间的数据移动，从而加速数据处理和常规 I&#x2F;O 操作（read,write）</p>
+<p>对比SOTA：以前的SOTA要么取缺乏any memory caching support，要么无法协作device host memory作为缓存，结果就是缺乏缓存支持或无法利用近存储内存进行 I&#x2F;O 和数据处理会增加主机和设备之间的存储访问和数据移动。<br>先前的设计使用简单的指标来减轻数据处理的负担，（例如，计算能力）而不考虑以存储为中心的指标（例如，数据分布、I&#x2F;O 处理比率、数据移动带宽和排队成本），导致性能不佳</p>
+<p>OmniCache：near-storage accelerators, host CPUs, and their memory (DRAM)的结合，加速IO和数据传输</p>
+<p>提出了一种新颖的原则”near-cache”,它专注于最大化最近缓存上的数据访问，有效地结合主机（例如更高的内存容量和更多的CPU）和设备（更靠近存储）的优势，同时减轻它们的限制。</p>
+<p>horizontal paradigm（横向模式）其中应用程序线程可以同时存储和访问来自主机和设备缓存的数据，从而改善聚合带宽和数据访问延迟。</p>
+<p>贡献</p>
+<ul>
+<li>Near-cache I&#x2F;O：同时利用hostcache 和devicecache，仅将应用程序线程请求的数据大小而不是整个块从存储传输到主机。</li>
+<li>Collaborative Caching for Concurrent I&#x2F;O：分层缓存方法不同，分层缓存方法中，当缓存（例如 HostCache）已满时，线程必须等待缓存逐出完成，OmniCache 的水平范例允许线程更新其他缓存（例如，DevCache），直到逐出为止完成并减少应用程序停顿。为了定位存储在这些缓存或磁盘上的数据，我们引入了一种可扩展的、主机管理的索引机制，称为 OmniIndex。 OmniIndex 利用配备细粒度范围锁的每文件间隔树，使线程能够同时访问主机和设备缓存以获取非冲突块 </li>
+<li>Exploiting CXL.mem Capabilities：除了在基于NVMe的近存储设备上应用Ominicache，也在基于CXL mem的设备上实验</li>
+<li>End-to-end Evaluation：用levelDB、KNN做了测试<blockquote>
+<p> 在计算机科学和信息技术领域中，”端对端评估”（End-to-End Evaluation）是一种评估系统或服务的方法，它关注整个系统的端到端性能和功能，而不仅仅是其中的部分组件或模块。这种评估方法旨在考虑系统在实际使用环境中的行为和性能，从用户的角度来评估系统的整体表现。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="2-Background-and-Motivation"><a href="#2-Background-and-Motivation" class="headerlink" title="2 Background and Motivation"></a>2 Background and Motivation</h2><h3 id="2-1-Background-and-Related-Work"><a href="#2-1-Background-and-Related-Work" class="headerlink" title="2.1 Background and Related Work"></a>2.1 Background and Related Work</h3><h4 id="Hardware-Near-storage-Processing-Trends"><a href="#Hardware-Near-storage-Processing-Trends" class="headerlink" title="Hardware Near-storage Processing Trends"></a>Hardware Near-storage Processing Trends</h4><p>Computational Storage Devices (CSD)计算存储设备，通常配有16GB的RAM和 16 核 Cortex 处理器，它们提供预定义的功能和定制选项，以消除主机和设备之间的数据移动，同时提高性能和灵活性。此外，ScaleFlux [35] 和 Newport [15] 等 CSD 无缝集成了处理器、内存和 SSD 控制。这种集成消除了片外通信，并实现了向设备计算单元的快速数据传输，为探索设备资源的利用提供了新的机会</p>
+<h4 id="Software-Support-for-Near-storage-Acceleration"><a href="#Software-Support-for-Near-storage-Acceleration" class="headerlink" title="Software Support for Near-storage Acceleration"></a>Software Support for Near-storage Acceleration</h4><p>除了硬件支持，还有软件优化<br> INSIDER [33] 等设计使用基于块的接口将计算任务卸载到基于 FPGA 的 CSD。键值接口设计，例如 POLARDB [13]、PINK [17] 和 KEVIN [24] 将数据库特定的计算卸载到近存储。此外，NearPM [37]和SmartRec [39]专注于定制的应用程序级优化或系统级保证<br>与这些系统相比，近存储文件系统设计将文件系统卸载到更靠近存储的位置，同时保持类似 POSIX 的接口。 DevFS [21] 和 CrossFS [31] 等系统采用这种方法，通过卸载元数据结构来提高性能和效率。 FusionFS [9]在这项工作中进行了比较，将文件系统操作与计算步骤结合起来，并结合了设备级任务调度程序以及持久性和可恢复性机制</p>
+<h4 id="Data-Processing-Support"><a href="#Data-Processing-Support" class="headerlink" title="Data Processing Support"></a>Data Processing Support</h4><p>已经探索了各种近存储数据处理系统。 POLARDB [13] 开发了新的应用程序逻辑，通过将数据卸载到基于 FPGA 的键值存储来加速应用程序。 λ-IO [44]利用操作系统文件系统作为统一的IO堆栈来管理主机和设备上的计算和存储资源。它扩展了 eBPF 以在异构硬件上执行功能，并为定制计算逻辑提供额外的编程接口。最后，FusionFS引入了CISCOps抽象，它结合了I&#x2F;O和数据处理操作，以减少与I&#x2F;O操作相关的应用程序更改和开销，例如系统调用、数据移动、通信和其他软件开销</p>
+<h4 id="In-memory-Caching-for-Storage"><a href="#In-memory-Caching-for-Storage" class="headerlink" title="In-memory Caching for Storage"></a>In-memory Caching for Storage</h4><p>在 DRAM 中缓存 I&#x2F;O 数据对于现代 I&#x2F;O 堆栈至关重要，传统的缓存是操作系统级别的页缓存，面临用户态到内核态的开销，许多系统探索用户级缓存支持，但是OmniCache是第一个结合主机设备cache的</p>
+<h3 id="2-2-Limitations-of-State-of-the-art-Systems"><a href="#2-2-Limitations-of-State-of-the-art-Systems" class="headerlink" title="2.2 Limitations of State-of-the-art Systems"></a>2.2 Limitations of State-of-the-art Systems</h3><ul>
+<li>Failure to Exploit Near-storage Memory for Caching：现有的近存储设计要么忽视设备内存，要么没能协同host和device cache</li>
+<li>缺乏并发IO和数据处理的支持</li>
+<li>缺乏动态卸载支持</li>
+</ul>
+<h3 id="2-3-Analysis"><a href="#2-3-Analysis" class="headerlink" title="2.3 Analysis"></a>2.3 Analysis</h3><p>直接展示性能<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240507212631.png" alt="image.png"><br>512 GB DC Optane NVM for storage, 64 CPUs, and 32 GB DRAM，20GB的cache<br>NOVA (a kernel file system) [43], FusionFS (a near-storage file system without caching support)，extended hostonly caching design using OmniCache<br>第一个测试包含两个workload：IO密集的随机写bench，IO+处理密集的KNN<br>由于系统调用和内核软件开销以及缺乏缓存支持，NOVA 表现出较差的性能。由于缺乏缓存，FusionFS 的性能也很差。<br>HostCache-用户级在缓存驱逐期间遭受数据移动和频繁的写入停顿。然而，OmniCache 通过利用协作主机和设备缓存使用显着提高了性能<br>第二，为了强调利用近存储 RAM 来优化未对齐 I&#x2F;O 请求的必要性，表 2 显示了流行的实际应用程序中大量未对齐的 I&#x2F;O 请求比率，包括 RocksDB、MySQL 和 DiskANN[18]。这激发了 OmniCache 的协作 I&#x2F;O 缓存，旨在最大限度地减少与未对齐 I&#x2F;O 请求相关的数据移动开销</p>
+<p>第二个测试针对随机写入工作负载的平均延迟细分，首先OmniIndex的开销很低，其次可以看到OmniCache减少了write stalls，最后由于其高效的近缓存 I&#x2F;O 原理，I&#x2F;O 中的数据移动开销以及未对齐 I&#x2F;O 请求的数据处理减少了</p>
+<h2 id="3-Goals-and-Overview"><a href="#3-Goals-and-Overview" class="headerlink" title="3 Goals and Overview"></a>3 Goals and Overview</h2><p>Omnicache包含三部分<br>(1) a userlevel library (OmniLib), (2) a user-level cache indexing structure (OmniIndex), and (3) a device manager (OmniDev).<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240507214804.png" alt="image.png"></p>
+<p><strong>OmniLib</strong>：用户级组件利用主机级多核 CPU，启用协作缓存并执行数据处理。 OmniLib 执行各种任务，例如调度 I&#x2F;O 请求、管理缓存资源、促进并发 I&#x2F;O 和数据处理操作以及处理数据逐出。</p>
+<p>OmniLib 拦截系统调用并创建每个文件的 I&#x2F;O 队列，将所有 POSIX I&#x2F;O 调用转换为类似 NVMe 的命令并将它们添加到 I&#x2F;O 队列中以供设备 (OmniDev) 处理（如 1 到 3 所示）</p>
+<p> OmniLib 还处理数据处理操作并提供预定义的应用程序接口，这些操作被转换为 NVMe 命令向量并添加到 I&#x2F;O 队列中，以便卸载到设备或在主机上进行处理。<br><strong>For caching</strong>：OmniCache 将职责划分到主机层和设备层。 OmniLib 为 HostCache 和 DevCache 提供索引，使用索引检查数据是否存在，并管理 HostCache。 OmniLib 还通过实施两步 LRU 驱逐来决定何时从 HostCache 和 DevCache 中驱逐<br><strong>For data processing</strong>：OmniLib 实现了模型驱动的卸载引擎，以动态 (B) 决定是否将处理（例如，读取-CRC-写入）卸载到主机 (C) 或设备 (D)。最后，OmniLib 还通过直接将数据和命令复制到 DevCache 并避免排队延迟和数据复制来提供使用 CXL.mem 的可扩展性。<br>**Fine-grained Indexing (OmniIndex)**：OmniLib的一部分，实现高效的数据检索，能够定位到数据在hostcache、devcache还是storage。<br>除此之外还执行文件中块范围的所有权管理和数据驱逐，OmniIndex 是一个每文件的范围树索引结构，每个节点对应于文件的特定范围&#x2F;段，并具有指向 HostCache 或 DevCache 中内存缓冲区的指针，图中蓝色和绿色节点分别表示数据驻留在HostCache和DevCache中，OmniIndex 的细粒度范围锁可跨线程处理并发 I&#x2F;O 和处理请求，确保跨主机和设备的无冲突访问。 OmniIndex 还跟踪脏数据以进行缓存驱逐<br><strong>OmniDev</strong>：近存储组件由文件系统、数据处理引擎和近存储缓存支持组成。OmniDev 的文件系统类似于之前的近存储文件系统，包括内存中和磁盘上的元数据结构以及用于崩溃一致性的日志记录[9]。数据处理引擎处理处理请求，从 I&#x2F;O 队列检索它们，使用处理后的输出更新 NVMe 命令，并设置完成标志。<br>cache功能：一旦cache miss，OmniDev就使用内部的内存分配器分配空间，处理请求，返回cache的内存地址来更新OmniIndex</p>
+<h2 id="4-Design"><a href="#4-Design" class="headerlink" title="4 Design"></a>4 Design</h2><h3 id="4-1-Cache-Architecture"><a href="#4-1-Cache-Architecture" class="headerlink" title="4.1 Cache Architecture"></a>4.1 Cache Architecture</h3><p>我们讨论分布式缓存管理的布局、管理和挑战的基本原理。<br>DevCache 的两个重要设计考虑因素是：(1) 在主机和设备缓存中独占或包含地维护数据，而不增加数据移动和通信开销； (2) 确保只有具有正确权限的应用程序才能访问缓存块，尽管直接 I&#x2F;O 绕过操作系统。<br>关于（1），我们采用独占缓存方法，其中数据块要么存储在HostCache中，要么存储在DevCache中，或者存储在存储中（这会导致缓存未命中）。原因如下</p>
+<ol>
+<li>首先，与包含式缓存不同，独占式缓存避免了跨缓存的重复块，从而增加了缓存覆盖率。</li>
+<li>其次，用于保持一致性的包容性缓存可能会导致主机和设备之间的通信成本较高。</li>
+<li>最后，由于 HostCache（较大）和 DevCache（较小）容量显着不同，独占缓存提供了改变逐出频率的灵活性。<br>关于 (2)，操作系统和 OmniDev 管理权限检查和访问控制，这是我们从先前系统继承的 [9,31,33]。简而言之，对于访问文件的进程，只有当进程具有文件的访问权限并且队列也由操作系统标记有凭据时，操作系统才会创建每个文件的 I&#x2F;O 队列。</li>
+</ol>
+<h3 id="4-2-Collaborative-Caching-for-I-O"><a href="#4-2-Collaborative-Caching-for-I-O" class="headerlink" title="4.2 Collaborative Caching for I&#x2F;O"></a>4.2 Collaborative Caching for I&#x2F;O</h3><h4 id="4-2-1-Scalable-OmniIndex"><a href="#4-2-1-Scalable-OmniIndex" class="headerlink" title="4.2.1 Scalable OmniIndex"></a>4.2.1 Scalable OmniIndex</h4><p>基于范围树的可扩展且高度并发的缓存索引机制。<br><strong>并发无冲突访问</strong>：OmniIndex 中的每个节点范围都配备了读写锁。线程在从缓存访问相应数据、执行 I&#x2F;O 或处理之前获取按范围锁。当数据不在主机和设备缓存中时，在发出 I&#x2F;O 命令之前会获取范围锁。<br><strong>Avoiding Conflicts</strong>：防止主机和设备的冲突：将范围的所有权分配给主机和设备，确保只有一个实体（host or device）可以修改节点范围内的数据并保持数据完整性<br><strong>Memory Overheads of OmniIndex</strong>：很小，1TB数据只需要128MB（&lt;0.001%）每个node156字节</p>
+<h4 id="4-2-2-I-O-Operations-with-OmniCache"><a href="#4-2-2-I-O-Operations-with-OmniCache" class="headerlink" title="4.2.2 I&#x2F;O Operations with OmniCache"></a>4.2.2 I&#x2F;O Operations with OmniCache</h4><p>写：OmniCache 采用近缓存 I&#x2F;O 原理。首先，数据被写入OmniIndex节点的HostCache，然后更新节点的信息，包括更新OmniIndex节点的脏位信息。此外，为了减少 OmniIndex 的深度并启用批量驱逐，写入操作将合并到单个节点中，其最大范围为预配置大小（默认为 2 MB）。然而，缓存页是以块大小的粒度分配的。我们将很快讨论更新 HostCache 和 DevCache 的并发和协作方法。<br>（写回策略，不直接写到storage，而是先写到缓存，提交时才写到存储里）<br>覆写：如何要覆写的块在缓存里，就更新缓存标记为脏，如果cache miss与现有设计不同，OmniCache 避免将整个范围的块从存储器获取到主机。相反，它仅将相关块读取到 DevCache，以减少设备和主机之间的写入放大，将更改直接应用于 DevCache 中的块并更新 OmniIndex。（覆写的话就有可能不在cache，要读到cache，不过怎么做到细粒度读的？）<br>读：先读omniindex看数据在哪，如果cache miss就类似覆写，对于多个OmniIndex节点或存储中的块，使用带有细粒度锁的OmniIndex来并发读取块，从而实现更低的延迟和更高的吞吐量。<br>**File Commit (fsync)**：OmniCache 使用 OmniIndex 的范围和每块脏位将一个或多个块提交到存储。对于 DevCache 中的块，OmniCache 创建并发出 I&#x2F;O 命令，OmniDev 处理文件提交。 fsync 被视为文件上的屏障操作<br><strong>文件共享</strong>：在共享内存分配器的支持下在共享内存区域内分配缓存页。对共享缓存和 OmniIndex 的访问仅限于具有必要文件权限的进程。受信任的第三方服务器使用基于租约的锁来调解对共享 OmniIndex 的访问。</p>
+<h4 id="4-2-3-Concurrent-Caching-and-Reducing-Eviction-Stalls"><a href="#4-2-3-Concurrent-Caching-and-Reducing-Eviction-Stalls" class="headerlink" title="4.2.3 Concurrent Caching and Reducing Eviction Stalls"></a>4.2.3 Concurrent Caching and Reducing Eviction Stalls</h4><p>同时使用 HostCache 和 DevCache 以及低开销缓存驱逐对于最大限度地减少应用程序停顿和优化性能至关重要。<br>为解决挑战，提出collaborative caching and concurrent eviction；在协作缓存中，应用程序线程同时使用 HostCache 和 DevCache，当一个缓存已满时在它们之间进行切换。这减少了计算停顿并提高了性能。</p>
+<p><strong>Two-step LRU Eviction</strong>：<br>当有新的数据更新时，首先将其写入HostCache。当HostCache达到容量上限（没有可用空间）时，OmniLib将写操作转到DevCache，并同时开始在HostCache中进行并发的缓存淘汰操作</p>
+<p>为了管理两个级别的LRU信息，系统使用了一个后台淘汰线程。这个线程维护了两个LRU列表：文件级LRU和每个文件的OmniIndex LRU。文件级LRU列表包含了所有已关闭或非活动文件的信息。OmniIndex LRU列表用于跟踪最近未被访问的文件范围。如果一个文件或一个范围在可配置的30秒时间段内没有被访问，它就会成为LRU。<br>驱逐缓存的第一步：逐出LRU的文件，如果此时缓存占用空间下降到阈值以下，比如10%，应用程序就继续插入缓存，否则进行第二步。第二步进行文件内范围LRU驱逐，从设备和主机缓存中删除文件的LRU的范围块。<br>协作缓存和两步驱逐确保 HostCache 和 DevCache 之间的无缝过渡、不同缓存的并发利用、减少计算停顿并提高性能。</p>
+<h3 id="4-3-Collaborative-Processing-with-Caching"><a href="#4-3-Collaborative-Processing-with-Caching" class="headerlink" title="4.3 Collaborative Processing with Caching"></a>4.3 Collaborative Processing with Caching</h3><p>近存储处理的卸载操作的有效性取决于 I&#x2F;O 操作的频率以及使用功能较弱的设备上计算和较小的内存资源的影响等因素。<br><strong>Application Interface for Processing</strong>：Omnicache需要应用使用Omnilib预定义的处理函数，提供了丰富的op，比如checksum or compression.<br>I&#x2F;O和数据处理操作被转换和堆叠为NVMe命令向量，并作为批处理操作卸载（称为CISC操作[9]<br><strong>Challenges</strong>：协作数据处理需要并行的主机设备处理、跨缓存的动态数据迁移以及基于硬件和软件成本（例如，数据移动开销、数据处理时间、队列延迟）的智能卸载决策。<br><strong>Key Ideas</strong>：首先，继承了cache的协作，我们使用 OmniIndex 在主机和设备上进行并发范围级数据处理，并具有细粒度的范围并发性。其次，我们引入了一个考虑硬件和软件指标（例如存储、内存、计算时间、排队延迟）的动态模型。</p>
+<h4 id="4-3-1-Extending-OmniIndex-for-Compute-Cache"><a href="#4-3-1-Extending-OmniIndex-for-Compute-Cache" class="headerlink" title="4.3.1 Extending OmniIndex for Compute Cache:"></a>4.3.1 Extending OmniIndex for Compute Cache:</h4><p>我们通过添加处理缓冲区processing buffer（与高速缓存缓冲区分开的中间计算缓冲区）来改进 OmniIndex。处理缓冲区链接到每个树节点，并且可以存储在主机或设备内存中。通过每个区间树节点中的地址引用来访问处理缓冲区。这有助于 OmniCache 快速查找处理状态，在主机和设备上拆分和合并处理。</p>
+<p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240516164749.png" alt="image.png"><br>借用一个例子来看processing buffer的作用<br>引入read-cal_distance-nearestK操作，这个操作计算距离、选择最近的K个点，中间结果比如说计算得到的距离将会被存储在processing buffer中。<br>这个操作可以并发在host和device中执行，协作处理。<br>之后，OmniCache会合并K个最近点并进行最终分类预测，这里会涉及到数据传输，<br>预测操作具体在host还是在device上执行由动态任务卸载策略决定。</p>
+<h3 id="4-4-Resource-driven-Dynamic-Offloading"><a href="#4-4-Resource-driven-Dynamic-Offloading" class="headerlink" title="4.4 Resource-driven Dynamic Offloading"></a>4.4 Resource-driven Dynamic Offloading</h3><p>目的:增加主机和设备上的近缓存和近数据处理，同时最大限度地减少数据移动<br>困难：存储、HostCache 和 DevCache 之间不同的计算能力、缓存容量和数据传输时间需要动态方法来达到最佳处理位置，有三重挑战：<br>首先，数据分布在主机和设备缓存之间的处理操作可能会导致数据移动。其次，决定卸载位置的硬件和软件指标（例如计算成本、内存要求和 I&#x2F;O 频率）可能会根据处理复杂性而发生显着变化。第三，在不干扰数据平面操作的情况下监控主机和设备硬件和软件指标至关重要。<br><strong>Model-driven Approach</strong>：<br>模型驱动的策列基于以下公式<img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240516170904.png" alt="image.png">Th 和 Td 通过考虑各种因素分别计算主机和设备上请求的处理时间： 数据比率 (R) 表示与分布在 HostCache、DevCache 和存储上的请求关联的数据。比率 Rhm、Rdm 和 Rs 表示每个请求的主机内存 (hm)、设备内存 (dm) 和存储 (s) 中的数据部分。执行时间 (E) 仅捕获处理成本，Ehavg 表示在主机上执行请求的平均时间，而 Edavg 表示在设备上的平均时间。数据传输成本 (B) 捕获 HostCache、DevCache 和存储之间的数据移动。 Bhm_dm表示HostCache和DevCache之间的数据传输带宽，Bds_hm表示存储和HostCache之间的带宽，Bds_dm表示存储和DevCache之间的带宽。最后，Queue Latency 表示请求的完成时间，这取决于排队延迟。这取决于每个文件 I&#x2F;O 队列中的 I&#x2F;O 和数据处理请求的数量以及处理请求所需的平均时间 (Cmdavg * Qlen)。缓存驱逐期间队列延迟会增加。<br><strong>Continuous and Low-interference Monitoring</strong><br>为了实现动态卸载模型，OmniCache 使用 OmniDynamic 组件持续监控主机和设备层的硬件和软件参数。该组件在 OmniLib 和 OmniDev 的交叉点上运行，收集缓存数据比率、数据移动带宽、处理成本和队列等待时间开销等指标。<br>对于设备上的指标收集，我们使用附加计数器扩展了用于数据处理的每个 NVMe 命令，包括设备上处理时间 (Ed)、DevCache 和 HostCache 之间 (Bhm_dm) 以及存储和 DevCache 之间 (Bds_dm) 之间的数据移动带宽。<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240516172201.png" alt="image.png"><br>使用上面的算法进行决策，最后还会更新平均执行时间、处理请求所需的平均时间</p>
+<h3 id="4-5-Exploring-CXL-Extensibility-with-OmniCXL"><a href="#4-5-Exploring-CXL-Extensibility-with-OmniCXL" class="headerlink" title="4.5 Exploring CXL Extensibility with OmniCXL"></a>4.5 Exploring CXL Extensibility with OmniCXL</h3><p>我们研究了 OmniCache 如何利用 CXL.mem 减少数据复制和排队瓶颈，同时确保在没有硬件级缓存一致性支持的情况下安全运行。<br>在 OmniCache 基于队列的设计中，所有请求都会产生开销，例如将数据和 NVMe 命令从应用程序（或设备）缓冲区打包和复制到启用 DMA 的 I&#x2F;O 队列、排队延迟以及主机 CPU 开销（例如轮询请求完成）。<br>如何利用CXL.mem来减少这部分开销<br>对于 write() 等 I&#x2F;O 操作，由于空间限制，无法缓存在 HostCache 中，OmniLib 直接将数据写入devcache并进行flush。<br>避免 (1) 在应用程序和设备队列之间复制数据，(2) 打包（在主机上）和解包（在设备上）NVMe 命令，(3) 减少排队延迟，以及 (4) 连续轮询请求完成，从而最大限度地减少 CPU 开销。<br>（传统的写要先写道host memory，然后执行memcpy到device，这就会带来上述的开销，引入cxl后可以直接写到device memory）</p>
+<h2 id="5-Implementation-Details"><a href="#5-Implementation-Details" class="headerlink" title="5 Implementation Details"></a>5 Implementation Details</h2><p>首先，由于缺乏对可编程存储硬件的访问，我们将模拟 OmniDev 实现为设备驱动程序 (8K LOC)，这与之前的工作类似 [9, 31]。为了了解 OmniCache 对更快和更慢存储的影响，我们实现了两个不同的近存储后端：一个通过扩展 PM 文件系统在 Intel Optane 持久内存 (PM) 上，另一个在基于 NVMe 的 SSD 上使用块级 ext4 和 I&#x2F; O 绕过操作系统缓存的操作。我们还向 OmniDev 添加了一个存储处理引擎。<br>其次，为了管理 DevCache，在 OmniDev 中，我们实现了一个轻量级且高效的内存分配器，它使用位图数组来跟踪缓存块的可用性。分配器将块 ID 返回给主机级，而不是将设备的内存地址暴露给主机。<br>第三，OmniLib（在第 3.2 节中讨论）使用 shim 库来拦截 POSIX I&#x2F;O 操作并将其转换为符合 OmniDev 的 NVMe 命令。对于 HostCache 管理，我们扩展了可扩展的 jemalloc[4] 分配器来进行缓存块分配和释放。使用非 CXL 近存储设备时，NVMe 命令将复制到每个文件的 NVMe 队列，稍后由 OmniDev 出队并分派。相反，对于 CXL.mem，OmniLib 直接访问设备内存。我们为 OmniLib 实现了 CXL 内存分配语义，以注册和分配在 OmniLib 和 OmniDev 之间共享的 CXL 命名空间。<br>最后，为了模拟设备内存和计算速度以及 CXL.mem 延迟和带宽，我们采用了两步模拟。首先，为了模拟从主机 CPU 访问较慢的设备内存，我们将设备内存映射到主机 CPU 远程但位于设备 CPU 本地的 NUMA 套接字（节点）上。准确地说，在具有两个套接字的系统中，我们在 NUMA Node0 上分配主机内存，该内存对于主机 CPU 来说是本地的，对于设备 CPU 来说是远程的。相反，我们在 NUMA 节点 1 上分配设备内存，该节点对于设备 CPU 来说是本地的，但对于主机 CPU 来说是远程的。接下来，为了模拟设备内存带宽，我们使用热调节 [6] 来限制设备内存的带宽，使用频率缩放来降低设备 CPU 速度，并添加软件延迟来改变 PCIe 延迟。在第 6.4 节中，我们研究了 OmniCache 对这些硬件参数的敏感性</p>
+<h2 id="6-Evaluation"><a href="#6-Evaluation" class="headerlink" title="6 Evaluation"></a>6 Evaluation</h2><h3 id="6-1-Experimental-Setup"><a href="#6-1-Experimental-Setup" class="headerlink" title="6.1 Experimental Setup"></a>6.1 Experimental Setup</h3><p>dual-socket, 64-core, 2.7GHz Intel(R) Xeon(R) Gold platform with 32GB memory<br>512GB (4x128GB) Optane DC persistent memory with App-Direct (persistent) mode to represent the upcoming fast storage as well as 512GB NVMe SSD to study the benefit of OmniCache on slower storage.<br>DevCache with 4GB of DRAM for caching and for OmniDev, we reserve 4 CPUs.<br>对比对象：</p>
+<ul>
+<li>SOTA PM file system NOVA</li>
+<li>near-storage file system FusionFS（这俩都没cache）</li>
+<li>HostCache-user-level：只用hostcahe</li>
+<li>lambda-IO-emulate：引入λIO，使用hostcache（可以将操作卸载到device）</li>
+<li>OmniCache：同时用host device cache，但是没有模型驱动的任务卸载，卸载仅由数据比率决定</li>
+<li>OmniCache-dynamic：有动态卸载</li>
+<li>OmniCXL：结合CXL</li>
+</ul>
+<h3 id="6-2-I-O-Performance"><a href="#6-2-I-O-Performance" class="headerlink" title="6.2 I&#x2F;O Performance"></a>6.2 I&#x2F;O Performance</h3><p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240516174804.png" alt="image.png"><br>读写私有文件，1KB IO共64GB，总cache20GB<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240516175302.png" alt="image.png"><br>研究IO size的影响<br>对于跨各种工作负载的非块对齐请求，OmniCache 始终优于其他方法，从而获得了近缓存 I&#x2F;O 的优势。对于块对齐 (4KB) 随机写入，OmniCache 提供了性能提升，这要归功于其并发 I&#x2F;O 和协作缓存，可减少写入停顿。对于块对齐的随机读取（例如 4KB），OmniCache 的性能与 HostCache 用户级类似，因为它将整个块移动到主机。<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240516175417.png" alt="image.png"><br>cache数据比率的影响<br>较低比率下只用hostcache会经历频繁的驱逐和线程停顿，OmniCache 会平滑地将应用程序线程转换为利用 DevCache，所以性能好些，即使在 100% 缓存比率下，OmniCache 通过使用近缓存 I&#x2F;O 原则最大限度地减少数据移动，也优于其他缓存。</p>
+<h3 id="6-3-Data-Processing-with-OmniCache"><a href="#6-3-Data-Processing-with-OmniCache" class="headerlink" title="6.3 Data Processing with OmniCache"></a>6.3 Data Processing with OmniCache</h3><p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240516175731.png" alt="image.png"><br>IO+数据处理负载（read-CRC-write）<br>吞吐量分析：<br>FusionFS 遇到 NVMe 命令通信和数据复制开销。它需要将每个请求卸载到设备，在设备上执行计算，然后将数据写回设备存储。而HostCache可以直接在主机上进行操作，所以效率更高。<br>但是在缓存未命中的情况下，HostCache 用户级会产生存储和主机内存之间的数据移动开销，从而阻碍计算。<br>OmniCache-dynamic 显着提高了性能，尤其是在繁重的工作负载场景下。这种性能的提高得益于其模型驱动方法，该方法持续监控执行时间、队列延迟和其他因素，以动态确定最佳卸载位置<br>延迟分析：<br>HostCache 最初可以很好地处理写入请求，但由于 epoch 1000 之后的驱逐而出现波动和延迟，从而导致更长的队列延迟。OmniCachedynamic 的模型驱动方法考虑了数据分布率、队列长度和执行成本等因素，保持了较低且稳定的延迟，性能比 HostCache 用户级高出 1.42 倍。</p>
+<h3 id="6-4-OmniDynamic-Model-Effectiveness"><a href="#6-4-OmniDynamic-Model-Effectiveness" class="headerlink" title="6.4 OmniDynamic Model Effectiveness"></a>6.4 OmniDynamic Model Effectiveness</h3><p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240516180333.png" alt="image.png"><br>拆分公式验证每个参数都是有用的<br><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240516180338.png" alt="image.png"></p>
+<p>验证硬件参数的敏感性，即使是低频率的内存也有很好的性能</p>
+<h3 id="6-5-CXL-mem-enabled-OmniCache"><a href="#6-5-CXL-mem-enabled-OmniCache" class="headerlink" title="6.5 CXL.mem enabled OmniCache"></a>6.5 CXL.mem enabled OmniCache</h3><p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240516180435.png" alt="image.png"><br>性能提升</p>
+<h3 id="6-6-Real-World-Applications"><a href="#6-6-Real-World-Applications" class="headerlink" title="6.6 Real-World Applications"></a>6.6 Real-World Applications</h3><p><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20240516180656.png" alt="image.png"></p>
+<h2 id="7-Conclusion"><a href="#7-Conclusion" class="headerlink" title="7 Conclusion"></a>7 Conclusion</h2><p>我们开发了 OmniCache，这是一种协作式缓存设计，利用主机和设备内存作为缓存来加速 I&#x2F;O 和数据处理。 OmniCache 通过可扩展索引、并发缓存和处理支持以及以模型为中心的动态卸载技术来实现这一目标，从而显着提高微基准测试和应用程序的性能</p>
+<p hidden>
+Back: you have read it !
+Tags: cxl
+END
+</p></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://mightcoder.com">might</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://mightcoder.com/2024/05/07/OmniCache%EF%BC%9ACollaborative%20Caching%20for%20Near-storage%20Accelerators/">https://mightcoder.com/2024/05/07/OmniCache%EF%BC%9ACollaborative%20Caching%20for%20Near-storage%20Accelerators/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/cxl/">cxl</a></div><div class="post_share"><div class="social-share" data-image="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>请作者喝杯咖啡</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/mm_facetoface_collect_qrcode_1701260520030.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" target="_blank"><img class="post-qr-code-img" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/1701260528369.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/05/10/Memory%20Sharing%20with%20CXL%EF%BC%9A%20Hardware%20and%20Software%20Design%20Approaches/" title="Memory Sharing with CXL: Hardware and Software Design Approaches"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">Memory Sharing with CXL: Hardware and Software Design Approaches</div></div></a></div><div class="next-post pull-right"><a href="/2024/04/01/Toward%20CXL-Native%20Memory%20Tiering%20via%20Device-Side%20Profiling/" title="Toward CXL-Native Memory Tiering via Device-Side Profiling"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next</div><div class="next_info">Toward CXL-Native Memory Tiering via Device-Side Profiling</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2023/11/08/CXL%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87%E8%B0%83%E7%A0%942023.11.8/" title="论文研究方向"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-11-08</div><div class="title">论文研究方向</div></div></a></div><div><a href="/2024/03/20/DDC%EF%BC%9AA%20Vision%20for%20a%20Disaggregated%20Datacenter/" title="DDC：A Vision for a Disaggregated Datacenter"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-20</div><div class="title">DDC：A Vision for a Disaggregated Datacenter</div></div></a></div><div><a href="/2023/09/18/An%20Introduction%20to%20the%20Compute%20Express%20LinkTM%20(CXLTM)%20Interconnect/" title="An Introduction to the Compute Express LinkTM (CXLTM) Interconnect"><img class="cover" src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-09-18</div><div class="title">An Introduction to the Compute Express LinkTM (CXLTM) Interconnect</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> Comment</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/OK.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">might</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">69</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">32</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/shenghansen"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/shenghansen" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:shenghs@mail2.sysu.edu.cn" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="/./atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #f36d6d;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">Hope you can find something useful here ᐕ)⁾⁾ .</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Background-and-Motivation"><span class="toc-number">1.</span> <span class="toc-text">2 Background and Motivation</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-Background-and-Related-Work"><span class="toc-number">1.1.</span> <span class="toc-text">2.1 Background and Related Work</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Hardware-Near-storage-Processing-Trends"><span class="toc-number">1.1.1.</span> <span class="toc-text">Hardware Near-storage Processing Trends</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Software-Support-for-Near-storage-Acceleration"><span class="toc-number">1.1.2.</span> <span class="toc-text">Software Support for Near-storage Acceleration</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Data-Processing-Support"><span class="toc-number">1.1.3.</span> <span class="toc-text">Data Processing Support</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#In-memory-Caching-for-Storage"><span class="toc-number">1.1.4.</span> <span class="toc-text">In-memory Caching for Storage</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-Limitations-of-State-of-the-art-Systems"><span class="toc-number">1.2.</span> <span class="toc-text">2.2 Limitations of State-of-the-art Systems</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-Analysis"><span class="toc-number">1.3.</span> <span class="toc-text">2.3 Analysis</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Goals-and-Overview"><span class="toc-number">2.</span> <span class="toc-text">3 Goals and Overview</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Design"><span class="toc-number">3.</span> <span class="toc-text">4 Design</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-Cache-Architecture"><span class="toc-number">3.1.</span> <span class="toc-text">4.1 Cache Architecture</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-Collaborative-Caching-for-I-O"><span class="toc-number">3.2.</span> <span class="toc-text">4.2 Collaborative Caching for I&#x2F;O</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-1-Scalable-OmniIndex"><span class="toc-number">3.2.1.</span> <span class="toc-text">4.2.1 Scalable OmniIndex</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-2-I-O-Operations-with-OmniCache"><span class="toc-number">3.2.2.</span> <span class="toc-text">4.2.2 I&#x2F;O Operations with OmniCache</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-3-Concurrent-Caching-and-Reducing-Eviction-Stalls"><span class="toc-number">3.2.3.</span> <span class="toc-text">4.2.3 Concurrent Caching and Reducing Eviction Stalls</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-Collaborative-Processing-with-Caching"><span class="toc-number">3.3.</span> <span class="toc-text">4.3 Collaborative Processing with Caching</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-1-Extending-OmniIndex-for-Compute-Cache"><span class="toc-number">3.3.1.</span> <span class="toc-text">4.3.1 Extending OmniIndex for Compute Cache:</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-Resource-driven-Dynamic-Offloading"><span class="toc-number">3.4.</span> <span class="toc-text">4.4 Resource-driven Dynamic Offloading</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-5-Exploring-CXL-Extensibility-with-OmniCXL"><span class="toc-number">3.5.</span> <span class="toc-text">4.5 Exploring CXL Extensibility with OmniCXL</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-Implementation-Details"><span class="toc-number">4.</span> <span class="toc-text">5 Implementation Details</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-Evaluation"><span class="toc-number">5.</span> <span class="toc-text">6 Evaluation</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-Experimental-Setup"><span class="toc-number">5.1.</span> <span class="toc-text">6.1 Experimental Setup</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-I-O-Performance"><span class="toc-number">5.2.</span> <span class="toc-text">6.2 I&#x2F;O Performance</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-Data-Processing-with-OmniCache"><span class="toc-number">5.3.</span> <span class="toc-text">6.3 Data Processing with OmniCache</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-4-OmniDynamic-Model-Effectiveness"><span class="toc-number">5.4.</span> <span class="toc-text">6.4 OmniDynamic Model Effectiveness</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-5-CXL-mem-enabled-OmniCache"><span class="toc-number">5.5.</span> <span class="toc-text">6.5 CXL.mem enabled OmniCache</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-6-Real-World-Applications"><span class="toc-number">5.6.</span> <span class="toc-text">6.6 Real-World Applications</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-Conclusion"><span class="toc-number">6.</span> <span class="toc-text">7 Conclusion</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/11/25/cpp%E5%8D%8F%E7%A8%8B/" title="1.协程简介">1.协程简介</a><time datetime="2024-11-25T08:23:29.000Z" title="Created 2024-11-25 16:23:29">2024-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/11/13/SHMEMGraph%EF%BC%9A%20Efficient%20and%20Balanced%20Graph%20%20Processing%20Using%20One-sided%20Communication/" title="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151617.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication"/></a><div class="content"><a class="title" href="/2024/11/13/SHMEMGraph%EF%BC%9A%20Efficient%20and%20Balanced%20Graph%20%20Processing%20Using%20One-sided%20Communication/" title="SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication">SHMEMGraph： Efficient and Balanced Graph  Processing Using One-sided Communication</a><time datetime="2024-11-13T07:34:44.000Z" title="Created 2024-11-13 15:34:44">2024-11-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/11/11/RGraph%EF%BC%9AAsynchronous%20graph%20processing%20based%20on%20%20asymmetry%20of%20remote%20direct%20memory%20access/" title="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151617.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access"/></a><div class="content"><a class="title" href="/2024/11/11/RGraph%EF%BC%9AAsynchronous%20graph%20processing%20based%20on%20%20asymmetry%20of%20remote%20direct%20memory%20access/" title="RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access">RGraph：Asynchronous graph processing based on  asymmetry of remote direct memory access</a><time datetime="2024-11-11T08:17:26.000Z" title="Created 2024-11-11 16:17:26">2024-11-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/10/01/cloudlab%E5%A4%9A%E8%8A%82%E7%82%B9%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" title="cloudlab多节点环境配置"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220150722.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="cloudlab多节点环境配置"/></a><div class="content"><a class="title" href="/2024/10/01/cloudlab%E5%A4%9A%E8%8A%82%E7%82%B9%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" title="cloudlab多节点环境配置">cloudlab多节点环境配置</a><time datetime="2024-10-01T03:23:12.000Z" title="Created 2024-10-01 11:23:12">2024-10-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/09/21/DFabric%EF%BC%9A%20Scaling%20Out%20Data%20Parallel%20Applications%20with%20%20CXL-Ethernet%20Hybrid%20Interconnects/" title="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects"><img src="https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects"/></a><div class="content"><a class="title" href="/2024/09/21/DFabric%EF%BC%9A%20Scaling%20Out%20Data%20Parallel%20Applications%20with%20%20CXL-Ethernet%20Hybrid%20Interconnects/" title="DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects">DFabric： Scaling Out Data Parallel Applications with  CXL-Ethernet Hybrid Interconnects</a><time datetime="2024-09-21T06:44:05.000Z" title="Created 2024-09-21 14:44:05">2024-09-21</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://might-image-bed.oss-cn-hangzhou.aliyuncs.com/imgbed/20250220151229.png')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By might</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">hope you can find something useful here ᐕ)⁾⁾ .</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="Scroll To Comments"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const initValine = () => {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'VBvzA6UUhphh1Tc1BtzWXzye-gzGzoHsz',
+      appKey: 'J0UlGcCok0khsrORkwxD1HwF',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  const loadValine = async () => {
+    if (typeof Valine === 'function') initValine()
+    else {
+      await getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js')
+      initValine()
+    }
+  }
+
+  if ('Valine' === 'Valine' || !false) {
+    if (false) btf.loadComment(document.getElementById('vcomment'),loadValine)
+    else setTimeout(loadValine, 0)
+  } else {
+    window.loadOtherComment = loadValine
+  }
+})()</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
